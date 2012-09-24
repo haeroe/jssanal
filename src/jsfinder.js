@@ -1,5 +1,5 @@
 var userInput = '/';
-var jsArray = new Array();
+var jsArray = [];
 var jsArrayCount = 0;
 
 // Checking if the user gave a target folder as a parameter.
@@ -15,7 +15,8 @@ var files = require('findit').sync(__dirname + userInput);
 
 // A function for checking if string str ends with the suffix string.
 function endsWith(str, suffix) {
-    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+	"use strict";
+	return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
 
 // Iterating through the files to find all the .js files and adding those to an array.
