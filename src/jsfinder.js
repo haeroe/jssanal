@@ -1,6 +1,5 @@
 var fs = require('fs');
-var files = require('findit').sync(__dirname);
-
+var files = require('findit').sync(__dirname + process.argv[2]);
 
 var jsArray = new Array();
 var jsArrayCount = 0;
@@ -15,5 +14,6 @@ for (var i=0; i<files.length; i++) {
 		jsArrayCount++;
 	}
 }
+
 
 console.log(jsArray);
