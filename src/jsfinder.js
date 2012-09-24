@@ -4,7 +4,6 @@ var jsArrayCount = 0;
 
 // Checking if the user gave a target folder as a parameter.
 if(process.argv.length < 3) {
-	console.log(process.argv.length);
 	console.log('No input parameter given. Beginning search from current folder. \n');
 } else {
 	userInput = process.argv[2];
@@ -30,3 +29,5 @@ for (var i=0; i<files.length; i++) {
 
 // Printing out the array for debugging purposes.
 console.log(jsArray);
+
+return jsArray;
