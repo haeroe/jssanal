@@ -25,10 +25,13 @@ module.exports = function (grunt) {
                 alert: false,
                 prompt: false
             }
+        },
+        qunit: {
+        		index: ['test/*.js']
         }
     });
 
     // Default task.
-    grunt.registerTask('default', 'lint');
+    grunt.registerTask('default', 'lint', 'qunit');
 };
 
