@@ -26,13 +26,13 @@ grunt.initConfig({
 			prompt: false
 		}
 	},
-	qunit: {
-		index: ['tests/testrunner.js']
-		}
+	test: {
+		files: ['tests/exampletest.js']
+	}
 	});
 
 	// Default task.
-	grunt.registerTask('default', 'lint', 'qunit');
+	grunt.registerTask('default', 'lint', 'test');
 
 	// Travis CI task.
 	grunt.registerTask('travis', 'lint qunit');
