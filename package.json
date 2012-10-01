@@ -1,10 +1,12 @@
 {
-	"name": "jssanal",
-	"version": "0.0.1",
-	"dependencies": 
-		{
-			"esprima": "*",
-            "findit": "*",
-            "qunit": "*"
-		}
+    "name": "jssanal",
+    "version": "0.0.1",
+    "dependencies": {
+        "esprima": "*",
+        "findit": "*",
+        "qunit": "*"
+    },
+    "scripts": {
+        "test": "grunt travis --verbose"
+    }
 }

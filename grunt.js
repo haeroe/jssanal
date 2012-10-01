@@ -6,7 +6,7 @@ module.exports = function (grunt) {
 // Project configuration.
 grunt.initConfig({
 	lint: {
-		all: ["grunt.js", "src/*.js", "tests/*.js"]
+		all: ["grunt.js", "src/*.js"]
 	},
 	jshint: {
 		options: {
@@ -27,7 +27,7 @@ grunt.initConfig({
 		}
 	},
 	qunit: {
-		index: ['tests/tests.js']
+		index: ['tests/testrunner.js']
 		}
 	});
 
