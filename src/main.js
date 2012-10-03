@@ -4,9 +4,7 @@ var util	= require('util');
 
 var methods	= {};
 var variables	= {};
-
-var currMethod;
-var currVar;
+var sources	= [];
 
 
 function newMethod(name)
@@ -39,14 +37,11 @@ function parseAST(astBlock)
 	if(astBlock.type === undefined)
 		return;
 
-	var localMethod = currMethod;
-	var localVar = currVar;
-
 	switch(astBlock.type)
 	{
 		case "CallExpression":
 			var method = newMethod(astBlock.callee.name);
-			
+			if(
 			break;
 
 
@@ -76,9 +71,15 @@ function parseAST(astBlock)
 			console.log("Type not found! - " + astBlock.type);
 			process.exit(1);
 	}
+}
 
-	currMethod = localMethod;
-	currVar = localVar;
+function isSource(name)
+{
+	for(method in sources)
+		if(sources[method] === name)
+			return true;
+
+	return false;
 }
 
 
