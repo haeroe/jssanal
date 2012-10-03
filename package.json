@@ -8,7 +8,7 @@
         "grunt": "*"
     },
     "scripts": {
-    	"preinstall": "npm i -g grunt"
+    	"preinstall": "npm i -g grunt",
         "test": "grunt travis --verbose"
     }
 }
