@@ -35,6 +35,6 @@ grunt.initConfig({
 	grunt.registerTask('default', 'lint', 'test');
 
 	// Travis CI task.
-	grunt.registerTask('travis', 'lint qunit');
+	grunt.registerTask('travis', 'lint test');
 };
 

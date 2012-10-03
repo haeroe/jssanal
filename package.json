@@ -4,9 +4,11 @@
     "dependencies": {
         "esprima": "*",
         "findit": "*",
-        "qunit": "*"
+        "qunit": "*",
+        "grunt": "*"
     },
     "scripts": {
+    	"preinstall": "npm i -g grunt",
         "test": "grunt travis --verbose"
     }
 }
