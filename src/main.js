@@ -6,6 +6,7 @@ var methods	= {};
 var variables	= {};
 var sources	= [];
 
+var globalContext;
 
 function newMethod(name)
 {
@@ -15,18 +16,20 @@ function newMethod(name)
 
 	tempMethod.isSink = false;
 	tempMethod.isSource = false;
+	tempMethod.isCleaner = false;
 
 	tempMethod.params = {};
 	tempMethod.calls = {};
+	tempMethod.aliases = {};
 
 	tempMethod.addParam = function (paramName, isTainted)
 				{
-					params.paramName = isTainted;
+					tempMethod.params.paramName = isTainted;
 				}
 
 	tempMethod.addCall = function (callee, isDangerous)
 				{
-					calls.callee = isDangerous;
+					tempMethod.calls.callee = isDangerous;
 				}
 
 	return tempMethod;
@@ -37,11 +40,24 @@ function parseAST(astBlock)
 	if(astBlock.type === undefined)
 		return;
 
+	var methodContext = globalContext;
+
+	console.log(astBlock.type);
+
 	switch(astBlock.type)
 	{
 		case "CallExpression":
 			var method = newMethod(astBlock.callee.name);
-			if(
+			for(var arg in astBlock.arguments)
+				method.addParam(arg, isTainted(arg, method.name));
+			methods[method] = isSource(method);
+			if(globalContext != null)
+				methods[globalContext.name].addCall(method.name, false);
+			break;
+
+
+		case "NewExpression":
+			
 			break;
 
 
@@ -62,7 +78,6 @@ function parseAST(astBlock)
 
 
 		case "VariableDeclarator":
-			//TODO: Make astBlock.id.name globally unique and store it
 			parseAST(astBlock.init);
 			break;			
 
@@ -71,6 +86,8 @@ function parseAST(astBlock)
 			console.log("Type not found! - " + astBlock.type);
 			process.exit(1);
 	}
+
+	globalContext = methodContext;
 }
 
 function isSource(name)
@@ -79,6 +96,11 @@ function isSource(name)
 		if(sources[method] === name)
 			return true;
 
+	return false;
+}
+
+function isTainted(name, contextMethod)
+{
 	return false;
 }
 
