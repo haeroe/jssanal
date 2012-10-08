@@ -6,8 +6,6 @@ var methods	= {};
 var variables	= {};
 var sources	= [];
 
-var globalContext;
-
 function newMethod(name)
 {
 	tempMethod = new Object();
@@ -22,14 +20,9 @@ function newMethod(name)
 	tempMethod.calls = {};
 	tempMethod.aliases = {};
 
-	tempMethod.addParam = function (paramName, isTainted)
-				{
-					tempMethod.params.paramName = isTainted;
-				}
-
 	tempMethod.addCall = function (callee, isDangerous)
 				{
-					tempMethod.calls.callee = isDangerous;
+					tempMethod.calls[callee] = isDangerous;
 				}
 
 	return tempMethod;
@@ -40,19 +33,13 @@ function parseAST(astBlock)
 	if(astBlock.type === undefined)
 		return;
 
-	var methodContext = globalContext;
-
 	console.log(astBlock.type);
 
 	switch(astBlock.type)
 	{
 		case "CallExpression":
 			var method = newMethod(astBlock.callee.name);
-			for(var arg in astBlock.arguments)
-				method.addParam(arg, isTainted(arg, method.name));
-			methods[method] = isSource(method);
-			if(globalContext != null)
-				methods[globalContext.name].addCall(method.name, false);
+			methods[method] = method.isSource;
 			break;
 
 
@@ -87,13 +74,12 @@ function parseAST(astBlock)
 			process.exit(1);
 	}
 
-	globalContext = methodContext;
 }
 
 function isSource(name)
 {
-	for(method in sources)
-		if(sources[method] === name)
+	for(source in sources)
+		if(sources[source] === name)
 			return true;
 
 	return false;
