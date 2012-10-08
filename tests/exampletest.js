@@ -1,6 +1,7 @@
 var filereader = require('../src/jsfinder.js');
 var path = require('path');
 var util = require('util');
+var fs = require('fs');
 
 exports['awesome'] = {
   setUp: function(done) {
@@ -26,4 +27,12 @@ exports['jsfinder'] = {
     test.expect(1);
     test.equal(util.inspect(testArray), util.inspect(filereader), 'the folderlisting should be the same');
     test.done();
-  }}
+  },
+  'src folder with .jsp added': function(test) {
+    fs.writeFileSync(testFolder + 'test.jsp', 'just a test');
+    test.expect(1);
+    test.equal(util.inspect(testArray), util.inspect(filereader), 'the .jsp file should not be included');
+    test.done();
+    fs.unlinkSync(testFolder + 'test.jsp');
+  }
+}
