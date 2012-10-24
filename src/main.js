@@ -2,94 +2,39 @@ var esprima 	= require('esprima');
 var fs		= require('fs');
 var util	= require('util');
 
-var methods	= {};
-var variables	= {};
-var sources	= [];
+var id = 0;
+var blocks = {};
 
-function newMethod(name)
+// Function to assign a global ID for JSON blocks in the parse tree
+function getID()
 {
-	tempMethod = new Object();
-
-	tempMethod.name = name;
-
-	tempMethod.isSink = false;
-	tempMethod.isSource = false;
-	tempMethod.isCleaner = false;
-
-	tempMethod.params = {};
-	tempMethod.calls = {};
-	tempMethod.aliases = {};
-
-	tempMethod.addCall = function (callee, isDangerous)
-				{
-					tempMethod.calls[callee] = isDangerous;
-				}
-
-	return tempMethod;
+	id++;
+	return id;
 }
 
+//recursive parsing function for parse tree blocks
 function parseAST(astBlock)
 {
 	if(astBlock.type === undefined)
 		return;
 
+	astBlock.ID = getID();
+	blocks[astBlock.ID] = astBlock;
+
 	console.log(astBlock.type);
 
-	switch(astBlock.type)
+	for(var child in astBlock)
 	{
-		case "CallExpression":
-			var method = newMethod(astBlock.callee.name);
-			methods[method] = method.isSource;
-			break;
+		console.log(child.type);
 
-
-		case "NewExpression":
+		if(child.type === "AssignmentExpression")
+		{
 			
-			break;
+		}
 
-
-		case "Program":
-			for(var child in astBlock.body)
-			{
-				parseAST(astBlock.body[child]);
-			}
-			break;
-
-
-		case "VariableDeclaration":
-			for(var child in astBlock.declarations)
-			{
-				parseAST(astBlock.declarations[child]);
-			}
-			break;
-
-
-		case "VariableDeclarator":
-			parseAST(astBlock.init);
-			break;			
-
-
-		default:
-			console.log("Type not found! - " + astBlock.type);
-			process.exit(1);
+		parseAST(child);
 	}
-
 }
-
-function isSource(name)
-{
-	for(source in sources)
-		if(sources[source] === name)
-			return true;
-
-	return false;
-}
-
-function isTainted(name, contextMethod)
-{
-	return false;
-}
-
 
 var file_name 	= process.argv[2];
 var file 	= fs.readFileSync( file_name, 'ascii' );
