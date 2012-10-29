@@ -17,7 +17,7 @@ exports['awesome'] = {
 };
 
 var testFolder= path.normalize(__dirname + '/../src') + '/';
-var testArray = [testFolder + 'main.js', testFolder + 'jsfinder.js'];
+var testArray = [testFolder + 'configuration.js', testFolder + 'main.js', testFolder + 'jsfinder.js'];
 exports['jsfinder'] = {
   setUp: function(done) {
     done();
