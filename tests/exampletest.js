@@ -21,7 +21,6 @@ var testArray = [testFolder + 'configuration.js', testFolder + 'main.js', testFo
 exports['jsfinder'] = {
   setUp: function(done) {
     done();
-    
   },
   'src folder': function(test) {
     test.expect(1);
