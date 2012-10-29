@@ -3,7 +3,7 @@ var fs		= require('fs');
 var util	= require('util');
 
 var id = 0;
-var blocks = {};
+var methods = {};
 
 // Function to assign a global ID for JSON blocks in the parse tree
 function getID()
@@ -15,24 +15,28 @@ function getID()
 //recursive parsing function for parse tree blocks
 function parseAST(astBlock)
 {
-	if(astBlock.type === undefined)
-		return;
-
-	astBlock.ID = getID();
-	blocks[astBlock.ID] = astBlock;
-
 	console.log(astBlock.type);
 
-	for(var child in astBlock)
+	if(astBlock.type === undefined)
 	{
-		console.log(child.type);
-
-		if(child.type === "AssignmentExpression")
+		for(var child in astBlock)
 		{
-			
+			parseAST(astBlock[child]);
 		}
 
-		parseAST(child);
+		return;
+	}
+
+	if(astBlock.type === "BlockStatement" || astBlock.type === "FunctionDeclaration"
+				|| astBlock.type === "FunctionExpression" || astBlock.type === "Program")
+	{
+		if(astBlock.type === "FunctionDeclaration" || astBlock.type === "FunctionExpression")
+		{
+			var foo = getID();
+			methods[foo] = astBlock;
+		}
+
+		parseAST(astBlock.body);
 	}
 }
 
@@ -41,3 +45,4 @@ var file 	= fs.readFileSync( file_name, 'ascii' );
 var ast		= esprima.parse( file, {loc: true, range: true, raw: true, token: true} );
 
 parseAST(ast);
+
