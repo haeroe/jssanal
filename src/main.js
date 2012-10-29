@@ -13,36 +13,66 @@ function getID()
 }
 
 //recursive parsing function for parse tree blocks
-function parseAST(astBlock)
+function getMethods(astBlock)
 {
-	console.log(astBlock.type);
-
 	if(astBlock.type === undefined)
 	{
 		for(var child in astBlock)
 		{
-			parseAST(astBlock[child]);
+			getMethods(astBlock[child]);
 		}
 
 		return;
 	}
 
 	if(astBlock.type === "BlockStatement" || astBlock.type === "FunctionDeclaration"
-				|| astBlock.type === "FunctionExpression" || astBlock.type === "Program")
+				|| astBlock.type === "Program")
 	{
-		if(astBlock.type === "FunctionDeclaration" || astBlock.type === "FunctionExpression")
+		if(astBlock.type === "FunctionDeclaration")
 		{
 			var foo = getID();
 			methods[foo] = astBlock;
 		}
 
-		parseAST(astBlock.body);
+		getMethods(astBlock.body);
 	}
+}
+
+function checkMethod(method, sources)
+{
+	tainted = [];
+
+	for(child in method.params)
+	{
+		console.log(method.params[child].name);
+	}
+
+	for(number in sources)
+	{
+		console.log(sources[number]);
+		
+		var foo = method.params[sources[number]];
+		if(foo != undefined)
+		{
+			tainted.push(foo.name);
+		}
+	}
+
+	console.log("\\\\\\");
+	console.log(tainted);
+	console.log("///");
 }
 
 var file_name 	= process.argv[2];
 var file 	= fs.readFileSync( file_name, 'ascii' );
 var ast		= esprima.parse( file, {loc: true, range: true, raw: true, token: true} );
 
-parseAST(ast);
+getMethods(ast);
 
+for(var child in methods)
+{
+	checkMethod(methods[child], [0, 1, 2]);
+	console.log(methods[child]);
+}
+
+//console.log(ast);
