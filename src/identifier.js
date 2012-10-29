@@ -1,4 +1,4 @@
-function Identifier(){
+function Identifier( block, context ){
 
 }
 

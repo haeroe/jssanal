@@ -2,11 +2,11 @@ function Dependency(){
 
 }
 
-function fromParameter( index ){
+function fromParameter( index, type, context ){
     return new Dependency(index + "_parameter");
 }
 
-function fromId( id ){
+function fromBlock( block, context ){
 
 }
 
