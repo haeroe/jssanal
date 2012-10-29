@@ -1,11 +1,24 @@
-var esprima = require('esprima'),
-	fs = require('fs'),
-	util = require('util');
+var esprima     = require('esprima');
+var fs      = require('fs');
+var util    = require('util');
+var analyzer  = new (require('analyzer'))();
 
-var file_name = process.argv[2];
-var file = fs.readFileSync( file_name, 'ascii' );
+var file_name   = process.argv[ 2 ];
+var file    = fs.readFileSync( file_name, 'ascii' );
+var ast     = esprima.parse( file, {loc: true, range: true, raw: true, token: true} );
 
-var syntax_tree = esprima.parse( file, {loc: true, range: true, raw: true, token: true} );
+var options = {
 
-//console.log(util.inspect( syntax_tree.body, false, null));
+}
+analyzer.config( options );
+
+analyzer.add( ast );
+
+function log_f( arg ){
+    console.log(arg);
+}
+
+analyzer.process();
+analyzer.report( log_f );
+
 
