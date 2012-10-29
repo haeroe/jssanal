@@ -10,7 +10,7 @@ var blackList = [""];
 var jQuerySinks = ["$ELEMENT.append(*)","$ELEMENT.html(*)", "jQuery.globalEval(*)"];
 
 // DOM XSS sinks.
-var domSinks = ["document.write(*)", "document.writeln(*)", "element.innerHTML = *", "element.outerHTML = *", "window.location =", "location.assign(*)", "location.replace(*), "range.createContextualFragment(*)", "HTMLBUTTON.value = *" ];
+var domSinks = ["document.write(*)", "document.writeln(*)", "element.innerHTML = *", "element.outerHTML = *", "window.location =", "location.assign(*)", "location.replace(*)", "range.createContextualFragment(*)", "HTMLBUTTON.value = *" ];
 
 // Browser JS execution sinks.
 var browserSinks = ["eval(*)", "Function()", "setTimeout(*)", "setInterval(*)", "execScript(*)", "crypto.generateCRMFRequest()", "ScriptElement.src = *", "ScriptElement.text = *", "ScriptElement.textContent = *", "ScriptElement.innerText = *", "anyTag.onclick = *"];
