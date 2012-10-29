@@ -42,15 +42,8 @@ function checkMethod(method, sources)
 {
 	tainted = [];
 
-	for(child in method.params)
-	{
-		console.log(method.params[child].name);
-	}
-
 	for(number in sources)
 	{
-		console.log(sources[number]);
-		
 		var foo = method.params[sources[number]];
 		if(foo != undefined)
 		{
@@ -58,9 +51,79 @@ function checkMethod(method, sources)
 		}
 	}
 
-	console.log("\\\\\\");
-	console.log(tainted);
-	console.log("///");
+	if(method.body.type === undefined)
+	{
+		return;
+	}
+
+	if(method.body.type === "BlockStatement")
+	{
+		var block = method.body.body;
+		for(child in block)
+		{
+//			console.log(block[child].type);
+
+			switch(block[child].type)
+			{
+				case "ExpressionStatement":
+					checkLine(block[child].expression, tainted);
+					break;				
+				default:
+					//checkLine(block[child], tainted);
+					break;
+			}
+		}		
+
+		return;
+	}
+
+	checkLine(method.body);
+}
+
+function checkLine(expr, tainted)
+{
+	switch(expr.type)
+	{
+		case "AssignmentExpression":
+			if(isSource(expr.right))
+			{
+				console.log("Source found!");
+				//console.log(expr.left);
+				tainted.push(expr.left.name);
+			}
+			break;
+		case "ExpressionStatement":
+		case "VariableDeclaration":
+			break;
+		default:
+			console.log("Unknown type! " + expr.type);
+			break;
+	}
+
+//	console.log(expr);
+//	console.log("ADASDASD");
+}
+
+function isSource(expr)
+{
+//	console.log(expr);
+
+	switch(expr.type)
+	{
+		case "MemberExpression":
+			if(expr.object.name === "document")
+			{
+				if(expr.property.name === "referrer")
+				{
+					return true;
+				}
+			}
+			break;
+		default:
+			break;
+	}
+
+	return false;
 }
 
 var file_name 	= process.argv[2];
@@ -72,7 +135,7 @@ getMethods(ast);
 for(var child in methods)
 {
 	checkMethod(methods[child], [0, 1, 2]);
-	console.log(methods[child]);
+//	console.log(methods[child]);
 }
 
 //console.log(ast);
