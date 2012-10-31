@@ -1,0 +1,31 @@
+1. vaihe:
+
+3,4: param c tässä scopessa -> ei voi tulla mistään muusta scopesta
+
+mappi jossa tämän scopen riippuvuudet:
+3: identifier param -> dependency parametristä 0
+5: identifier c -> dependency parametri_0
+
+jokaselle return statementille katotaan mitä niissä on
+7: funktiolle f lisätään dependency parametri_0
+
+10: tiedetään että param on tästä scopesta
+
+mappi jossa tämän scopen riippuvuudet:
+10: identifier param -> dependency parametristä 0
+
+11: sinkki dependencyllä parametristä 0 -> funktio g on sinkki riippuen parametrista 0
+
+14: tiedetään että param on tästä scopesta
+15: sinkki dependencyllä ulkopuoliseen a -> funktio h on sinkki riippuen ulkopuolisesta muuttujasta a(tässä kohassa tiedetään jo varmasti mikä a on kyseessä)
+
+18: mappi jossa tämän scopen riippuvuudet
+18: identifier a -> dependency source/unsafe (document.location)
+
+2. vaihe:
+
+20: kutsu funktioon f -> f on riippuvainen parametrista 0 -> parametri 0 on tämän scopen muuttuja a -> riippuvainen muuttujasta a -> unsafe
+20: kutsu funktioon g -> g on sinkki riippuen parametrista 0 -> SECURITY BREACH! CALL THE ALARM!!!!!
+
+21: kutsu funktioon h -> h on sinkki riippuen ulkopuolisesta a (katsotaan myös mikä a on kyseessä, ei välttämättä sama kuin funktiokutsun scopen a, vaikka nyt onkin) -> a on unsafe -> SECURITY BREACH! CALL THE ALARM!!!!!
+
