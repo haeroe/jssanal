@@ -1,3 +1,5 @@
+//var tr = require('qunit')
+
 test("Hello World", function() {
     ok(true);
 });
