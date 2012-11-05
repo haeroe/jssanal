@@ -38,7 +38,7 @@ function parseFunctions( ast, analyzer ) {
 }
 
 function parseCalls( ast, analyzer ) {
-
+	
 }
 
 module.exports = {
