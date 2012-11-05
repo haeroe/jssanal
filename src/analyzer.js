@@ -1,8 +1,8 @@
 var Parser = require('./parser');
 
 function Analyzer(){
-    this.state = new State();
-    this.jobList = [];
+	this.jobList = [];
+	this.wrapperFunction = undefined;
 }
 
 Analyzer.prototype.add = function( astBlock ){

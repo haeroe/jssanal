@@ -1,6 +1,6 @@
 var FunctionObject = require('./function_object');
 
-function parseFunctions( ast, analyzer ){
+function parseFunctions( ast, analyzer ) {
 		var currentFunction = undefined;
 
 		// for returning to the parent.
@@ -12,16 +12,23 @@ function parseFunctions( ast, analyzer ){
 		function walkDown( astBlock ) {
 			if( astBlock.type === undefined )
         	    return;
-        	if( astBlock.type === "FunctionDeclaration" ){
-        	    currentFunction = new FunctionObject( astBlock, currentFunction, analyzer );
+        	if( astBlock.type === "FunctionDeclaration" ) {
+				if (currentFunction === undefined) {
+					analyzer.wrapperFunction = new FunctionObject( astBlock, currentFunction );
+					currentFunction = analyzer.wrapperFunction;
+				} else {
+					currentFunction = new FunctionObject( astBlock, currentFunction );	
+				}
         	}
         }
 		
 
     function rec( astBlock ) {		
 		walkDown( astBlock );
-
-        for(var child in astBlock){
+		console.log(astBlock);
+		if(astBlock != undefined)
+			return;
+        for(var child in astBlock) {	
             rec( astBlock[ child ] );
         }
 
@@ -30,7 +37,7 @@ function parseFunctions( ast, analyzer ){
 		rec( ast );
 }
 
-function parseCalls( ast, analyzer ){
+function parseCalls( ast, analyzer ) {
 
 }
 

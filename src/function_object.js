@@ -1,16 +1,14 @@
 var Identifier = require('./identifier')
 
-function FunctionObject( block, context, analyzer ){
-    var dependencies = [];
-    var names = {}
+function FunctionObject( block, parent ){
+	this.parent = parent;    
+	this.block = block;
+	this.variables = {};
 
     function getDependencies( block ){
 		if(block.type === undefined)
 			return;
 
-		if(block.type === "FunctionDeclaration" || block.type === "FunctionExpression"){
-			return;
-		}
 		if(block.type === "VariableDeclaration"){
 			for( var i = 0, len = block.declarations.length; i < len; ++i){
 				var declarator = block.declarations[ i ];
@@ -25,6 +23,10 @@ function FunctionObject( block, context, analyzer ){
 
 		if(block.type === "ReturnStatement"){
 			return names[ new Identifier( block.argument ) ];
+		}
+
+		if(block.type === "FunctionDeclaration" || block.type === "FunctionExpression"){
+			return;
 		}
 
 		for(var i in block){
