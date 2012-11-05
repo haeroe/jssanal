@@ -40,7 +40,7 @@ function FunctionObject( block, parent ){
 		}
 
 		for(var i in block){
-			getDependencies( block[ i ] ).call(this);
+			getDependencies( block[ i ] );
 		}
     }
 	getDependencies = getDependencies.bind(this);
