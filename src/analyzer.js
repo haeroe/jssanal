@@ -1,4 +1,3 @@
-var State = require('./state');
 var Parser = require('./parser');
 
 function Analyzer(){
@@ -32,9 +31,9 @@ Analyzer.prototype.process = function(){
         combined_ast.body.body.push( this.jobList[ jobNumber ].body );
     }
 
-    Parser.parseFunctions( combined_ast, this.state );
+    Parser.parseFunctions( combined_ast, this );
 
-    Parser.parseCalls( combined_ast, this.state );
+    Parser.parseCalls( combined_ast, this );
 }
 
 Analyzer.prototype.report = function( log_f ){

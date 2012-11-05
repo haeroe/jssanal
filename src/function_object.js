@@ -1,6 +1,6 @@
 var Identifier = require('./identifier')
 
-function FunctionObject( block, state, context ){
+function FunctionObject( block, context, analyzer ){
     var dependencies = [];
     var names = {}
 

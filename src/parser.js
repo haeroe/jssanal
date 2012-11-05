@@ -1,35 +1,36 @@
 var FunctionObject = require('./function_object');
 
-function parseFunctions( ast, state ){
+function parseFunctions( ast, analyzer ){
+		var currentFunction = undefined;
+
 		// for returning to the parent.
-		function walkUp() {
-		
+		function walkUp( astBlock ) { 
+			if ( astBlock.type === "FunctionDeclaration" )
+				currentFunction = currentFunction.parent;
 		}
 		// for traversing the tree downwards.
-		function walkDown() {
-		
-		}
-
-    function rec( astBlock, state, parent ) {
-		  if( astBlock.type === undefined )
-            return;
-
-        if( astBlock.type === "FunctionDeclaration" ){
-            new FunctionObject( astBlock, state, parent );
-            
+		function walkDown( astBlock ) {
+			if( astBlock.type === undefined )
+        	    return;
+        	if( astBlock.type === "FunctionDeclaration" ){
+        	    currentFunction = new FunctionObject( astBlock, currentFunction, analyzer );
+        	}
         }
-        //todo handle variable declaration and function assignment
-        //need to do some experimenting with forms like a = 4, b = 9
+		
+
+    function rec( astBlock ) {		
+		walkDown( astBlock );
 
         for(var child in astBlock){
-						console.log(child);
-            rec( astBlock[ child ], state, );
+            rec( astBlock[ child ] );
         }
-    }
-		rec(ast, state);
+
+		walkUp( astBlock );
+    }	
+		rec( ast );
 }
 
-function parseCalls( ast, state ){
+function parseCalls( ast, analyzer ){
 
 }
 
