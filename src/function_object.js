@@ -15,10 +15,10 @@ function FunctionObject( block, state, context ){
 			for( var i = 0, len = block.declarations.length; i < len; ++i){
 				var declarator = block.declarations[ i ];
 				var left = new Identifier( declarator.id, context ).index;
-				if ( 
 				var right = Dependency.fromBlock( declarator.init, context );
-
-				names[ left ] = right;
+				if (names[ left ] = right) {
+					console.log('left=right')				
+				}
 			}
 			return;
 		}

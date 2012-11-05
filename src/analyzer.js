@@ -20,7 +20,7 @@ Analyzer.prototype.process = function(){
         body: []
     };
 
-    for(var jobNumber = 0, len = this.jobList.length; i < len; ++i){
+    for(var jobNumber = 0, len = this.jobList.length; jobNumber < len; ++jobNumber){
         combined_ast.body.push( this.jobList[ jobNumber ].body );
     }
 
@@ -34,5 +34,3 @@ Analyzer.prototype.report = function( log_f ){
 }
 
 module.exports = Analyzer;
-
-
