@@ -10,7 +10,7 @@ var ast     = esprima.parse( file, {loc: true, range: true, raw: true, token: tr
 var options = {
 
 }
-analyzer.config( options );
+//analyzer.config( options );
 
 analyzer.add( ast );
 
