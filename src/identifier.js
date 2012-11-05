@@ -1,7 +1,7 @@
-function Identifier( block, context ){
-	
+function parse( block ){
+	return 0;
 }
 
-module.exports = Identifier;
-
-
+module.exports = {
+	parse: parse
+};

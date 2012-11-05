@@ -7,12 +7,12 @@ function fromParameter( index, type, context ){
 }
 
 function fromBlock( block, context ){
-
+	
 }
 
 module.exports = {
-    fromParameter: fromParameter;
-    fromId: fromId
+    fromParameter: fromParameter,
+	fromBlock: fromBlock
 };
 
 
