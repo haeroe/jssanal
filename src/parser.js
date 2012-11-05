@@ -1,10 +1,11 @@
 var FunctionObject = require('./function_object');
 
 function parseFunctions( ast, state ){
-		
+		// for returning to the parent.
 		function walkUp() {
 		
 		}
+		// for traversing the tree downwards.
 		function walkDown() {
 		
 		}
