@@ -1,5 +1,4 @@
 function Dependency(){
-
 }
 
 function fromParameter( index, type, context ){
@@ -14,5 +13,4 @@ module.exports = {
     fromParameter: fromParameter;
     fromId: fromId
 };
-
 

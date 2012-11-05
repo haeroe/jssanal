@@ -1,8 +1,10 @@
-var State = require('state');
-var Parser = require('parser');
+var util = require('util');
+
+var State  = require('./state');
+var Parser = require('./parser');
 
 function Analyzer(){
-    this.state = new State();
+    this.state = new State(); // täällä kaikki kerätty data ?
     this.jobList = [];
 }
 
@@ -20,11 +22,15 @@ Analyzer.prototype.process = function(){
         body: []
     };
 
-    for(var jobNumber = 0, len = this.jobList.length; i < len; ++i){
-        combined_ast.body.push( this.jobList[ jobNumber ].body );
-    }
+    combined_ast.body = this.jobList[0].body;
 
-    Parser.parseFunctions( combined_ast, this.state );
+    // jobNumber ?
+    //for(var jobNumber = 1, len = this.jobList.length; jobNumber < len; ++jobNumber){
+    //    combined_ast.body.push( this.jobList[jobNumber].body );
+    //}
+    console.log('combined_ast: ' + util.inspect(combined_ast.body, false) + '\n');
+
+    Parser.parseFunctions( combined_ast.body, this.state );
 
     Parser.parseCalls( combined_ast, this.state );
 }

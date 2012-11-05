@@ -10,11 +10,10 @@ catch (err) {
 
 testrunner.setup({
   log: {
-    summary: true
     assertions: true,
     errors: true,
     tests: true,
-    summary: true,
+    //summary: true,
     globalSummary: true,
     testing: true
   },
