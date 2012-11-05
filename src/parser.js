@@ -21,17 +21,17 @@ function parseFunctions( ast, analyzer ) {
 				}
         	}
         }
-		
 
-    function rec( astBlock ) {		
-		walkDown( astBlock );
-		console.log(astBlock);
-		if(astBlock != undefined)
+    function rec( astBlock ) {
+		if (astBlock === null)		
 			return;
-        for(var child in astBlock) {	
-            rec( astBlock[ child ] );
-        }
-
+		walkDown( astBlock );
+		//console.log(astBlock);
+		var blockType = Object.prototype.toString.call(astBlock).slice(8, -1);
+		if(blockType === "Object" || blockType === "Array")
+		    for(var child in astBlock) {
+		        rec( astBlock[ child ] );
+		    }
 		walkUp( astBlock );
     }	
 		rec( ast );
