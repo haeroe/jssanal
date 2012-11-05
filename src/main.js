@@ -1,7 +1,7 @@
 var esprima     = require('esprima');
 var fs      = require('fs');
 var util    = require('util');
-var analyzer  = new (require('analyzer'))();
+var analyzer  = new (require('./analyzer'))();
 
 var file_name   = process.argv[ 2 ];
 var file    = fs.readFileSync( file_name, 'ascii' );

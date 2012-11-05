@@ -1,4 +1,4 @@
-var FunctionObject = require('function_object');
+var FunctionObject = require('./function_object');
 
 function parseFunctions( ast, state ){
 

@@ -1,5 +1,5 @@
-var State = require('state');
-var Parser = require('parser');
+var State = require('./state');
+var Parser = require('./parser');
 
 function Analyzer(){
     this.state = new State();

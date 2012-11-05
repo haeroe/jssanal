@@ -1,5 +1,7 @@
-function State(){
+var FunctionContainer = require('./function_container');
 
+function State(){
+	this.functionContainer = new FunctionContainer()
 }
 
 
