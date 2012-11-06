@@ -1,5 +1,7 @@
+// hakee blokista stringimuotoisen identifierin.
 function parse( block ){
-	return 0;
+	if (block != undefined && block != null)
+		return block.name;
 }
 
 module.exports = {

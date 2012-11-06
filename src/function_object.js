@@ -16,7 +16,7 @@ function FunctionObject( block, parent ){
 			for( var i = 0, len = block.declarations.length; i < len; ++i){
 				var declarator = block.declarations[ i ];
 				var left = Identifier.parse( declarator.id );
-				var right = Dependency.fromBlock( declarator.init );
+				var right = Dependency.fromBlock( declarator.init, parent );
 				if (this.variables[left] === undefined)
 					this.variables[left] = [];
 				this.variables[left].push(right);
@@ -24,7 +24,7 @@ function FunctionObject( block, parent ){
 			return;
 		}
 		if(block.type === "FunctionDeclaration") {
-			var identifier = Identifier.parse( block.id );
+			var identifier = Identifier.parse( block.id );			
 			var value = Dependency.fromBlock( block );
 			if (this.variables[identifier] === undefined)
 				this.variables[identifier] = [];

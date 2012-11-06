@@ -12,14 +12,14 @@ function parseFunctions( ast, analyzer ) {
 		function walkDown( astBlock ) {
 			if( astBlock.type === undefined )
         	    return;
-        	if( astBlock.type === "FunctionDeclaration" ) {
+        	if( astBlock.type === "FunctionDeclaration" ) {	
 				if (currentFunction === undefined) {
 					analyzer.wrapperFunction = new FunctionObject( astBlock, currentFunction );
 					currentFunction = analyzer.wrapperFunction;
 				} else {
 					currentFunction = new FunctionObject( astBlock, currentFunction );	
 				}
-        	}
+        	}		
         }
 
     function rec( astBlock ) {
@@ -34,7 +34,7 @@ function parseFunctions( ast, analyzer ) {
 		    }
 		walkUp( astBlock );
     }	
-		rec( ast );
+	rec( ast );
 }
 
 function parseCalls( ast, analyzer ) {
