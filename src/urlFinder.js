@@ -14,7 +14,7 @@ var isFindAll = false;
 // node urlFinder url http://www.cs.helsinki.fi/u/kkaaria/*.js
 process.argv.forEach(function(val, index) {
 
-	if (val == 'url') {
+	if (val === 'url') {
 		jsurl = process.argv[index + 1];
 		return;
 	}
@@ -26,16 +26,16 @@ function UrlFile(jsurl) {
 	this.doFindAll = false;
 	this.uri = jsurl;
 
-	if (jsurl == '') { return; } 
+	if (jsurl === '') { return; } 
 
 	var re = /\*.js$/;
 
-	if (jsurl.match(re) != null && jsurl.match(re)[0] == '*.js') {
-	        this.doFindAll = true;
-	        this.uri = jsurl.substring(0, jsurl.search(re));
+	if (jsurl.match(re) != null && jsurl.match(re)[0] === '*.js') {
+        this.doFindAll = true;
+        this.uri = jsurl.substring(0, jsurl.search(re));
 	}       
 	this.options = url.parse(this.uri);
-};
+}
 
 UrlFile.prototype.wget = function(callback) {
    
@@ -44,22 +44,22 @@ UrlFile.prototype.wget = function(callback) {
 
     var request, response_body = '';
 
-    if (options.protocol == 'https:') {
+    if (options.protocol === 'https:') {
 		request = https.get(this.uri);
     } else {
-  		request = http.get(this.uri);
+        request = http.get(this.uri);
     }
 
     request.end();
     request.on('response', function(response) {
-   		response.on('data', function(chunk) {
+    response.on('data', function(chunk) {
 		
-			if (doFindAll == true) {
+			if (doFindAll === true) {
 			
 				var hrefRE = /\ *href=.([\/a-zA-Z_]*.js)/;
-				var chunks = chunk.toString().split('\<a ');
+				var chunks = chunk.toString().split("<a ");
 
-				response_body = new Array(); 
+				response_body = []; 
 				
 				chunks.forEach(function(chunky) {
 					
@@ -73,20 +73,18 @@ UrlFile.prototype.wget = function(callback) {
 			} else {
 				response_body += chunk;
 			}	
-  		});
-   		response.on('end', function() {
-       			if (response_body instanceof Array) {
-    
-          			response_body.forEach(function(rb) { 
-
-                        var urlFile = new UrlFile(rb);
-                        urlFile.wget(function(cb) {
-                   				callback(cb);
-                    	});
-               		});
-        		} else {
-           			callback(response_body);
-            	}    
+        });
+        response.on('end', function() {
+            if (response_body instanceof Array) {
+                response_body.forEach(function(rb) { 
+                    var urlFile = new UrlFile(rb);
+                    urlFile.wget(function(cb) {
+                        callback(cb);
+                    });
+                });
+            } else {
+                callback(response_body);
+            }    
 		});
 	});
 };

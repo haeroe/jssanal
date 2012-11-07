@@ -16,7 +16,7 @@ analyzer.add( ast );
 
 function log_f( arg ){
     console.log(arg);
-}
+};
 
 analyzer.process();
 analyzer.report( log_f );

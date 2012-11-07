@@ -1,17 +1,19 @@
 var FunctionObject = require('./function_object');
 
 function parseFunctions( ast, analyzer ) {
-	var currentFunction = undefined;
+	var currentFunction;
 
 	// for returning to the parent.
 	function walkUp( astBlock ) { 
-		if ( astBlock.type === "FunctionDeclaration" )
+		if ( astBlock.type === "FunctionDeclaration" ){
 			currentFunction = currentFunction.parent;
+		}
 	}
 	// for traversing the tree downwards.
 	function walkDown( astBlock ) {
-		if( astBlock.type === undefined )
+		if( astBlock.type === undefined ) {
 			return;
+		}
 		if( astBlock.type === "FunctionDeclaration" ) {	
 			if (currentFunction === undefined) {
 				analyzer.wrapperFunction = new FunctionObject( astBlock, currentFunction );
@@ -23,15 +25,17 @@ function parseFunctions( ast, analyzer ) {
 	}
 
     function rec( astBlock ) {
-		if (astBlock === null)		
+		if (astBlock === null) {
 			return;
+		}
 		walkDown( astBlock );
 		//console.log(astBlock);
 		var blockType = Object.prototype.toString.call(astBlock).slice(8, -1);
-		if(blockType === "Object" || blockType === "Array")
-		    for(var child in astBlock) {
-		        rec( astBlock[ child ] );
-		    }
+		if(blockType === "Object" || blockType === "Array") {
+			for(var child in astBlock) {
+				rec( astBlock[ child ] );
+			}
+		}
 		walkUp( astBlock );
     }	
 	rec( ast );
@@ -63,9 +67,9 @@ function parseCalls( ast, analyzer ) {
 		
 		var blockType = Object.prototype.toString.call(astBlock).slice(8, -1);
 		if(blockType === "Object" || blockType === "Array")
-		    for(var child in astBlock) {
-		        rec( astBlock[ child ] );
-		    }
+			for(var child in astBlock) {
+				rec( astBlock[ child ] );
+			}
 
 		walkUp( astBlock );	
 	}

@@ -7,11 +7,11 @@ function Analyzer(){
 
 Analyzer.prototype.add = function( astBlock ){
     this.jobList.push( astBlock );
-}
+};
 
 Analyzer.prototype.config = function( options ){
 
-}
+};
 
 Analyzer.prototype.process = function(){
     var combined_ast = {
@@ -35,10 +35,10 @@ Analyzer.prototype.process = function(){
 
 	combined_ast.functionObject.resolveDependencies();
 	
-}
+};
 
 Analyzer.prototype.report = function( log_f ){
 
-}
+};
 
 module.exports = Analyzer;
