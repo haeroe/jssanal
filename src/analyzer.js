@@ -33,7 +33,8 @@ Analyzer.prototype.process = function(){
 
     Parser.parseFunctions( combined_ast, this );
 
-    Parser.parseCalls( combined_ast, this );
+	combined_ast.functionObject.resolveDependencies();
+	
 }
 
 Analyzer.prototype.report = function( log_f ){
