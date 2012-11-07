@@ -48,10 +48,10 @@ FunctionObject.prototype.getVariables = function( block ){
 		return;
 	}
 	
-	for(var i in block){
+	for(var index in block){
 		var blockType = Object.prototype.toString.call(block).slice(8, -1);
 		if(blockType === "Object" || blockType === "Array") {
-			this.getVariables( block[ i ] );
+			this.getVariables( block[ index ] );
 		}
 	}
 
@@ -81,10 +81,10 @@ FunctionObject.prototype.getDependencies = function( block ){
 		return;
 	}
 
-	for(var i in block){
+	for(var index in block){
 		var blockType = Object.prototype.toString.call(block).slice(8, -1);
 		if(blockType === "Object" || blockType === "Array"){
-			this.getDependencies( block[ i ] );
+			this.getDependencies( block[ index ] );
 		}
 	}
 

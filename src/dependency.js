@@ -6,7 +6,7 @@ function Dependency(id, type, args){
 
 	args = args || {};
 	this.block = args.block;
-	this.arguments = args.arguments;
+	this.argumentList = args.argumentList;
 	this.sinks = args.sinks;
 }
 
@@ -36,6 +36,8 @@ function findVariable( id, context ){
 // tunnistaa funktiokutsut, muuttujien alustukset literaaleiksi, parametrit jne.
 // selvittää parentista mistä riippuvuus oikeasti löytyy.
 function fromBlock( block, context, list ){
+	var args, d, id, type;
+
 	if (block === null){
 		return;
 	}
@@ -43,10 +45,10 @@ function fromBlock( block, context, list ){
 		return;
 	}
 	if (block.type === "Identifier"){
-		var id = Identifier.parse(block);
-		var type = "variable";
+		id = Identifier.parse(block);
+		type = "variable";
 		
-		var d = new Dependency( id, type );
+		d = new Dependency( id, type );
 		list.push( d );
 
 	}
@@ -54,12 +56,12 @@ function fromBlock( block, context, list ){
 		fromBlock( block.expression, context, list );
 	}
 	if (block.type === "FunctionDeclaration") {
-		var id = Identifier.parse( block.id );
-		var type = "function";
+		id = Identifier.parse( block.id );
+		type = "function";
 
-		var args = { block = block };
+		args = { block : block };
 
-		var d = new Dependency( id, type, args );
+		d = new Dependency( id, type, args );
 		list.push( d );
 	}
 	if (block.type === "BinaryExpression"){
@@ -68,12 +70,12 @@ function fromBlock( block, context, list ){
 		//list.push( RIGHT SIDE );
 	}
 	if (block.type === "CallExpression"){
-		var id = Identifier.parse(block.callee.property);
-		var type = "call";
+		id = Identifier.parse(block.callee.property);
+		type = "call";
 
-		var args = { arguments: [], sinks: [] };
-		for(var i = 0; i < block.arguments.length; i++) {
-			fromBlock( block.arguments[ i ], context, args.arguments );
+		args = { argumentList: [], sinks: [] };
+		for(var i = 0; i < block.argumentList.length; i++) {
+			fromBlock( block.argumentList[ i ], context, args.argumentList );
 		}
 		
 		if ( id === "sink" ) {
