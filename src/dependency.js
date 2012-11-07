@@ -8,10 +8,31 @@ function Dependency(id, type, args){
 	this.block = args.block;
 	this.arguments = args.arguments;
 	this.sinks = args.sinks;
+	this.realLocation = args.realLocation;
 }
 
 Dependency.prototype.resolve = function( context, args ) {
+	if( this.type !== 'call')
+		return true;
 
+	var sources = [];
+	for(var i = 0; i < args.length; i++){
+		var list = [];
+		sources.push( list );
+		
+		var rLocation = args[ i ].realLocation;
+		if( rLocation !== undefined ){
+			for(var p = 0; p < rLocation.length; p++){
+				if( rLocation[ p ].type === 'function' ){
+					var calledFunction = rLocation[ p ].block.functionObject;
+					calledFunction.resolveDependencies();
+					
+				}
+			}
+		} else {
+			console.log( "Unknown function ", args[ i ].identifier );
+		}
+	}
 }
 
 function fromParameter( index, context, list ){
@@ -44,8 +65,10 @@ function fromBlock( block, context, list ){
 	if (block.type === "Identifier"){
 		var id = Identifier.parse(block);
 		var type = "variable";
+
+		var args = { realLocation: findVariable( id, context ) };
 		
-		var d = new Dependency( id, type );
+		var d = new Dependency( id, type, args );
 		list.push( d );
 
 	}
@@ -56,7 +79,7 @@ function fromBlock( block, context, list ){
 		var id = Identifier.parse( block.id );
 		var type = "function";
 
-		var args = { block = block };
+		var args = { block: block };
 
 		var d = new Dependency( id, type, args );
 		list.push( d );
@@ -70,13 +93,9 @@ function fromBlock( block, context, list ){
 		var id = Identifier.parse(block.callee.property);
 		var type = "call";
 
-		var args = { arguments: [], sinks: [] };
+		var args = { arguments: [] };
 		for(var i = 0; i < block.arguments.length; i++) {
 			fromBlock( block.arguments[ i ], context, args.arguments );
-		}
-		
-		if ( id === "sink" ) {
-			args.sinks = fromParameter( ;
 		}
 	}
 }

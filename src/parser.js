@@ -25,11 +25,10 @@ function parseFunctions( ast, analyzer ) {
 	}
 
     function rec( astBlock ) {
-		if (astBlock === null) {
+		if (astBlock === null || astBlock === undefined || astBlock.returnDependencies) {
 			return;
 		}
 		walkDown( astBlock );
-		//console.log(astBlock);
 		var blockType = Object.prototype.toString.call(astBlock).slice(8, -1);
 		if(blockType === "Object" || blockType === "Array") {
 			for(var child in astBlock) {

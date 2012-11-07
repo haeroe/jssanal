@@ -56,8 +56,8 @@ FunctionObject.prototype.getVariables = function( block ){
 
 FunctionObject.prototype.getDependencies = function( block ){
 		
-	if(block === undefined || block === null)
-			return;
+	if (block === null || block === undefined || block.returnDependencies)
+		return;
 	if(block.type === "VariableDeclaration"){
 		for( var i = 0, len = block.declarations.length; i < len; ++i){
 			var declarator = block.declarations[ i ];
@@ -86,6 +86,8 @@ FunctionObject.prototype.getDependencies = function( block ){
 }
 
 FunctionObject.prototype.getCalls = function( block ) {
+	if (block === null || block === undefined || block.returnDependencies)
+		return;
 
 	if( block.type === "FunctionDeclaration" ) {
 		return;
@@ -120,7 +122,7 @@ FunctionObject.prototype.resolveDependencies = function() {
 	this.resolved = RESOLVED_VISITED;
 
 	for(var i = 0; i < this.functionCalls.length; i++){
-		if(!this.functionCalls[ i ].resolve()){
+		if( !this.functionCalls[ i ].resolve() ){
 			this.resolved = RESOLVED_RECURSION;
 			console.log("Recursion! Function: ", this.name);
 			return false;
