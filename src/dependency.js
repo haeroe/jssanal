@@ -12,7 +12,7 @@ function Dependency(id, type, args){
 
 Dependency.prototype.resolve = function( context, args ) {
 
-}
+};
 
 function fromParameter( index, context, list ){
 	var id = index;
@@ -23,12 +23,12 @@ function fromParameter( index, context, list ){
 }
 
 function findVariable( id, context ){
-	if( context.variables[ id ] !== undefined )
+	if( context.variables[ id ] !== undefined ){
 		return context.variables[ id ];
-
-	if( context.parent === undefined )
+	}
+	if( context.parent === undefined ){
 		return undefined;
-	
+	}
 	return findVariable( id, context.parent );
 }
 
@@ -36,11 +36,12 @@ function findVariable( id, context ){
 // tunnistaa funktiokutsut, muuttujien alustukset literaaleiksi, parametrit jne.
 // selvittää parentista mistä riippuvuus oikeasti löytyy.
 function fromBlock( block, context, list ){
-	if (block === null)
+	if (block === null){
 		return;
-	if (block.type === "Literal") 
+	}
+	if (block.type === "Literal"){
 		return;
-	
+	}
 	if (block.type === "Identifier"){
 		var id = Identifier.parse(block);
 		var type = "variable";
@@ -76,7 +77,7 @@ function fromBlock( block, context, list ){
 		}
 		
 		if ( id === "sink" ) {
-			args.sinks = fromParameter( ;
+			args.sinks = fromParameter();
 		}
 	}
 }

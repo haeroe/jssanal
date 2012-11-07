@@ -9,14 +9,14 @@ var ast     = esprima.parse( file, {loc: true, range: true, raw: true, token: tr
 
 var options = {
 
-}
+};
 //analyzer.config( options );
 
 analyzer.add( ast );
 
 function log_f( arg ){
     console.log(arg);
-};
+}
 
 analyzer.process();
 analyzer.report( log_f );
