@@ -30,7 +30,7 @@ function UrlFile(jsurl) {
 
 	var re = /\*.js$/;
 
-	if (jsurl.match(re) != null && jsurl.match(re)[0] === '*.js') {
+	if (jsurl.match(re) !== null && jsurl.match(re)[0] === '*.js') {
         this.doFindAll = true;
         this.uri = jsurl.substring(0, jsurl.search(re));
 	}       
@@ -65,7 +65,7 @@ UrlFile.prototype.wget = function(callback) {
 					
 					var path = hrefRE.exec(chunky);
 
-					if (path != null && path[1] != null) {
+					if (path !== null && path[1] !== null) {
 						var nurl = options.protocol + (options.slashes ? '//' : '') + options.hostname + options.pathname + path[1];
 						response_body.push(nurl);
 					}

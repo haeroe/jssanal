@@ -6,7 +6,7 @@ function Dependency(id, type, args){
 
 	args = args || {};
 	this.block = args.block;
-	this.arguments = args.arguments;
+	this.argumentList = args.argumentList;
 	this.sinks = args.sinks;
 	this.realLocation = args.realLocation;
 }
@@ -33,7 +33,7 @@ Dependency.prototype.resolve = function( context, args ) {
 			console.log( "Unknown function ", args[ i ].identifier );
 		}
 	}
-}
+};
 
 function fromParameter( index, context, list ){
 	var id = index;
@@ -44,12 +44,12 @@ function fromParameter( index, context, list ){
 }
 
 function findVariable( id, context ){
-	if( context.variables[ id ] !== undefined )
+	if( context.variables[ id ] !== undefined ){
 		return context.variables[ id ];
-
-	if( context.parent === undefined )
+	}
+	if( context.parent === undefined ){
 		return undefined;
-	
+	}
 	return findVariable( id, context.parent );
 }
 
@@ -57,18 +57,19 @@ function findVariable( id, context ){
 // tunnistaa funktiokutsut, muuttujien alustukset literaaleiksi, parametrit jne.
 // selvittää parentista mistä riippuvuus oikeasti löytyy.
 function fromBlock( block, context, list ){
-	if (block === null)
-		return;
-	if (block.type === "Literal") 
-		return;
-	
-	if (block.type === "Identifier"){
-		var id = Identifier.parse(block);
-		var type = "variable";
+	var args, d, id, type;
 
-		var args = { realLocation: findVariable( id, context ) };
+	if (block === null){
+		return;
+	}
+	if (block.type === "Literal"){
+		return;
+	}
+	if (block.type === "Identifier"){
+		id = Identifier.parse(block);
+		type = "variable";
 		
-		var d = new Dependency( id, type, args );
+		d = new Dependency( id, type, args );
 		list.push( d );
 
 	}
@@ -76,12 +77,12 @@ function fromBlock( block, context, list ){
 		fromBlock( block.expression, context, list );
 	}
 	if (block.type === "FunctionDeclaration") {
-		var id = Identifier.parse( block.id );
-		var type = "function";
+		id = Identifier.parse( block.id );
+		type = "function";
 
-		var args = { block: block };
+		args = { block: block };
 
-		var d = new Dependency( id, type, args );
+		d = new Dependency( id, type, args );
 		list.push( d );
 	}
 	if (block.type === "BinaryExpression"){
@@ -90,12 +91,13 @@ function fromBlock( block, context, list ){
 		//list.push( RIGHT SIDE );
 	}
 	if (block.type === "CallExpression"){
-		var id = Identifier.parse(block.callee.property);
-		var type = "call";
+		id = Identifier.parse(block.callee.property);
+		type = "call";
 
-		var args = { arguments: [] };
+		var args = { argumentList: [] };
+		//block.arguments comes from parserAPI
 		for(var i = 0; i < block.arguments.length; i++) {
-			fromBlock( block.arguments[ i ], context, args.arguments );
+			fromBlock( block.arguments[ i ], context, args.argumentList );
 		}
 	}
 }
