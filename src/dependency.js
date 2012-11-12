@@ -1,6 +1,7 @@
 var Identifier = require('./identifier');
 
 function Dependency(id, type, args){
+//	console.log('noniin taalla ollaa jannityksella luomassa uutta oliota', id)
 	this.identifier = id;
 	this.type = type;
 
@@ -12,9 +13,23 @@ function Dependency(id, type, args){
 }
 
 Dependency.prototype.resolve = function( context, args ) {
+//	console.log('no sehan oli hyva', this.identifier, this.type)
 	if( this.type !== 'call')
 		return true;
+	
+	var ret = true;
 
+	for(var i = 0; i < this.realLocation.length; i++){
+//		console.log(this.realLocation[i])
+		if(this.realLocation[ i ].block.type === "FunctionDeclaration") {
+			ret = ret && this.realLocation[ i ].block.functionObject.resolveDependencies();
+
+		}
+
+	}
+	return ret;
+
+	/*
 	var sources = [];
 	for(var i = 0; i < args.length; i++){
 		var list = [];
@@ -33,6 +48,7 @@ Dependency.prototype.resolve = function( context, args ) {
 			console.log( "Unknown function ", args[ i ].identifier );
 		}
 	}
+	*/
 };
 
 function fromParameter( index, context, list ){
@@ -57,6 +73,7 @@ function findVariable( id, context ){
 // tunnistaa funktiokutsut, muuttujien alustukset literaaleiksi, parametrit jne.
 // selvittää parentista mistä riippuvuus oikeasti löytyy.
 function fromBlock( block, context, list ){
+//	console.log(block.type)
 	var args, d, id, type;
 
 	if (block === null){
@@ -91,7 +108,9 @@ function fromBlock( block, context, list ){
 		//list.push( RIGHT SIDE );
 	}
 	if (block.type === "CallExpression"){
-		id = Identifier.parse(block.callee.property);
+//		console.log(block.callee)
+		id = Identifier.parse(block.callee);
+//		console.log('no ehka luultiin vahan liikoja', id)
 		type = "call";
 
 		args = { argumentList: [] };
@@ -99,6 +118,11 @@ function fromBlock( block, context, list ){
 		for(var i = 0; i < block.arguments.length; i++) {
 			fromBlock( block.arguments[ i ], context, args.argumentList );
 		}
+	
+		args.realLocation = findVariable(id, context);
+
+		d = new Dependency( id, type, args );
+		list.push( d );
 	}
 }
 

@@ -30,25 +30,29 @@ function FunctionObject( block, parent ){
 }
 
 FunctionObject.prototype.getVariables = function( block ){
-	
-	if(block.type === "VariableDeclaration"){
-		for( var i = 0, len = block.declarations.length; i < len; ++i){
-			var declaration = block.declarations[ i ];
-			var left = Identifier.parse( declaration.id );
-			if (this.variables[left] === undefined) {
-				this.variables[left] = [];
+	if (block === null || block === undefined || block.returnDependencies){
+		return;
+	}
+	if(block !== this.block){
+
+		if(block.type === "VariableDeclaration"){
+			for( var i = 0, len = block.declarations.length; i < len; ++i){
+				var declaration = block.declarations[ i ];
+				var left = Identifier.parse( declaration.id );
+				if (this.variables[left] === undefined) {
+					this.variables[left] = [];
+				}
 			}
+			return;
 		}
-		return;
-	}
-	if(block.type === "FunctionDeclaration") {
-		var identifier = Identifier.parse( block.id );
-		if (this.variables[identifier] === undefined) {
-			this.variables[identifier] = [];
+		if(block.type === "FunctionDeclaration") {
+			var identifier = Identifier.parse( block.id );
+			if (this.variables[identifier] === undefined) {
+				this.variables[identifier] = [];
+			}
+			return;
 		}
-		return;
-	}
-	
+	}	
 	for(var index in block){
 		var blockType = Object.prototype.toString.call(block).slice(8, -1);
 		if(blockType === "Object" || blockType === "Array") {
@@ -62,26 +66,27 @@ FunctionObject.prototype.getDependencies = function( block ){
 		
 	if (block === null || block === undefined || block.returnDependencies){
 		return;
-}
-	if(block.type === "VariableDeclaration"){
-		for( var i = 0, len = block.declarations.length; i < len; ++i){
-			var declarator = block.declarations[ i ];
-			var left = Identifier.parse( declarator.id );
-			Dependency.fromBlock( declarator.init, this, this.variables[left] );
+	}
+	if(block !== this.block){
+		if(block.type === "VariableDeclaration"){
+			for( var i = 0, len = block.declarations.length; i < len; ++i){
+				var declarator = block.declarations[ i ];
+				var left = Identifier.parse( declarator.id );
+				Dependency.fromBlock( declarator.init, this, this.variables[left] );
+			}
+			return;
 		}
-		return;
-	}
-	if(block.type === "FunctionDeclaration") {
-		var identifier = Identifier.parse( block.id );
-		Dependency.fromBlock( block, this, this.variables[ identifier ] );
+		if(block.type === "FunctionDeclaration") {
+			var identifier = Identifier.parse( block.id );
+			Dependency.fromBlock( block, this, this.variables[ identifier ] );
 
-		return;
+			return;
+		}
+		if(block.type === "ReturnStatement"){
+			Dependency.fromBlock( block.argument, this, this.returnDependencies );
+			return;
+		}
 	}
-	if(block.type === "ReturnStatement"){
-		Dependency.fromBlock( block.argument, this, this.returnDependencies );
-		return;
-	}
-
 	for(var index in block){
 		var blockType = Object.prototype.toString.call(block).slice(8, -1);
 		if(blockType === "Object" || blockType === "Array"){
@@ -94,15 +99,18 @@ FunctionObject.prototype.getDependencies = function( block ){
 FunctionObject.prototype.getCalls = function( block ) {
 	if (block === null || block === undefined || block.returnDependencies)
 		return;
+	if(block !== this.block){
+//		console.log(block.type);
+		if( block.type === "FunctionDeclaration" ) {
+			return;
+		}
 
-	if( block.type === "FunctionDeclaration" ) {
-		return;
+		if( block.type === "CallExpression" ) {
+//			console.log('HEI KOVIS', this.functionCalls.length)
+			Dependency.fromBlock( block, this, this.functionCalls );
+//			console.log('NO MITA', this.functionCalls.length)
+		}
 	}
-
-	if( block.type === "CallExpression" ) {
-		this.functionCalls.push( Dependency.fromBlock( block ) );
-	}
-	
 	for(var i in block){
 		var blockType = Object.prototype.toString.call(block).slice(8, -1);
 		if(blockType === "Object" || blockType === "Array"){
@@ -112,6 +120,7 @@ FunctionObject.prototype.getCalls = function( block ) {
 };
 
 FunctionObject.prototype.resolveDependencies = function() {
+//	console.log(this.name);
 	if(this.resolved === RESOLVED_DONE) {
 		return true;
 	}
@@ -127,9 +136,11 @@ FunctionObject.prototype.resolveDependencies = function() {
 	}
 
 	this.resolved = RESOLVED_VISITED;
-
+	
+//	console.log(this.functionCalls.length)	
 	for(var i = 0; i < this.functionCalls.length; i++){
-		if( !this.functionCalls[ i ].resolve() ){
+		var params = []; //TODO
+		if( !this.functionCalls[ i ].resolve.apply(this.functionCalls[ i ], [this, params] ) ){
 			this.resolved = RESOLVED_RECURSION;
 			console.log("Recursion! Function: ", this.name);
 			return false;
