@@ -38,7 +38,9 @@ Dependency.prototype.resolve = function( context, args ) {
 function fromParameter( index, context, list ){
 	var id = index;
 	var type = 'param';
-
+	if ( list === undefined ) {
+		list = [];
+	}
 	var d = new Dependency( id, type );
 	list.push( d );
 }
