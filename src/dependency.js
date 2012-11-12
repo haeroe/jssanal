@@ -1,7 +1,8 @@
 var Identifier = require('./identifier');
+var Config = require('./configuration');
+var _ = require('underscore');
 
 function Dependency(id, type, args){
-//	console.log('noniin taalla ollaa jannityksella luomassa uutta oliota', id)
 	this.identifier = id;
 	this.type = type;
 
@@ -18,14 +19,14 @@ Dependency.prototype.resolve = function( context, args ) {
 		return true;
 	
 	var ret = true;
-
-	for(var i = 0; i < this.realLocation.length; i++){
+    if ( this.realLocation !== undefined ) {
+		for(var i = 0; i < this.realLocation.length; i++){
 //		console.log(this.realLocation[i])
-		if(this.realLocation[ i ].block.type === "FunctionDeclaration") {
-			ret = ret && this.realLocation[ i ].block.functionObject.resolveDependencies();
+			if(this.realLocation[ i ].block.type === "FunctionDeclaration") {
+				ret = ret && this.realLocation[ i ].block.functionObject.resolveDependencies();
 
+			}
 		}
-
 	}
 	return ret;
 
@@ -110,7 +111,11 @@ function fromBlock( block, context, list ){
 	if (block.type === "CallExpression"){
 //		console.log(block.callee)
 		id = Identifier.parse(block.callee);
-//		console.log('no ehka luultiin vahan liikoja', id)
+
+		if (_(Config.functionSinks).contains(id)){
+			console.log("Call to sink function found: " + id );
+		}
+
 		type = "call";
 
 		args = { argumentList: [] };

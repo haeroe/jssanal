@@ -106,9 +106,7 @@ FunctionObject.prototype.getCalls = function( block ) {
 		}
 
 		if( block.type === "CallExpression" ) {
-//			console.log('HEI KOVIS', this.functionCalls.length)
 			Dependency.fromBlock( block, this, this.functionCalls );
-//			console.log('NO MITA', this.functionCalls.length)
 		}
 	}
 	for(var i in block){
