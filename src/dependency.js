@@ -109,11 +109,13 @@ function fromBlock( block, context, list ){
 		//list.push( RIGHT SIDE );
 	}
 	if (block.type === "CallExpression"){
-//		console.log(block.callee)
 		id = Identifier.parse(block.callee);
 
 		if (_(Config.functionSinks).contains(id)){
-			console.log("Call to sink function found: " + id );
+			console.log("Call to a sink function found: " + id );
+		}
+	   	if (block.callee.property !== undefined && _(Config.memberFunctionSinks).contains(block.callee.property.name) ) {
+			console.log("Call to a MemberFunction sink found: " + block.callee.property.name);
 		}
 
 		type = "call";
