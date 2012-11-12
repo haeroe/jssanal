@@ -9,7 +9,7 @@ grunt.initConfig({
 		all: ["grunt.js", "src/*.js"]
 	},
 	test: {
-		files: ['tests/jsfinderTest.js']
+		files: ['tests/jsfinderTest.js', 'tests/dependencyTest.js']
 	}
 	});
 
