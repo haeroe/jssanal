@@ -38,9 +38,7 @@ Dependency.prototype.resolve = function( context, args ) {
 function fromParameter( index, context, list ){
 	var id = index;
 	var type = 'param';
-	if ( list === undefined ) {
-		list = [];
-	}
+
 	var d = new Dependency( id, type );
 	list.push( d );
 }
@@ -96,7 +94,7 @@ function fromBlock( block, context, list ){
 		id = Identifier.parse(block.callee.property);
 		type = "call";
 
-		var args = { argumentList: [] };
+		args = { argumentList: [] };
 		//block.arguments comes from parserAPI
 		for(var i = 0; i < block.arguments.length; i++) {
 			fromBlock( block.arguments[ i ], context, args.argumentList );

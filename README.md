@@ -1,2 +1,2 @@
-jssanal
+Javascript Security Analyzer
 =======

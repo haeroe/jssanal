@@ -20,6 +20,7 @@ function FunctionObject( block, parent ){
 
 	for ( var i = 0; i < block.params.length; i++ ) {
 		var id = Identifier.parse(block.params[i]);
+		this.variables[id] = [];
 		Dependency.fromParameter( i, this, this.variables[id] ); 
 	}
 		
