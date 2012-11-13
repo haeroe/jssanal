@@ -113,7 +113,7 @@ function fromBlock( block, context, list ){
 		list.push( d );
 	}
 	if (block.type === "BinaryExpression"){
-		// TODO (properly)
+		/*// TODO (properly)
 		type = 'binary';
 		var binList = {};
 		
@@ -123,7 +123,7 @@ function fromBlock( block, context, list ){
 		id = block.operator;
 		d = new Dependency( id, type, binList );
 		console.log(binList);
-		list.push( d );
+		list.push( d );*/
 	}
 	if (block.type === "CallExpression"){
 		id = Identifier.parse(block.callee);
@@ -154,7 +154,7 @@ function isFunctionSink(id) {
 }
 
 function isMemberSink(block) {
-	if (block.callee.property !== undefined && _(Config.memberFunctionSinks).contains(block.callee.property.name) && _(Config.memberFunctionSinks).contains(block.callee.object.name) {
+	if (block.callee.property !== undefined && _(Config.memberFunctionSinks).contains(block.callee.property.name) && _(Config.memberFunctionSinks).contains(block.callee.object.name)) {
 			console.log("Call to a MemberFunction sink found: " + block.callee.property.name);
 	}
 	return;
