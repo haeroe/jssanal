@@ -74,7 +74,7 @@ function findVariable( id, context ){
 // tunnistaa funktiokutsut, muuttujien alustukset literaaleiksi, parametrit jne.
 // selvittää parentista mistä riippuvuus oikeasti löytyy.
 function fromBlock( block, context, list ){
-//	console.log(block.type)
+	//console.log(block.type)
 	var args, d, id, type;
 
 	if (block === null){
@@ -104,9 +104,9 @@ function fromBlock( block, context, list ){
 		list.push( d );
 	}
 	if (block.type === "BinaryExpression"){
-		// TODO (properly)
+		/*// TODO (properly)
 		type = 'binary';
-		var binList = {};
+		var binList = [];
 		
 		fromBlock( block.left, undefined, binList );
 		fromBlock( block.right, undefined, binList );
@@ -114,17 +114,12 @@ function fromBlock( block, context, list ){
 		id = block.operator;
 		d = new Dependency( id, type, binList );
 		console.log(binList);
-		list.push( d );
+		list.push( d );*/
 	}
 	if (block.type === "CallExpression"){
 		id = Identifier.parse(block.callee);
-
-		if (_(Config.functionSinks).contains(id)){
-			console.log("Call to a sink function found: " + id );
-		}
-	   	if (block.callee.property !== undefined && _(Config.memberFunctionSinks).contains(block.callee.property.name) ) {
-			console.log("Call to a MemberFunction sink found: " + block.callee.property.name);
-		}
+		isFunctionSink(id);
+		isMemberSink(block);
 
 		type = "call";
 
@@ -138,12 +133,25 @@ function fromBlock( block, context, list ){
 
 		d = new Dependency( id, type, args );
 		list.push( d );
+	}	
+}
+
+function isFunctionSink(id) {
+	if (_(Config.functionSinks).contains(id)){
+			console.log("Call to a sink function found: " + id );
 	}
+	return;
+}
+
+function isMemberSink(block) {
+	if (block.callee.property !== undefined && _(Config.memberFunctionSinks).contains(block.callee.property.name) && _(Config.memberFunctionSinks).contains(block.callee.object.name) {
+			console.log("Call to a MemberFunction sink found: " + block.callee.property.name);
+	}
+	return;
 }
 
 module.exports = {
     fromParameter: fromParameter,
 	fromBlock: fromBlock
 };
-
 
