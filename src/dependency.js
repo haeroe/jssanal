@@ -113,9 +113,17 @@ function fromBlock( block, context, list ){
 		list.push( d );
 	}
 	if (block.type === "BinaryExpression"){
-		// TODO
-		//list.push( LEFT SIDE )
-		//list.push( RIGHT SIDE );
+		// TODO (properly)
+		type = 'binary';
+		var binList = {};
+		
+		fromBlock( block.left, undefined, binList );
+		fromBlock( block.right, undefined, binList );
+	    	
+		id = block.operator;
+		d = new Dependency( id, type, binList );
+		console.log(binList);
+		list.push( d );
 	}
 	if (block.type === "CallExpression"){
 		id = Identifier.parse(block.callee);
