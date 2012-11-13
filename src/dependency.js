@@ -128,9 +128,8 @@ function fromBlock( block, context, list ){
 	if (block.type === "CallExpression"){
 		id = Identifier.parse(block.callee);
 
-		isFunctionSink(id);
-		if (isMemberSink(block)) {
-			console.log('lol');	
+		if ( isFunctionSink(id) || isMemberSink(block) ) {
+			console.log('Possible sink linenumber: ' + block.callee.loc.start.line);
 		}
 
 		type = "call";
@@ -151,43 +150,34 @@ function fromBlock( block, context, list ){
 function isFunctionSink(id) {
 	if (_(Config.functionSinks).contains(id)){
 			console.log("Call to a sink function found: " + id );
+			return true;
 	}
-	return;
+	return false;
 }
 
 function isMemberSink(block) {
-        /*if (block.callee.property !== undefined &&
-                _(Config.memberFunctionSinks).contains(block.callee.property.name)
-                && _(Config.memberFunctionSinks).contains(block.callee.object.name)) {
-                        console.log("Call to a MemberFunction sink found: " + block.callee.property.name);
-        }*/
-		if(block.callee.type === undefined) {
-                return false;
-        }
+   	if(block.callee.type === undefined) {
+        return false;
+     }
 
-        if(block.callee.type === "MemberExpression") {
-                var prop = block.callee.property.name;
-                var obj;
-
-                if(block.callee.object === "MemberExpression") {
-                        obj = block.callee.object.property.name;
-                } else {
-                       	obj = block.callee.object.name;
-                }
-
-                var child = Config.memberFunctionSinks[prop];
-
-                if(child === null) {
-                       	return true;
-               	} else {
-                        return _(child).contains(obj);
-                }
+    if(block.callee.type === "MemberExpression") {
+        var prop = block.callee.property.name;
+        var obj;
+        if(block.callee.object === "MemberExpression") {
+            obj = block.callee.object.property.name;
         } else {
-		var prop = block.callee.name;
-                return _(Config.functionSinks).contains(prop);
+           	obj = block.callee.object.name;
         }
+        var child = Config.memberFunctionSinks[prop];
 
-	return;
+        if(child === null) {
+           	return true;
+        } else {
+            return _(child).contains(obj);
+        }
+     } 
+
+	return false;
 }
 module.exports = {
     fromParameter: fromParameter,
