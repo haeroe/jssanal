@@ -8,7 +8,7 @@ RESOLVED_RECURSION = 3;
 
 function FunctionObject( block, parent ){
 	this.name = Identifier.parse( block.id );
-	this.parent = parent;    
+	this.parent = parent; 
 	this.block = block;
 	block.functionObject = this;
 	this.variables = {};

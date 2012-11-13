@@ -9,7 +9,7 @@ function Dependency(id, type, args){
 	args = args || {};
 	this.block = args.block;
 	this.argumentList = args.argumentList;
-	this.sinks = args.sinks;
+	this.sink = args.sink;
 	this.realLocation = args.realLocation;
 }
 
@@ -22,9 +22,12 @@ Dependency.prototype.resolve = function( context, args ) {
     if ( this.realLocation !== undefined ) {
 		for(var i = 0; i < this.realLocation.length; i++){
 //		console.log(this.realLocation[i])
-			if(this.realLocation[ i ].block.type === "FunctionDeclaration") {
-				ret = ret && this.realLocation[ i ].block.functionObject.resolveDependencies();
-
+			var rloc = this.realLocation[ i ];
+			if(rloc.type === "function") {
+				if( rloc.sink === true ) {
+					console.log("Call to sink: \"" + rloc.identifier + "\"");
+				}
+				ret = ret && rloc.block.functionObject.resolveDependencies();
 			}
 		}
 	}
@@ -100,6 +103,12 @@ function fromBlock( block, context, list ){
 
 		args = { block: block };
 
+		if ( block.sink !== undefined ) {
+			args.sink = true;
+		} else {
+			args.sink = false;
+		}
+
 		d = new Dependency( id, type, args );
 		list.push( d );
 	}
@@ -110,13 +119,6 @@ function fromBlock( block, context, list ){
 	}
 	if (block.type === "CallExpression"){
 		id = Identifier.parse(block.callee);
-
-		if (_(Config.functionSinks).contains(id)){
-			console.log("Call to a sink function found: " + id );
-		}
-	   	if (block.callee.property !== undefined && _(Config.memberFunctionSinks).contains(block.callee.property.name) ) {
-			console.log("Call to a MemberFunction sink found: " + block.callee.property.name);
-		}
 
 		type = "call";
 
