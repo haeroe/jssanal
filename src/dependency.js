@@ -128,6 +128,9 @@ function fromBlock( block, context, list ){
 	if (block.type === "CallExpression"){
 		id = Identifier.parse(block.callee);
 
+		isFunctionSink(id);
+		isMemberSink(block);
+
 		type = "call";
 
 		args = { argumentList: [] };
@@ -143,9 +146,22 @@ function fromBlock( block, context, list ){
 	}
 }
 
+function isFunctionSink(id) {
+	if (_(Config.functionSinks).contains(id)){
+			console.log("Call to a sink function found: " + id );
+	}
+	return;
+}
+
+function isMemberSink(block) {
+	if (block.callee.property !== undefined && _(Config.memberFunctionSinks).contains(block.callee.property.name) && _(Config.memberFunctionSinks).contains(block.callee.object.name) {
+			console.log("Call to a MemberFunction sink found: " + block.callee.property.name);
+	}
+	return;
+}
+
 module.exports = {
     fromParameter: fromParameter,
 	fromBlock: fromBlock
 };
-
 
