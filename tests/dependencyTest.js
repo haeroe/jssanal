@@ -68,32 +68,5 @@ exports['dependency'] = {
 	var result = (lista.type === 'binary' && lista.identifier === '*'); 
 	test.ok(result);
     test.done();
-  }'creating a dependency from a call expression': function(test) {
-    test.expect(1);
-    var paramBlock = {
-            "type": "ExpressionStatement",
-            "expression": {
-                "type": "CallExpression",
-                "callee": {
-                    "type": "Identifier",
-                    "name": "pertti"
-                },
-                "arguments": [
-                    {
-                        "type": "Literal",
-                        "value": "esimerkki",
-                        "raw": "\"esimerkki\""
-                    }
-                ]
-            }
-    };
-	var lista = [];
-	Dependency.fromBlock(paramBlock, undefined, lista);
-	lista = lista[0];
-	var result = (lista.type === 'call' && lista.identifier === 'pertti'); 
-	test.ok(result);
-    test.done();
   }
-
-
 } 
