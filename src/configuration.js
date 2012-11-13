@@ -6,13 +6,33 @@ var blackList = [""];
 
 var functionSinks = ["eval", "Function", "setTimeout", "setInterval", "execScript"];
 
-var assignmentSinks = ["ScriptElement.src", "ScriptElement.text", "ScriptElement.textContent", "ScriptElement.innerText", "anyTag.onclick","element.innerHTML", "element.outerHTML", "window.location", "HTMLBUTTON.value"];
+var memberAssignmentSinks = {
+        "innerHTML" : null,
+        "src" :	null,
+        "text" : null,
+        "textContent" : null,
+        "innerText" : null,
+        "value"	: null,
 
-// when callexpression callee contains memberexpression with object and a property the property.name is one of these
-var memberFunctionSinks = ["write", "writeln", "assign", "replace", "createContextualFragment", "globalEval", "append", "html", "generateCRMFRequest", "innerHTML"];
+        "hostname" : ["location"],
+        "protocol" : ["location"],
+        "pathname" : ["location"],
+        "href" : ["location"],
+        "location" : ["window",	"document"]  
+}
+
+var memberFunctionSinks	= {
+        "generateCRMFRequest" : ["crypto"],
+        "write" : ["document"],
+        "writeln" : ["document"],
+        "createContextualFragment" : ["Range"],
+        "search" : ["location"],
+        "assign" : ["location"],
+        "replace" : ["location"],
+}
 
 module.exports = {
 	functionSinks: functionSinks,
 	memberFunctionSinks: memberFunctionSinks,
-	assignmentSinks: assignmentSinks
+	memberAssignmentSinks: memberAssignmentSinks
 }
