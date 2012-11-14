@@ -65,7 +65,6 @@ Analyzer.prototype.process = function(){
 		)
 	});
 	*/
-    var util = require('util');
 	for(var jobNumber = 0, len = this.jobList.length; jobNumber < len; ++jobNumber){
 		combined_ast.body.body.push( this.jobList[ jobNumber ].body );
 	}

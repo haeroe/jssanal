@@ -31,8 +31,32 @@ var memberFunctionSinks	= {
         "replace" : ["location"],
 }
 
+var varSources = ["location"];
+
+var memberVarSources = {
+	"referrer" : ["document"],
+	"URL" : ["document"],
+	"documentURI" : ["document"],
+	"URLUnencoded" : ["document"],
+	"baseURI" : ["document"],
+	"cookie" : ["document"],
+	"href" : ["location"],
+	"search" : ["location"],
+	"hash" : ["location"],
+	"pathname" : ["location"],
+	"name" : ["window"]
+}
+
+var memberFunctionSources = {
+	"pushState" : ["history"],
+	"replaceState" : ["history"]
+}
+
 module.exports = {
 	functionSinks: functionSinks,
 	memberFunctionSinks: memberFunctionSinks,
-	memberAssignmentSinks: memberAssignmentSinks
+	memberAssignmentSinks: memberAssignmentSinks,
+	varSources: varSources,
+	memberVarSources: memberVarSources,
+	memberFunctionSources: memberFunctionSources
 }

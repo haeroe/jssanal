@@ -128,9 +128,8 @@ function fromBlock( block, context, list ){
 	if (block.type === "CallExpression"){
 		id = Identifier.parse(block.callee);
 
-		if ( isFunctionSink(id) || isMemberSink(block) ) {
-			var util = require('util');
-			console.log('Possible sink ' + block.loc.file + ':' + block.callee.loc.start.line);
+		if ( isFunctionSink(block.callee) ) {
+			console.log('Possible sink linenumber: ' + block.callee.loc.start.line);
 		}
 
 		type = "call";
@@ -148,38 +147,34 @@ function fromBlock( block, context, list ){
 	}
 }
 
-function isFunctionSink(id) {
-	if (_(Config.functionSinks).contains(id)){
-			console.log("Call to a sink function found: " + id );
-			return true;
+function isFunctionSink(block) {
+	if (block === null
+	|| block.name === null
+	|| block.name === undefined) {
+		return false;
 	}
-	return false;
+
+	if(block.type === "MemberExpression") {
+		var prop = block.property.name;
+		var obj;
+
+		if(block.object === "MemberExpression") {
+		    obj = block.object.property.name;
+		} else {
+		   	obj = block.object.name;
+		}
+
+		var child = Config.memberFunctionSinks[prop];
+
+		return (child === null) || _(child).contains(obj);
+	}
+
+	//if it's not a MemberExpression	
+
+	id = block.name;
+	return (_(Config.functionSinks).contains(id));
 }
 
-function isMemberSink(block) {
-   	if(block.callee.type === undefined) {
-        return false;
-     }
-
-    if(block.callee.type === "MemberExpression") {
-        var prop = block.callee.property.name;
-        var obj;
-        if(block.callee.object === "MemberExpression") {
-            obj = block.callee.object.property.name;
-        } else {
-           	obj = block.callee.object.name;
-        }
-        var child = Config.memberFunctionSinks[prop];
-
-        if(child === null) {
-           	return true;
-        } else {
-            return _(child).contains(obj);
-        }
-     } 
-
-	return false;
-}
 module.exports = {
     fromParameter: fromParameter,
 	fromBlock: fromBlock
