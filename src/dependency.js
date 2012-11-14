@@ -1,6 +1,7 @@
 var Identifier = require('./identifier');
 var Config = require('./configuration');
 var _ = require('underscore');
+var fs = require('fs');
 
 function Dependency(id, type, args){
 	this.identifier = id;
@@ -11,6 +12,16 @@ function Dependency(id, type, args){
 	this.argumentList = args.argumentList;
 	this.sink = args.sink;
 	this.realLocation = args.realLocation;
+}
+
+// reads a specific line from a file.
+function readLine(filename, linenumber) {
+	file = fs.readFileSync(filename, 'utf8');
+    var lines = file.split("\n");
+	if(linenumber-1 > lines.length){
+		return;
+	}		
+	return lines[linenumber-1];
 }
 
 Dependency.prototype.resolve = function( context, args ) {
@@ -26,10 +37,11 @@ Dependency.prototype.resolve = function( context, args ) {
 			if(rloc.type === "function") {
 				if( rloc.sink === true ) {
 					var util = require('util');
+					var line = readLine(this.block.loc.file, this.block.callee.loc.start.line);
 					context.analyzer.results.unsafeSinkCalls.push({
 						sourceFile: this.block.loc.file,
 						lineNumber: this.block.callee.loc.start.line,
-						vulnerableLine: "", 
+						vulnerableLine: line,
 						sink: rloc.identifier,
 						trace: context
 					});
