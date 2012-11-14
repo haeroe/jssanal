@@ -3,13 +3,16 @@ var fs      = require('fs');
 var util    = require('util');
 var analyzer  = new (require('./analyzer'))();
 
-var file_name   = process.argv[ 2 ];
-var ast     = parseFilename(file_name); 
+for (var i = 2; i < process.argv.length; i++) {
+	var file_name   = process.argv[ i ];
+	var ast     = parseFilename(file_name); 
+	analyzer.add( ast );
+} 
+
 var options = {
 
 };
 //analyzer.config( options );
-analyzer.add( ast );
 
 function log_f( arg ){
     console.log(arg);
