@@ -129,7 +129,8 @@ function fromBlock( block, context, list ){
 		id = Identifier.parse(block.callee);
 
 		if ( isFunctionSink(id) || isMemberSink(block) ) {
-			console.log('Possible sink linenumber: ' + block.callee.loc.start.line);
+			var util = require('util');
+			console.log('Possible sink ' + block.loc.file + ':' + block.callee.loc.start.line);
 		}
 
 		type = "call";
