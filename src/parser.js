@@ -16,10 +16,10 @@ function parseFunctions( ast, analyzer ) {
 		}
 		if( astBlock.type === "FunctionDeclaration" ) {	
 			if (currentFunction === undefined) {
-				analyzer.wrapperFunction = new FunctionObject( astBlock, currentFunction );
+				analyzer.wrapperFunction = new FunctionObject( astBlock, currentFunction, analyzer );
 				currentFunction = analyzer.wrapperFunction;
 			} else {
-				currentFunction = new FunctionObject( astBlock, currentFunction );	
+				currentFunction = new FunctionObject( astBlock, currentFunction, analyzer );	
 			}
 		}		
 	}

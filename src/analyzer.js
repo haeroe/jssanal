@@ -5,6 +5,7 @@ var _ = require('underscore');
 function Analyzer(){
 	this.jobList = [];
 	this.wrapperFunction = undefined;
+	this.results = { safeSinkCalls: [], unsafeSinkCalls: [] };
 }
 
 Analyzer.prototype.add = function( astBlock ){
@@ -76,7 +77,20 @@ Analyzer.prototype.process = function(){
 };
 
 Analyzer.prototype.report = function( log_f ){
-
-};
+	if (this.results.unsafeSinkCalls.length !== 0) {
+		console.log('==============================\nUnsafe calls to sink functions:\n==============================');
+		for (var i = 0; i < this.results.unsafeSinkCalls.length ; i++) {
+			var curr = this.results.unsafeSinkCalls[i];
+			console.log('  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink function called: ' + curr.sink  + ' NOT YET ' );
+		}
+	}
+	if (this.results.safeSinkCalls.length !== 0) {
+		console.log('==============================\nSafe calls to sink functions:\n==============================');
+			for (var i = 0; i < this.results.safeSinkCalls.length ; i++) {
+			var curr = this.results.unsafeSinkCalls[i];
+			console.log('  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink function called: ' + curr.sink  + ' NOT YET ' );
+		}
+	}
+}
 
 module.exports = Analyzer;

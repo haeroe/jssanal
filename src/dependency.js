@@ -21,11 +21,18 @@ Dependency.prototype.resolve = function( context, args ) {
 	var ret = true;
     if ( this.realLocation !== undefined ) {
 		for(var i = 0; i < this.realLocation.length; i++){
-//		console.log(this.realLocation[i])
+	//	console.log(this.realLocation[i])
 			var rloc = this.realLocation[ i ];
 			if(rloc.type === "function") {
 				if( rloc.sink === true ) {
-					console.log("Call to sink: \"" + rloc.identifier + "\"");
+					var util = require('util');
+					context.analyzer.results.unsafeSinkCalls.push({
+						sourceFile: this.block.loc.file,
+						lineNumber: this.block.callee.loc.start.line,
+						vulnerableLine: "", 
+						sink: rloc.identifier,
+						trace: context
+					});
 				}
 				ret = ret && rloc.block.functionObject.resolveDependencies();
 			}
@@ -127,14 +134,11 @@ function fromBlock( block, context, list ){
 	}
 	if (block.type === "CallExpression"){
 		id = Identifier.parse(block.callee);
-
-		if ( isFunctionSink(block.callee) ) {
-			console.log('Possible sink linenumber: ' + block.callee.loc.start.line);
-		}
+		isFunctionSink(block.callee); 
 
 		type = "call";
 
-		args = { argumentList: [] };
+		args = { argumentList: [], block: block };
 		//block.arguments comes from parserAPI
 		for(var i = 0; i < block.arguments.length; i++) {
 			fromBlock( block.arguments[ i ], context, args.argumentList );

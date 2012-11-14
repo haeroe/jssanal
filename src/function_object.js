@@ -6,7 +6,7 @@ RESOLVED_VISITED = 1;
 RESOLVED_DONE = 2;
 RESOLVED_RECURSION = 3;
 
-function FunctionObject( block, parent ){
+function FunctionObject( block, parent, analyzer ){
 	this.name = Identifier.parse( block.id );
 	this.parent = parent; 
 	this.block = block;
@@ -15,6 +15,7 @@ function FunctionObject( block, parent ){
 	this.returnDependencies = [];
 	this.sourceDependencies = [];
 	this.functionCalls = [];
+	this.analyzer = analyzer;
 
 	this.resolved = RESOLVED_NOT_VISITED;
 
