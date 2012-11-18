@@ -192,7 +192,7 @@ function isFunctionSink(block) {
 }
 
 module.exports = {
-    fromParameter: fromParameter,
+  fromParameter: fromParameter,
 	fromBlock: fromBlock
 };
 

@@ -5,7 +5,7 @@ var _ = require('underscore');
 function Analyzer(){
 	this.jobList = [];
 	this.wrapperFunction = undefined;
-	this.results = { safeSinkCalls: [], unsafeSinkCalls: [] };
+	this.results = { safeSinkCalls: [], unsafeSinkCalls: [], recursiveExpressions: [] };
 }
 
 Analyzer.prototype.add = function( astBlock ){
@@ -81,14 +81,21 @@ Analyzer.prototype.report = function( log_f ){
 		console.log('==============================\nUnsafe calls to sink functions:\n==============================');
 		for (var i = 0; i < this.results.unsafeSinkCalls.length ; i++) {
 			var curr = this.results.unsafeSinkCalls[i];
-			console.log('  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink  + '() line: "' + curr.vulnerableLine + '"' );
+			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink  + '() line: "' + curr.vulnerableLine + '"' );
 		}
 	}
 	if (this.results.safeSinkCalls.length !== 0) {
 		console.log('==============================\nSafe calls to sink functions:\n==============================');
 			for (var i = 0; i < this.results.safeSinkCalls.length ; i++) {
 			var curr = this.results.unsafeSinkCalls[i];
-			console.log('  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink  + ' NOT YET ' );
+			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink );
+		}
+	}
+	if (this.results.recursiveExpressions.length !== 0) {
+		console.log('==============================\nRecursive expressions:\n==============================');
+			for (var i = 0; i < this.results.safeSinkCalls.length ; i++) {
+			var curr = this.results.recursiveExpressions[i];
+			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink );
 		}
 	}
 }

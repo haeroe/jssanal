@@ -35,7 +35,6 @@ FunctionObject.prototype.getVariables = function( block ){
 		return;
 	}
 	if(block !== this.block){
-
 		if(block.type === "VariableDeclaration"){
 			for( var i = 0, len = block.declarations.length; i < len; ++i){
 				var declaration = block.declarations[ i ];
