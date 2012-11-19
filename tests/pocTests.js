@@ -67,16 +67,17 @@ exports['ParseTest'] = {
 		var results = analyze(script);
     test.expect(2);
     test.equal(results.safe, true);
-	  test.equal(results.recursiveExpressions.size != 0);
+	  test.ok(results.recursiveExpressions.size !== 0);
     test.done();
-  }/*,
+  },
   'testIndirectlyRecursiveFunctionCalls': function(test) {
 	var script = "function f(x) { alert(x); g(x); }\n" + "function g(y) { f(y); }\n" + "f(1);";
 		var results = analyze(script);
-    test.expect(1);
-    test.equal(analyze(script), 'SAFE, RECURSIVE LOCAL "x"');
+    test.expect(2);
+    test.equal(results.safe, true);
+	  test.ok(results.recursiveExpressions.size !== 0);
     test.done();
-  }*/,
+  },
   'testArgumentValueFromFunctionParameter': function(test) {
 		var script = "g(1);\n" + "function g(y) { alert(y); }";
 		var results = analyze(script);

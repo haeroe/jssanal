@@ -140,6 +140,7 @@ FunctionObject.prototype.resolveDependencies = function() {
 		var params = []; //TODO
 		if( !this.functionCalls[ i ].resolve.apply(this.functionCalls[ i ], [this, params] ) ){
 			this.resolved = RESOLVED_RECURSION;
+			this.analyzer.results.safe = false;
 			console.log("Recursion! Function: ", this.name);
 			return false;
 		}
