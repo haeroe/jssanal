@@ -5,7 +5,7 @@ var _ = require('underscore');
 function Analyzer(){
 	this.jobList = [];
 	this.wrapperFunction = undefined;
-	this.results = { safeSinkCalls: [], unsafeSinkCalls: [], recursiveExpressions: [], safe: true };
+	this.results = { safeSinkCalls: [], unresolvedCalls: [], unsafeSinkCalls: [], recursiveExpressions: [], safe: true };
 }
 
 Analyzer.prototype.add = function( astBlock ){
