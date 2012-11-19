@@ -45,6 +45,7 @@ Dependency.prototype.resolve = function( context, args ) {
 						sink: rloc.identifier,
 						trace: context
 					});
+					context.analyzer.results.safe = false;
 				}
 				ret = ret && rloc.block.functionObject.resolveDependencies();
 			}
