@@ -74,7 +74,7 @@ exports['ParseTest'] = {
 	var script = "function f(x) { alert(x); g(x); }\n" + "function g(y) { f(y); }\n" + "f(1);";
 	var results = analyze(script);
     test.expect(2);
-    test.equal(results.safe, true);
+    test.equal(results.unsafe, true);
 	  test.ok(results.recursiveExpressions.size !== 0);
     test.done();
   },
