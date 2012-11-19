@@ -12,6 +12,8 @@ function Dependency(id, type, args){
 	this.argumentList = args.argumentList;
 	this.sink = args.sink;
 	this.realLocation = args.realLocation;
+
+	this.resolved = false;
 }
 
 // reads a specific line from a file.
@@ -24,34 +26,46 @@ function readLine(filename, linenumber) {
 	return lines[linenumber-1];
 }
 
-Dependency.prototype.resolve = function( context, args ) {
+Dependency.prototype.resolve = function( context ) {
+	var result = {
+		recursion: false,
+		unsafe: false
+	};
 //	console.log('no sehan oli hyva', this.identifier, this.type)
 	if( this.type !== 'call')
 		return true;
 	
-	var ret = true;
     if ( this.realLocation !== undefined ) {
 		for(var i = 0; i < this.realLocation.length; i++){
 	//	console.log(this.realLocation[i])
 			var rloc = this.realLocation[ i ];
 			if(rloc.type === "function") {
 				if( rloc.sink === true ) {
-					var util = require('util');
+					
 					var line = readLine(this.block.loc.file, this.block.callee.loc.start.line);
-					context.analyzer.results.unsafeSinkCalls.push({
+					var result_object = {
 						sourceFile: this.block.loc.file,
 						lineNumber: this.block.callee.loc.start.line,
 						vulnerableLine: line,
 						sink: rloc.identifier,
 						trace: context
-					});
-					context.analyzer.results.safe = false;
+					};
+					
+					var paramSafety = [];
+					for(var p = 0; p < this.argumentList.length; p++){
+						var safe = true;
+						var argument = this.argumentList[ p ];
+						for (var j = 0; j < argument.length; j++){
+							var resolveResult = argument[ j ].resolve();
+						}
+					}
+					context.analyzer.results.unsafeSinkCalls.push( result_object );
 				}
-				ret = ret && rloc.block.functionObject.resolveDependencies();
+				result.recursion = result.recursion && rloc.block.functionObject.resolveDependencies();
 			}
 		}
 	}
-	return ret;
+	return result;
 
 	/*
 	var sources = [];
@@ -147,14 +161,15 @@ function fromBlock( block, context, list ){
 	}
 	if (block.type === "CallExpression"){
 		id = Identifier.parse(block.callee);
-		isFunctionSink(block.callee); 
 
 		type = "call";
 
 		args = { argumentList: [], block: block };
 		//block.arguments comes from parserAPI
 		for(var i = 0; i < block.arguments.length; i++) {
-			fromBlock( block.arguments[ i ], context, args.argumentList );
+			var argument = [];
+			fromBlock( block.arguments[ i ], context, argument );
+			args.argumentList.push( argument );
 		}
 	
 		args.realLocation = findVariable(id, context);
@@ -164,6 +179,7 @@ function fromBlock( block, context, list ){
 	}
 }
 
+/*
 function isFunctionSink(block) {
 	if (block === null
 	|| block.name === null
@@ -191,6 +207,7 @@ function isFunctionSink(block) {
 	id = block.name;
 	return (_(Config.functionSinks).contains(id));
 }
+*/
 
 module.exports = {
   fromParameter: fromParameter,
