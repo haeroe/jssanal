@@ -1,6 +1,6 @@
 Javascript Security Analyzer
 =======
-A configurable open source XSS vulnerability analyzer.
+A configurable open source XSS vulnerability analyzer implemented in javascript with Node.js.
 
 For a brief getting started guide see:
 
