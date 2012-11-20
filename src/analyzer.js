@@ -44,8 +44,7 @@ Analyzer.prototype.process = function(){
 				body: []
 			},
 			params: []
-		}
-		)
+		});
 	});
 	
 	/*	

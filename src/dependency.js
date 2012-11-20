@@ -153,7 +153,7 @@ function fromBlock( block, context, list ){
 		
 		fromBlock( block.left, undefined, binList );
 		fromBlock( block.right, undefined, binList );
-	    	
+
 		id = block.operator;
 		d = new Dependency( id, type, binList );
 		console.log(binList);
@@ -192,9 +192,9 @@ function isFunctionSink(block) {
 		var obj;
 
 		if(block.object === "MemberExpression") {
-		    obj = block.object.property.name;
+		obj = block.object.property.name;
 		} else {
-		   	obj = block.object.name;
+		  obj = block.object.name;
 		}
 
 		var child = Config.memberFunctionSinks[prop];
@@ -211,6 +211,6 @@ function isFunctionSink(block) {
 
 module.exports = {
   fromParameter: fromParameter,
-	fromBlock: fromBlock
+  fromBlock: fromBlock
 };
 
