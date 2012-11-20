@@ -30,6 +30,11 @@ function FunctionObject( block, parent, analyzer ){
 	this.getCalls( block );
 }
 
+/*
+ * searches the block for Variable and Function declarations.
+ * when such block is found the function initializes an array for the id
+ * in the current function object.
+ */
 FunctionObject.prototype.getVariables = function( block ){
 	if (block === null || block === undefined || block.returnDependencies){
 		return;
@@ -62,8 +67,11 @@ FunctionObject.prototype.getVariables = function( block ){
 
 };
 
+/*
+ * searches the given block for dependencies in variables, function statements and function return values
+ * when found their id's are added to the dependencies of the current function object.
+ */
 FunctionObject.prototype.getDependencies = function( block ){
-		
 	if (block === null || block === undefined || block.returnDependencies){
 		return;
 	}
@@ -96,6 +104,10 @@ FunctionObject.prototype.getDependencies = function( block ){
 
 };
 
+/*
+ * parses the block for function calls and makes a dependency object
+ * in the current function object when found.
+ */
 FunctionObject.prototype.getCalls = function( block ) {
 	if (block === null || block === undefined || block.returnDependencies)
 		return;
@@ -117,8 +129,11 @@ FunctionObject.prototype.getCalls = function( block ) {
 	}
 };
 
+/*
+ * goes through the current function objects list of dependencies 
+ * and function call ids and finds the sources for each of those.
+ */
 FunctionObject.prototype.resolveDependencies = function() {
-//	console.log(this.name);
 	if(this.resolved === RESOLVED_DONE) {
 		return true;
 	}
@@ -156,5 +171,4 @@ FunctionObject.prototype.resolveDependencies = function() {
 };
 
 module.exports = FunctionObject;
-
 

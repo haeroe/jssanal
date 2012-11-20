@@ -3,9 +3,12 @@ var Config = require('./configuration');
 var _ = require('underscore');
 var fs = require('fs');
 
+/*
+ * initializes a new Dependency object.
+ */
 function Dependency(id, type, args){
-	this.identifier = id;
-	this.type = type;
+	this.identifier = id;	// the identifier should be a string eg. 'variableB'.
+	this.type = type;		// the type of the dependency as a string eg. 'param', 'call'.
 
 	args = args || {};
 	this.block = args.block;
@@ -16,7 +19,9 @@ function Dependency(id, type, args){
 	this.resolved = false;
 }
 
-// reads a specific line from a file.
+/* 
+ * reads and returns a specific line as a string from a file.
+ */
 function readLine(filename, linenumber) {
 	file = fs.readFileSync(filename, 'utf8');
     var lines = file.split("\n");
@@ -26,6 +31,9 @@ function readLine(filename, linenumber) {
 	return lines[linenumber-1];
 }
 
+/*
+ * resolves safety of function calls and their parameters from the given context.
+ */
 Dependency.prototype.resolve = function( context ) {
 	var result = {
 		recursion: false,
@@ -89,6 +97,10 @@ Dependency.prototype.resolve = function( context ) {
 	*/
 };
 
+/*
+ * generates a new dependency object from a parameter 
+ * and pushes it to the list of dependencies.
+ */
 function fromParameter( index, context, list ){
 	var id = index;
 	var type = 'param';
@@ -97,6 +109,9 @@ function fromParameter( index, context, list ){
 	list.push( d );
 }
 
+/*
+ * recursive search for finding a variable from the parent context.
+ */
 function findVariable( id, context ){
 	if( context.variables[ id ] !== undefined ){
 		return context.variables[ id ];
@@ -107,11 +122,11 @@ function findVariable( id, context ){
 	return findVariable( id, context.parent );
 }
 
-// parsii blokista identifierin stringinä
-// tunnistaa funktiokutsut, muuttujien alustukset literaaleiksi, parametrit jne.
-// selvittää parentista mistä riippuvuus oikeasti löytyy.
+/* 
+ * parses a ast block and generates the dependency objects for the listed block types.
+ * adds the dependency objects to the dependency list.
+ */
 function fromBlock( block, context, list ){
-//	console.log(block.type)
 	var args, d, id, type;
 
 	if (block === null){
