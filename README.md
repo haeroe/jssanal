@@ -1,3 +1,3 @@
 Javascript Security Analyzer
-
-[Usage Instructions](wiki/Usage-instructions)
+=======
+[Usage instructions](https://github.com/haeroe/jssanal/wiki/Usage-instructions)
