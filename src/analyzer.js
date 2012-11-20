@@ -3,11 +3,14 @@ var Config = require('./configuration');
 var _ = require('underscore');
 
 function Analyzer(){
-	this.jobList = [];
+	this.jobList = []; // A queue for all the different ast trees to be analyzed.
 	this.wrapperFunction = undefined;
 	this.results = { safeSinkCalls: [], unresolvedCalls: [], unsafeSinkCalls: [], recursiveExpressions: [], safe: true };
 }
 
+/*
+ * Adding a esprima ast tree to the analyzers queue.
+ */
 Analyzer.prototype.add = function( astBlock ){
     this.jobList.push( astBlock );
 };
