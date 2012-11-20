@@ -28,7 +28,7 @@ var memberFunctionSinks	= {
         "createContextualFragment" : ["Range"],
         "search" : ["location"],
         "assign" : ["location"],
-        "replace" : ["location"],
+        "replace" : ["location"]
 };
 
 var varSources = ["location"];
@@ -59,4 +59,4 @@ module.exports = {
 	varSources: varSources,
 	memberVarSources: memberVarSources,
 	memberFunctionSources: memberFunctionSources
-}
+};

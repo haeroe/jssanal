@@ -97,6 +97,6 @@ Analyzer.prototype.report = function( log_f ){
 			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink );
 		}
 	}
-}
+};
 
 module.exports = Analyzer;
