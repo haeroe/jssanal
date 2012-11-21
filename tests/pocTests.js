@@ -64,7 +64,7 @@ exports['ParseTest'] = {
   'testIndirectlyRecursiveFunctionCalls': function(test) {
 	var script  = "function f(x) { alert(x); g(x); }\n" + "function g(y) { f(y); }\n" + "f(1);";
 	var results = analyze.analyze(script);
-    test.expect(2);
+    test.expect(1);
     test.equal(results.safe, true, ("test source: " + script) );
     test.done();
   },

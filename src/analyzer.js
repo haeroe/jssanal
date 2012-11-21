@@ -5,7 +5,15 @@ var _ = require('underscore');
 function Analyzer(){
 	this.jobList = []; // A queue for all the different ast trees to be analyzed.
 	this.wrapperFunction = undefined;
-	this.results = { safeSinkCalls: [], unresolvedCalls: [], unsafeSinkCalls: [], recursiveExpressions: [], safe: true };
+	this.results = { 
+		safeSinkCalls: [], 
+		unresolvedCalls: [], 
+		unsafeSinkCalls: [], 
+		recursiveExpressions: [], 
+		unsafeAssignments: [], 
+		safeAssignments: [], 
+		safe: true 
+	};
 }
 
 /*
