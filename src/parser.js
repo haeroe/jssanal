@@ -1,5 +1,6 @@
 var FunctionObject = require('./function_object');
 
+// for parsing a esprima ast tree for different sink functions
 function parseFunctions( ast, analyzer ) {
 	var currentFunction;
 
@@ -23,7 +24,8 @@ function parseFunctions( ast, analyzer ) {
 			}
 		}		
 	}
-
+	
+	// recursive function for traversing through the block structure.
     function rec( astBlock ) {
 		if (astBlock === null || astBlock === undefined || astBlock.returnDependencies) {
 			return;

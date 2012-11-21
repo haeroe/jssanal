@@ -3,11 +3,14 @@ var Config = require('./configuration');
 var _ = require('underscore');
 
 function Analyzer(){
-	this.jobList = [];
+	this.jobList = []; // A queue for all the different ast trees to be analyzed.
 	this.wrapperFunction = undefined;
-	this.results = { safeSinkCalls: [], unsafeSinkCalls: [], recursiveExpressions: [] };
+	this.results = { safeSinkCalls: [], unresolvedCalls: [], unsafeSinkCalls: [], recursiveExpressions: [], safe: true };
 }
 
+/*
+ * Adding a esprima ast tree to the analyzers queue.
+ */
 Analyzer.prototype.add = function( astBlock ){
     this.jobList.push( astBlock );
 };
@@ -16,6 +19,10 @@ Analyzer.prototype.config = function( options ){
 
 };
 
+/*  
+ *  wraps all the input ast trees into a combined wrapper.
+ *	parses function calls and resolves the dependencies between the variables.
+ */
 Analyzer.prototype.process = function(){
 	var combined_ast = {
 		type: "FunctionDeclaration",
@@ -44,8 +51,7 @@ Analyzer.prototype.process = function(){
 				body: []
 			},
 			params: []
-		}
-		)
+		});
 	});
 	
 	/*	
@@ -76,6 +82,9 @@ Analyzer.prototype.process = function(){
 
 };
 
+/*
+ *  Generates a simple summary of the analysis results and prints that to the standard output.
+ */
 Analyzer.prototype.report = function( log_f ){
 	if (this.results.unsafeSinkCalls.length !== 0) {
 		console.log('==============================\nUnsafe calls to sink functions:\n==============================');
@@ -98,6 +107,6 @@ Analyzer.prototype.report = function( log_f ){
 			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink );
 		}
 	}
-}
+};
 
 module.exports = Analyzer;

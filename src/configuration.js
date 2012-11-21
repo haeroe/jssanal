@@ -19,7 +19,7 @@ var memberAssignmentSinks = {
         "pathname" : ["location"],
         "href" : ["location"],
         "location" : ["window",	"document"]  
-}
+};
 
 var memberFunctionSinks	= {
         "generateCRMFRequest" : ["crypto"],
@@ -28,8 +28,8 @@ var memberFunctionSinks	= {
         "createContextualFragment" : ["Range"],
         "search" : ["location"],
         "assign" : ["location"],
-        "replace" : ["location"],
-}
+        "replace" : ["location"]
+};
 
 var varSources = ["location"];
 
@@ -45,12 +45,12 @@ var memberVarSources = {
 	"hash" : ["location"],
 	"pathname" : ["location"],
 	"name" : ["window"]
-}
+};
 
 var memberFunctionSources = {
 	"pushState" : ["history"],
 	"replaceState" : ["history"]
-}
+};
 
 module.exports = {
 	functionSinks: functionSinks,
@@ -59,4 +59,4 @@ module.exports = {
 	varSources: varSources,
 	memberVarSources: memberVarSources,
 	memberFunctionSources: memberFunctionSources
-}
+};
