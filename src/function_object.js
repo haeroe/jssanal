@@ -18,6 +18,7 @@ function FunctionObject( block, parent, analyzer ){
 	this.analyzer = analyzer;
 
 	this.resolved = RESOLVED_NOT_VISITED;
+	this.resolveResult = {};
 
 	for ( var i = 0; i < block.params.length; i++ ) {
 		var id = Identifier.parse(block.params[i]);
@@ -135,17 +136,19 @@ FunctionObject.prototype.getCalls = function( block ) {
  */
 FunctionObject.prototype.resolveDependencies = function() {
 	if(this.resolved === RESOLVED_DONE) {
-		return true;
+		return this.resolveResult;
 	}
 
 	if(this.resolved === RESOLVED_VISITED){
 		this.resolved = RESOLVED_RECURSION;
-		console.log("Recursion! Function: ", this.name);
-		return false;
+
+
+		
+		return this.resolveResult;
 	}
 
 	if(this.resolved === RESOLVED_RECURSION){
-		return false;
+		return this.resolveResult;
 	}
 
 	this.resolved = RESOLVED_VISITED;
@@ -153,11 +156,14 @@ FunctionObject.prototype.resolveDependencies = function() {
 //	console.log(this.functionCalls.length)	
 	for(var i = 0; i < this.functionCalls.length; i++){
 		var call = this.functionCalls[ i ];
-		
+
+		call.resolve( this );
+
+		/*	
 		if( !call.resolve( this ).recursion ){
-			this.resolved = RESOLVED_RECURSION;
-			return false;
+			return ;
 		}
+		*/
 	}
 
 	for(i = 0; i < this.returnDependencies.length; i++){
@@ -165,7 +171,7 @@ FunctionObject.prototype.resolveDependencies = function() {
 	}
 
 	this.resolved = RESOLVED_DONE;
-	return true;
+	return this.resolveResult;
 };
 
 module.exports = FunctionObject;

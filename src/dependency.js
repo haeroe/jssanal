@@ -56,6 +56,8 @@ Dependency.prototype.resolve = function( context ) {
 			var rloc = this.realLocation[ i ];
 			if(rloc.type === "function") {
 
+				var functionObject = rloc.block.functionObject;
+
 				var argumentSafetyList = [];
 				for(var p = 0; p < this.argumentList.length; p++){
 					var argumentSafety = true;
@@ -65,10 +67,12 @@ Dependency.prototype.resolve = function( context ) {
 					}
 					argumentSafetyList.push( argumentSafety );
 				}
+				
+				var paramObject = functionObject.resolveDependencies();
 
 				if( rloc.sink === true ) {
 
-					var line = readLine(this.block.loc.file, this.block.callee.loc.start.line);
+					var line = readLine( this.block.loc.file, this.block.callee.loc.start.line );
 					var result_object = {
 						sourceFile: this.block.loc.file,
 						lineNumber: this.block.callee.loc.start.line,
