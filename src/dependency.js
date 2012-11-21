@@ -23,7 +23,6 @@ function Dependency(id, type, args){
  * reads and returns a specific line as a string from a file.
  */
 function readLine(loc, linenumber) {
-	console.log(loc.file);
 	if (loc.file === undefined ) {
 	   return 'test';
 	}

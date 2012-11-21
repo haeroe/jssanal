@@ -87,6 +87,7 @@ Analyzer.prototype.process = function(){
  */
 Analyzer.prototype.report = function( log_f ){
 	if (this.results.unsafeSinkCalls.length !== 0) {
+		console.log("");
 		console.log('==============================\nUnsafe calls to sink functions:\n==============================');
 		for (var i = 0; i < this.results.unsafeSinkCalls.length ; i++) {
 			var curr = this.results.unsafeSinkCalls[i];
@@ -95,14 +96,14 @@ Analyzer.prototype.report = function( log_f ){
 	}
 	if (this.results.safeSinkCalls.length !== 0) {
 		console.log('==============================\nSafe calls to sink functions:\n==============================');
-			for (var i = 0; i < this.results.safeSinkCalls.length ; i++) {
+		for (var i = 0; i < this.results.safeSinkCalls.length ; i++) {
 			var curr = this.results.unsafeSinkCalls[i];
 			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink );
 		}
 	}
 	if (this.results.recursiveExpressions.length !== 0) {
 		console.log('==============================\nRecursive expressions:\n==============================');
-			for (var i = 0; i < this.results.safeSinkCalls.length ; i++) {
+		for (var i = 0; i < this.results.safeSinkCalls.length ; i++) {
 			var curr = this.results.recursiveExpressions[i];
 			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink );
 		}
