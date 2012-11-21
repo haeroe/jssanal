@@ -31,28 +31,43 @@ function readLine(filename, linenumber) {
 }
 
 /*
- * resolves safety of function calls and their parameters from the given context.
+ * resolves safety of dependency in current context.
+ * Writes sink calls to results.
+ * Return whether expression return value is safe or not.
  */
 Dependency.prototype.resolve = function( context ) {
-	var result = {
-		recursion: false,
-		unsafe: false
-	};
+	var safe = true;
 
 	if( this.type === 'variable' ){
-		
+		var rloc = this.realLocation;
+		if( rloc === undefined )
+			return false;
+		for(var i = 0; i < rloc.length; i++){
+			safe = safe && rloc[ i ].resolve( context );
+		}
+		return safe;
 	}
 
 	if( this.type !== 'call')
-		return result;
+		return true;
 	
     if ( this.realLocation !== undefined ) {
 		for(var i = 0; i < this.realLocation.length; i++){
 			var rloc = this.realLocation[ i ];
 			if(rloc.type === "function") {
-				result.recursion = result.recursion && rloc.block.functionObject.resolveDependencies();
+
+				var argumentSafetyList = [];
+				for(var p = 0; p < this.argumentList.length; p++){
+					var argumentSafety = true;
+					var argument = this.argumentList[ p ];
+					for (var j = 0; j < argument.length; j++){
+						argumentSafety = argumentSafety && argument[ j ].resolve( context );
+					}
+					argumentSafetyList.push( argumentSafety );
+				}
+
 				if( rloc.sink === true ) {
-					
+
 					var line = readLine(this.block.loc.file, this.block.callee.loc.start.line);
 					var result_object = {
 						sourceFile: this.block.loc.file,
@@ -61,43 +76,14 @@ Dependency.prototype.resolve = function( context ) {
 						sink: rloc.identifier,
 						trace: context
 					};
-					
-					var paramSafety = [];
-					for(var p = 0; p < this.argumentList.length; p++){
-						var safe = true;
-						var argument = this.argumentList[ p ];
-						for (var j = 0; j < argument.length; j++){
-							var resolveResult = argument[ j ].resolve();
-							
-						}
-					}
+
 					context.analyzer.results.unsafeSinkCalls.push( result_object );
 				}
 			}
 		}
 	}
-	return result;
+	return safe;
 
-	/*
-	var sources = [];
-	for(var i = 0; i < args.length; i++){
-		var list = [];
-		sources.push( list );
-		
-		var rLocation = args[ i ].realLocation;
-		if( rLocation !== undefined ){
-			for(var p = 0; p < rLocation.length; p++){
-				if( rLocation[ p ].type === 'function' ){
-					var calledFunction = rLocation[ p ].block.functionObject;
-					calledFunction.resolveDependencies();
-					
-				}
-			}
-		} else {
-			console.log( "Unknown function ", args[ i ].identifier );
-		}
-	}
-	*/
 };
 
 /*
@@ -144,7 +130,7 @@ function fromBlock( block, context, list ){
 		
 		args = {};
 
-		args.realLocation = findVariable( id );
+		args.realLocation = findVariable( id, context );
 
 		d = new Dependency( id, type, args );
 		list.push( d );
