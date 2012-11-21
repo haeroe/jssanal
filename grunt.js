@@ -6,10 +6,10 @@ module.exports = function (grunt) {
 // Project configuration.
 grunt.initConfig({
 	lint: {
-		all: ["grunt.js", "src/*.js"]
+		all: ['grunt.js', 'src/*.js']
 	},
 	test: {
-		files: [/*'tests/jsfinderTest.js', 'tests/dependencyTest.js', 'tests/pocTests.js'*/ 'tests/simpleSinks.js']
+		files: ['tests/*.js']
 	}
 	});
 
