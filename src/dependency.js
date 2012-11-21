@@ -7,7 +7,6 @@ function Dependency(id, type, args){
 	this.identifier = id;
 	this.type = type;
 
-	args = args || {};
 	this.block = args.block;
 	this.argumentList = args.argumentList;
 	this.sink = args.sink;
@@ -31,15 +30,19 @@ Dependency.prototype.resolve = function( context ) {
 		recursion: false,
 		unsafe: false
 	};
-//	console.log('no sehan oli hyva', this.identifier, this.type)
+
+	if( this.type === 'variable' ){
+		
+	}
+
 	if( this.type !== 'call')
-		return true;
+		return result;
 	
     if ( this.realLocation !== undefined ) {
 		for(var i = 0; i < this.realLocation.length; i++){
-	//	console.log(this.realLocation[i])
 			var rloc = this.realLocation[ i ];
 			if(rloc.type === "function") {
+				result.recursion = result.recursion && rloc.block.functionObject.resolveDependencies();
 				if( rloc.sink === true ) {
 					
 					var line = readLine(this.block.loc.file, this.block.callee.loc.start.line);
@@ -57,11 +60,11 @@ Dependency.prototype.resolve = function( context ) {
 						var argument = this.argumentList[ p ];
 						for (var j = 0; j < argument.length; j++){
 							var resolveResult = argument[ j ].resolve();
+							
 						}
 					}
 					context.analyzer.results.unsafeSinkCalls.push( result_object );
 				}
-				result.recursion = result.recursion && rloc.block.functionObject.resolveDependencies();
 			}
 		}
 	}
@@ -124,6 +127,10 @@ function fromBlock( block, context, list ){
 		id = Identifier.parse(block);
 		type = "variable";
 		
+		args = {};
+
+		args.realLocation = findVariable( id );
+
 		d = new Dependency( id, type, args );
 		list.push( d );
 

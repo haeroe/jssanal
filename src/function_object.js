@@ -141,7 +141,6 @@ FunctionObject.prototype.resolveDependencies = function() {
 		
 		if( !call.resolve( this ).recursion ){
 			this.resolved = RESOLVED_RECURSION;
-			console.log("Recursion! Function: ", this.name);
 			return false;
 		}
 	}
