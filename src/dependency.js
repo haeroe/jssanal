@@ -9,7 +9,8 @@ var fs = require('fs');
 function Dependency(id, type, args){
 	this.identifier = id;	// the identifier should be a string eg. 'variableB'.
 	this.type = type;		// the type of the dependency as a string eg. 'param', 'call'.
-
+    if (args === undefined)
+	  args = {};
 	this.block = args.block;
 	this.argumentList = args.argumentList;
 	this.sink = args.sink;
@@ -21,8 +22,11 @@ function Dependency(id, type, args){
 /* 
  * reads and returns a specific line as a string from a file.
  */
-function readLine(filename, linenumber) {
-	file = fs.readFileSync(filename, 'utf8');
+function readLine(loc, linenumber) {
+	if (loc.file === undefined ) {
+	   return 'test';
+	}
+	file = fs.readFileSync(loc.filename, 'utf8');
     var lines = file.split("\n");
 	if(linenumber-1 > lines.length){
 		return;
@@ -50,7 +54,6 @@ Dependency.prototype.resolve = function( context ) {
 
 	if( this.type !== 'call')
 		return true;
-	
     if ( this.realLocation !== undefined ) {
 		for(var i = 0; i < this.realLocation.length; i++){
 			var rloc = this.realLocation[ i ];
@@ -72,7 +75,7 @@ Dependency.prototype.resolve = function( context ) {
 
 				if( rloc.sink === true ) {
 
-					var line = readLine( this.block.loc.file, this.block.callee.loc.start.line );
+					var line = readLine(this.block.loc, this.block.callee.loc.start.line);
 					var result_object = {
 						sourceFile: this.block.loc.file,
 						lineNumber: this.block.callee.loc.start.line,
