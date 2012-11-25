@@ -4,11 +4,15 @@ var _ = require('underscore');
 var fs = require('fs');
 
 /*
- * initializes a new Dependency object.
+ * Initializes a new Dependency object.
+ * @param { string } id textual representation parsed for the depedency. eg. 'variableB'.
+ * @param { string } type eg. 'call' for a depenency parsed from a functionCallBlock.
+ * @param { Object.Block } argument block parsed by esprima.
+ * @constructor
  */
 function Dependency(id, type, args){
-	this.identifier = id;	// the identifier should be a string eg. 'variableB'.
-	this.type = type;		// the type of the dependency as a string eg. 'param', 'call'.
+	this.identifier = id;
+	this.type = type;
     if (args === undefined)
 	  args = {};
 	this.block = args.block;
@@ -20,7 +24,10 @@ function Dependency(id, type, args){
 }
 
 /* 
- * reads and returns a specific line as a string from a file.
+ * Reads and returns a specific line as a string from a file.
+ * @param { Object.Block } an esprima location block.
+ * @param { integer } linenumber identifies the line you want to read.
+ * @return { string } The actual line read from the input.
  */
 function readLine(loc, linenumber) {
 	if (loc.file === undefined ) {
@@ -35,9 +42,9 @@ function readLine(loc, linenumber) {
 }
 
 /*
- * resolves safety of dependency in current context.
- * Writes sink calls to results.
- * Return whether expression return value is safe or not.
+ * Resolves safety of dependency in current context.
+ * @param { Object.Block } Esprima block containing the 'parent' context.
+ * @return { boolean } Whether expression return value is safe or not.
  */
 Dependency.prototype.resolve = function( context ) {
 	var safe = true;
@@ -94,8 +101,11 @@ Dependency.prototype.resolve = function( context ) {
 };
 
 /*
- * generates a new dependency object from a parameter 
- * and pushes it to the list of dependencies.
+ * Generates a new dependency object from a parameter 
+ *		and pushes it to the list of dependencies.
+ * param { string } index is the variable name.
+ * param { Object.Block } context contains the 'parent' context.
+ * param { Array.Dependency } list of dependencies for appending the results.
  */
 function fromParameter( index, context, list ){
 	var id = index;
@@ -106,12 +116,15 @@ function fromParameter( index, context, list ){
 }
 
 /*
- * recursive search for finding a variable from the parent context.
+ * Recursive search for finding a variable from the parent context.
+ * @param { string } id which the variable had when it was first met.
+ * @param { Object.AstBlock } context esprima block where the variable search begins.
+ * @return { string } The actual id of the found variable, undefined if not found.
  */
 function findVariable( id, context ){
 	if( context.variables[ id ] !== undefined ){
 		return context.variables[ id ];
-	}
+	}'
 	if( context.parent === undefined ){
 		return undefined;
 	}
@@ -119,8 +132,11 @@ function findVariable( id, context ){
 }
 
 /* 
- * parses a ast block and generates the dependency objects for the listed block types.
- * adds the dependency objects to the dependency list.
+ * Parses an ast block and generates the dependency objects for the listed block types.
+ *		adds the dependency objects to the dependency list.
+ * @param { Object.AstBlock } args block parsed by esprima.
+ * @param { Object.AstBlock } context contains the parent information of current block.
+ * @param { Array.Dependency } list is used for appending the results with the existing dependencies.
  */
 function fromBlock( block, context, list ){
 	var args, d, id, type;
