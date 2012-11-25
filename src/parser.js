@@ -1,16 +1,27 @@
 var FunctionObject = require('./function_object');
 
-// for parsing a esprima ast tree for different sink functions
+/*
+ * For parsing a esprima ast tree for different sink functions
+ * @param { Object.AstBlock } ast the whole esprima parse tree to be parsed.
+ * @param { Object.Analyzer } analyzer object given by te analyzer itself.
+ */ 
 function parseFunctions( ast, analyzer ) {
 	var currentFunction;
 
-	// for returning to the parent.
+	/*
+	 * For returning one block towards the parent.
+	 * @param { Object.AstBlock } astBlock contains the current esprima block.
+	 */
 	function walkUp( astBlock ) { 
 		if ( astBlock.type === "FunctionDeclaration" ){
 			currentFunction = currentFunction.parent;
 		}
 	}
-	// for traversing the tree downwards.
+
+	/*
+	 * For traversing the tree downwards.
+	 * @param { Object.AstBlock } astBlock contains the current esprima block.
+	 */
 	function walkDown( astBlock ) {
 		if( astBlock.type === undefined ) {
 			return;
@@ -25,8 +36,11 @@ function parseFunctions( ast, analyzer ) {
 		}		
 	}
 	
-	// recursive function for traversing through the block structure.
-    function rec( astBlock ) {
+	/* 
+	 * Recursive function for traversing through the block structure.
+	 * @param { Object.AstBlock } astBlock contains the current esprima block.
+   */ 
+	function rec( astBlock ) {
 		if (astBlock === null || astBlock === undefined || astBlock.returnDependencies) {
 			return;
 		}
