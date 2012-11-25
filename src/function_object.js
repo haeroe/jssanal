@@ -1,11 +1,19 @@
 var Identifier = require('./identifier');
 var Dependency = require('./dependency');
 
+/** @enum { integer } */
 RESOLVED_NOT_VISITED = 0;
 RESOLVED_VISITED = 1;
 RESOLVED_DONE = 2;
 RESOLVED_RECURSION = 3;
 
+/*
+ * Generates a function object for representing a single function found in the parsing process.
+ * @param { Object.AstBlock } block contains the esprima parsed representation of the function.
+ * @param { Object.AstBlock } parent contains the esprima parsed representation of the function.
+ * @param { Object.Analyzer } analyzer object given by the analyzer itself in the function call.
+ * @constructor
+ */
 function FunctionObject( block, parent, analyzer ){
 	this.name = Identifier.parse( block.id );
 	this.parent = parent; 
@@ -32,9 +40,10 @@ function FunctionObject( block, parent, analyzer ){
 }
 
 /*
- * searches the block for Variable and Function declarations.
- * when such block is found the function initializes an array for the id
- * in the current function object.
+ * Searches the block for Variable and Function declarations.
+ * When such block is found the function initializes an array for the id
+ *		in the current function object.
+ * @param { Object.AstBlock } block contains the esprima parsed representation of the function.
  */
 FunctionObject.prototype.getVariables = function( block ){
 	if (block === null || block === undefined || block.returnDependencies){
@@ -69,8 +78,9 @@ FunctionObject.prototype.getVariables = function( block ){
 };
 
 /*
- * searches the given block for dependencies in variables, function statements and function return values
- * when found their id's are added to the dependencies of the current function object.
+ * Searches the given block for dependencies in variables, function statements and function return values.
+ * When found their id's are added to the dependencies of the current function object.
+ * @param { Object.AstBlock } block contains the esprima parsed representation of the function.
  */
 FunctionObject.prototype.getDependencies = function( block ){
 	if (block === null || block === undefined || block.returnDependencies){
@@ -106,8 +116,9 @@ FunctionObject.prototype.getDependencies = function( block ){
 };
 
 /*
- * parses the block for function calls and makes a dependency object
- * in the current function object when found.
+ * Parses the block for function calls and makes a dependency object
+ *		in the current function object when found.
+ * @param { Object.AstBlock } block contains the esprima parsed representation of the function.
  */
 FunctionObject.prototype.getCalls = function( block ) {
 	if (block === null || block === undefined || block.returnDependencies)
@@ -131,8 +142,8 @@ FunctionObject.prototype.getCalls = function( block ) {
 };
 
 /*
- * goes through the current function objects list of dependencies 
- * and function call ids and finds the sources for each of those.
+ * Goes through the current function objects list of dependencies 
+ *		and function call ids and finds the sources for each of those.
  */
 FunctionObject.prototype.resolveDependencies = function() {
 	if(this.resolved === RESOLVED_DONE) {
@@ -141,9 +152,6 @@ FunctionObject.prototype.resolveDependencies = function() {
 
 	if(this.resolved === RESOLVED_VISITED){
 		this.resolved = RESOLVED_RECURSION;
-
-
-		
 		return this.resolveResult;
 	}
 
