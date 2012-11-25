@@ -2,6 +2,12 @@ var Parser = require('./parser');
 var Config = require('./configuration');
 var _ = require('underscore');
 
+/*
+ * Analyzers main function is to receive the astBlocks to be analyzed and
+ *		to have a datastructure for the results. Analyzer also implements the result
+ *		reporting functionalities. 
+ * @constructor
+ */
 function Analyzer(){
 	this.jobList = []; // A queue for all the different ast trees to be analyzed.
 	this.wrapperFunction = undefined;
@@ -17,19 +23,24 @@ function Analyzer(){
 }
 
 /*
- * Adding a esprima ast tree to the analyzers queue.
+ * Adds an esprima ast tree to the analyzers queue waiting for analysis.
+ * @param { Object.AstBlock } astBlock is a javascript source parsed to a ast tree by esprima.
  */
 Analyzer.prototype.add = function( astBlock ){
     this.jobList.push( astBlock );
 };
 
+/*
+ * Placeholder for future implementation of user configurable options.
+ * @param { ? } options contains the users preferences.
+ */
 Analyzer.prototype.config = function( options ){
 
 };
 
 /*  
- *  wraps all the input ast trees into a combined wrapper.
- *	parses function calls and resolves the dependencies between the variables.
+ *  Wraps all the input ast trees into a combined wrapper Object.
+ *	Parses function calls and resolves the dependencies between the variables.
  */
 Analyzer.prototype.process = function(){
 	var combined_ast = {
