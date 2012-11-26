@@ -145,21 +145,33 @@ FunctionObject.prototype.getCalls = function( block ) {
  * Goes through the current function objects list of dependencies 
  *		and function call ids and finds the sources for each of those.
  */
-FunctionObject.prototype.resolveDependencies = function() {
+FunctionObject.prototype.resolveDependencies = function() {	
+	//console.log('start', this.name );
 	if(this.resolved === RESOLVED_DONE) {
 		return this.resolveResult;
 	}
 
 	if(this.resolved === RESOLVED_VISITED){
 		this.resolved = RESOLVED_RECURSION;
+		
+		//console.log('visited', this.name );
+
+		this.resolveResult = {
+			returnsSafe: false,
+			isSink: true
+		}
+
 		return this.resolveResult;
 	}
 
 	if(this.resolved === RESOLVED_RECURSION){
+		//console.log('rec', this.name );
 		return this.resolveResult;
 	}
 
 	this.resolved = RESOLVED_VISITED;
+		
+	//console.log('main block', this.name );
 	
 //	console.log(this.functionCalls.length)	
 	for(var i = 0; i < this.functionCalls.length; i++){
@@ -178,7 +190,14 @@ FunctionObject.prototype.resolveDependencies = function() {
 		//this.sourceDependencies.push( source );
 	}
 
-	this.resolved = RESOLVED_DONE;
+	if(this.resolved === RESOLVED_VISITED){
+		this.resolved = RESOLVED_DONE;
+
+		this.resolveResult = {
+			returnsSafe: true,
+			isSink: false
+		}
+	}
 	return this.resolveResult;
 };
 

@@ -33,7 +33,7 @@ function readLine(loc, linenumber) {
 	if (loc.file === undefined ) {
 	   return 'test';
 	}
-	file = fs.readFileSync(loc.filename, 'utf8');
+	file = fs.readFileSync(loc.file, 'utf8');
     var lines = file.split("\n");
 	if(linenumber-1 > lines.length){
 		return;
@@ -63,10 +63,13 @@ Dependency.prototype.resolve = function( context ) {
 		return true;
     if ( this.realLocation !== undefined ) {
 		for(var i = 0; i < this.realLocation.length; i++){
+			//console.log("resolve call", this.identifier);
 			var rloc = this.realLocation[ i ];
 			if(rloc.type === "function") {
 
 				var functionObject = rloc.block.functionObject;
+
+				var tmpAllSafe = true;
 
 				var argumentSafetyList = [];
 				for(var p = 0; p < this.argumentList.length; p++){
@@ -75,10 +78,18 @@ Dependency.prototype.resolve = function( context ) {
 					for (var j = 0; j < argument.length; j++){
 						argumentSafety = argumentSafety && argument[ j ].resolve( context );
 					}
+					//console.log(argumentSafety);
 					argumentSafetyList.push( argumentSafety );
+
+					tmpAllSafe = tmpAllSafe && argumentSafety;
 				}
-				
+			
+				//console.log('wut', functionObject.name);	
 				var paramObject = functionObject.resolveDependencies();
+				//console.log("returns safe ", this.identifier, paramObject.returnsSafe);
+				if(paramObject.returnsSafe === false){
+					safe = false;
+				}
 
 				if( rloc.sink === true ) {
 
@@ -91,7 +102,11 @@ Dependency.prototype.resolve = function( context ) {
 						trace: context
 					};
 
-					context.analyzer.results.unsafeSinkCalls.push( result_object );
+					if(tmpAllSafe){
+						context.analyzer.results.safeSinkCalls.push( result_object );
+					}else{
+						context.analyzer.results.unsafeSinkCalls.push( result_object );
+					}
 				}
 			}
 		}
@@ -124,7 +139,7 @@ function fromParameter( index, context, list ){
 function findVariable( id, context ){
 	if( context.variables[ id ] !== undefined ){
 		return context.variables[ id ];
-	}'
+	}
 	if( context.parent === undefined ){
 		return undefined;
 	}

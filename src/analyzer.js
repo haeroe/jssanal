@@ -116,13 +116,13 @@ Analyzer.prototype.report = function( log_f ){
 	if (this.results.safeSinkCalls.length !== 0) {
 		console.log('==============================\nSafe calls to sink functions:\n==============================');
 		for (var i = 0; i < this.results.safeSinkCalls.length ; i++) {
-			var curr = this.results.unsafeSinkCalls[i];
-			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink );
+			var curr = this.results.safeSinkCalls[i];
+			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink  + '() line: "' + curr.vulnerableLine + '"' );
 		}
 	}
 	if (this.results.recursiveExpressions.length !== 0) {
 		console.log('==============================\nRecursive expressions:\n==============================');
-		for (var i = 0; i < this.results.safeSinkCalls.length ; i++) {
+		for (var i = 0; i < this.results.recursiveExpressions.length ; i++) {
 			var curr = this.results.recursiveExpressions[i];
 			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink );
 		}
