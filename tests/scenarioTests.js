@@ -68,7 +68,7 @@ exports['ScenarioTest'] = {
                      "company.getItemProviders = function(callBack) { " +
                      "  if (!company.itemProviders) { " +
                      "    ItemService.getItemProviders(function(data) { " +
-                     "      company.itemProviders = data;
+                     "      company.itemProviders = data; " +
                      "      jQuery.each(company.itemProviders, function() { " +
                      "        this.name = esc(this.name); " +
                      "        this.description = esc(this.description); " +
@@ -88,7 +88,7 @@ exports['ScenarioTest'] = {
     'completeUnVulnerableTest': function(test) {
         var script = "function populateItemData() { " +
                      "  company.getItemProviders(function(data) { " +
-                     "    var div = $j("div#item"); div.empty(); " +
+                     '    var div = $j("div#item"); div.empty(); ' +
                      "    jQuery(data).each(function(){ " +
                      "      var html = \"<div class='prov' data-id='\"+this.id+\"'><p>\"+ this.name+\"</p><img src='\"+this.iconUrl+\"'/></div>\";" +
                      "      div.append(html); }); }); " +
@@ -96,11 +96,11 @@ exports['ScenarioTest'] = {
                      "company.getItemProviders = function(callBack) { " +
                      "  if (!company.itemProviders) { " +
                      "    ItemService.getItemProviders(function(data) { " +
-                     "      company.itemProviders = data;
+                     "      company.itemProviders = data; " +
                      "      jQuery.each(company.itemProviders, function() { " +
                      "        this.name = esc(this.name); " +
                      "        this.description = esc(this.description); " +
-                     "        this.iconUrl = esc(this.iconUrl);  
+                     "        this.iconUrl = esc(this.iconUrl); " + 
                      "      }); " +                                                                                                                  
                      "      return company.getItemProviders(callBack); " +                                                                           
                      "    }); " +                                                                                                                    
