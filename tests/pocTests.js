@@ -8,7 +8,7 @@ exports['ParseTest'] = {
     var script  = "alert(1)";
 	var results = analyze.analyze(script);
 	test.expect(1);
-    test.equal(results.safe, true, ("test source: " + script) );
+    test.equal(results.unsafeSinkCalls.length, 0, ("test source: " + script) );
     test.done();
   },
   'testGlobalAssignment': function(test) {
@@ -112,10 +112,10 @@ exports['ParseTest'] = {
     test.done();
   },
   'testCallback': function(test) {
-    var script  = "function f(callback) { callback(123); } f(alert);";
+    var script  = "function f(callback) { callback(123); } f(eval);";
     var results = analyze.analyze(script);
     test.expect(1);
-	test.ok(results.unresolvedCalls.length !== 0);
+	test.ok(results.safeSinkCalls.length !== 0);
     /*test.equal(analyze(script, 'f'), 'UNRESOLVED(global("alert"))');
     test.equal(analyze(script, 'alert'), 'SAFE');*/
     test.done();
