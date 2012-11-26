@@ -3,18 +3,12 @@ var jsArray = [];
 var jsArrayCount = 0;
 var fs = require('fs');
 
-/*
-if(process.argv.length < 3) {
-		console.log('No input parameter given. Beginning search from current folder. \n');
-} else {
-		userInput = process.argv[2];
-}
-*/
-
+/* 
+ * Walking through the folder recursively and saving the files found to a list.
+ * @param { string } userInput contains the foldername given by the user.
+ * @return { Array.string } a list of .js files found with their paths.
+ */
 function readFolder(userInput) {
-	/* 
-	* Walking through the folder recursively and saving the files found to a list.
-	*/
 	var files = require('findit').sync(__dirname + '/');
 	if (userInput) { 
 		if(fs.exists(__dirname + '/' + userInput)) {
@@ -47,11 +41,5 @@ function readFolder(userInput) {
 	}
  return jsArray;
 }
-
-/* Printing out the array for debugging purposes.
-var stringOutput = '';
-for (var file in jsArray) {
-	stringOutput += jsArray[file] + ' ';	
-}*/
 
 module.exports = { find: readFolder }
