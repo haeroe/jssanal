@@ -124,7 +124,7 @@ function fromParameter( index, context, list ){
 function findVariable( id, context ){
 	if( context.variables[ id ] !== undefined ){
 		return context.variables[ id ];
-	}'
+	}
 	if( context.parent === undefined ){
 		return undefined;
 	}
