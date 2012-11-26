@@ -2,12 +2,23 @@ var esprima     = require('esprima');
 var fs      = require('fs');
 var util    = require('util');
 var analyzer  = new (require('./analyzer'))();
+var jsfinder = require('./jsfinder');
 
-for (var i = 2; i < process.argv.length; i++) {
-	var file_name   = process.argv[ i ];
-	var ast     = parseFilename(file_name); 
-	analyzer.add( ast );
-} 
+if (process.argv[2] !== undefined && process.argv[2] === '-f') {
+  var path = process.argv[3];
+	var files = jsfinder.find(path);
+	for (var i = 0; i < files.length; i++) {
+		var ast = parseFilename(files[i]);
+		analyzer.add( ast );
+	}
+}
+else { // if the file wasn't a relative path
+	for (var i = 2; i < process.argv.length; i++) {
+		var file_name   = process.argv[ i ];
+		var ast     = parseFilename(file_name);
+		analyzer.add( ast );
+	} 
+}
 
 var options = {
 
