@@ -1,7 +1,7 @@
 var Identifier = require('./identifier');
-var Config = require('./configuration');
-var _ = require('underscore');
-var fs = require('fs');
+var Config     = require('./configuration');
+var _          = require('underscore');
+var fs         = require('fs');
 
 /*
  * Initializes a new Dependency object.
@@ -50,10 +50,12 @@ Dependency.prototype.resolve = function( context ) {
 	var safe = true;
 
 	if( this.type === 'variable' ){
+
 		var rloc = this.realLocation;
-		if( rloc === undefined )
+        if( rloc === undefined )
 			return false;
-		for(var i = 0; i < rloc.length; i++){
+		
+        for(var i = 0; i < rloc.length; i++){
 			safe = safe && rloc[ i ].resolve( context );
 		}
 		return safe;
@@ -61,10 +63,16 @@ Dependency.prototype.resolve = function( context ) {
 
 	if( this.type !== 'call')
 		return true;
+
     if ( this.realLocation !== undefined ) {
 		for(var i = 0; i < this.realLocation.length; i++){
-			//console.log("resolve call", this.identifier);
+	
 			var rloc = this.realLocation[ i ];
+            //console.log('resolve call', this.identifier);
+
+            if(rloc === undefined)
+                continue;
+
 			if(rloc.type === "function") {
 
 				var functionObject = rloc.block.functionObject;
@@ -94,7 +102,8 @@ Dependency.prototype.resolve = function( context ) {
 				if( rloc.sink === true ) {
 
 					var line = readLine(this.block.loc, this.block.callee.loc.start.line);
-					var result_object = {
+					
+                    var result_object = {
 						sourceFile: this.block.loc.file,
 						lineNumber: this.block.callee.loc.start.line,
 						vulnerableLine: line,
