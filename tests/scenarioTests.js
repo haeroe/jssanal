@@ -1,58 +1,68 @@
-var analyze = require('./testUtils');
-
-var doAnalyze = analyze.analyze;
-
-// TODO: verify the results once code produce results
-var TOBE_VERIFIED_TRUE  = false
-var TOBE_VERIFIED_FALSE = true
+var analyze   = require('./testUtils');
 
 exports['ScenarioTest'] = {
 
-    setUp: function(done) {
-        console.log("\nScenarioTest setUp!");
-        done();
+    setUp: function(callback) {
+        //console.log("\nScenarioTest setUp!" + done);
+        callback();
     },
-    tearDown: function (done) {
-        console.log("\nScenarioTest tearDown!");
-        done();    
+    tearDown: function (callback) {
+        //console.log("\nScenarioTest tearDown!" + done);
+        callback();    
     },
+    'simpleFunctionDefinitionScenarioTest': function(test) {
+        var script  = 'function getTitleText(){return "Hello!";}';
+        var results = analyze.analyze(script);
 
-    'simpleFunctionTest': function(test) {
-        var script  = "function getTitleText(){return \"Hello!\";}";
-        var results = doAnalyze(script);
-        test.expect(1);
-        test.ok(TOBE_VERIFIED_TRUE, "message: 'the results TOBE validated'\t " + 
-                                    "test source:[" + script + "]");
+        test.expect(6);
+        test.equal(results.safeSinkCalls.length, 0, "message: expected results.safeSinkCalls.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeSinkCalls.length, 0, "message: expected results.unsafeSinkCalls.length == 0 " + "test source:[" + script + "]");                                     
+        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeAssignments.length, 0, "message: expected results.unsafeAssignments.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.safeAssignments.length, 0, "message: expected results.safeAssignments.length == 0 " + "test source:[" + script + "]");   
         test.done();
     },
-    'simpleSafeScenarioTest': function(test) {
+    'simpleSafeCallScenarioTest': function(test) {
         var script  = "function getTitleText() { return \"Hello!\"; } " +  
                       "$(\"div.header\").append(\"<h1>\" + getTitleText() + \"</h1>\");";
-        var results = doAnalyze(script);
-        //TODO: check that the results do not contain 
-        test.expect(1);
-        test.equal(results.safe, true, "message: 'the getTitleText() function call should be safe'\t " + 
-                                       "test source:[" + script + "]");    
+        var results = analyze.analyze(script);
+        
+        test.expect(6);
+        test.equal(results.safeSinkCalls.length, 1, "message: expected results.safeSinkCalls.length == 1 " + "test source:[" + script + "]");
+        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeSinkCalls.length, 0, "message: expected results.unsafeSinkCalls.length == 0 " + "test source:[" + script + "]");                                     
+        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeAssignments.length, 0, "message: expected results.unsafeAssignments.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.safeAssignments.length, 0, "message: expected results.safeAssignments.length == 0 " + "test source:[" + script + "]");   
         test.done();
     },
-    'simpleUnSafeScenarioTest': function(test) {
+    'simpleUnSafeCallScenarioTest': function(test) {
         var script = "function getTitleText() { return \"Hello\" + user.name + \"!\"; }" + 
                      "$(\"div.header\").append(\"<h1>\" + getTitleText() + \"</h1>\");";
-        var results = doAnalyze(script);
-        //TODO: check that the results do contain
-        test.expect(1);
-        test.equal(results.safe, false, "message: 'the getTitleText() function call should be UNsafe'\t " + 
-                                        "test source:[" + script + "]");    
+        var results = analyze.analyze(script);
+        
+        test.expect(6);
+        test.equal(results.safeSinkCalls.length, 0, "message: expected results.safeSinkCalls.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeSinkCalls.length, 1, "message: expected results.unsafeSinkCalls.length == 1 " + "test source:[" + script + "]");                                     
+        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeAssignments.length, 0, "message: expected results.unsafeAssignments.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.safeAssignments.length, 0, "message: expected results.safeAssignments.length == 0 " + "test source:[" + script + "]"); 
         test.done();
     },
     'simpleEscapedScenarioTest': function(test) {
         var script = "function getTitleText(){return \"Hello\" + user.name + \"!\";} " + 
                      "$(\"div.header\").append(\"<h1>\" + htmlEscape(getTitleText()) + \"</h1>\");";
-        var results = doAnalyze(script);
-        //TODO: check that the results do not contain
-        test.expect(1);
-        test.equal(results.safe, true, "message: 'the getTitleText() function call is unsafe, but escaped and therefore should be safe'\t " + 
-                                       "test source:[" + script + "]");    
+        var results = analyze.analyze(script);
+        
+        test.expect(6);
+        test.equal(results.safeSinkCalls.length, 1, "message: expected results.safeSinkCalls.length == 1 " + "test source:[" + script + "]");
+        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeSinkCalls.length, 0, "message: expected results.unsafeSinkCalls.length == 0 " + "test source:[" + script + "]");                                     
+        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeAssignments.length, 0, "message: expected results.unsafeAssignments.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.safeAssignments.length, 0, "message: expected results.safeAssignments.length == 0 " + "test source:[" + script + "]");  
         test.done();
     },
 
@@ -72,16 +82,21 @@ exports['ScenarioTest'] = {
                      "      jQuery.each(company.itemProviders, function() { " +
                      "        this.name = esc(this.name); " +
                      "        this.description = esc(this.description); " +
+                     //       this.iconUrl = esc(this.iconUrl); unsafe because of this
                      "      }); " +
                      "      return company.getItemProviders(callBack); " +
                      "    }); " +
                      "  } else { callBack(company.itemProviders); } " +
                      "}; ";
-        var results = doAnalyze(script);
-        //TODO: check that the results do contain
-        test.expect(1);
-        test.ok(TOBE_VERIFIED_TRUE, "message: 'the results TOBE validated'\t " + 
-                                    "test source:[" + script + "]");
+        var results = analyze.analyze(script);
+
+        test.expect(6);
+        test.equal(results.safeSinkCalls.length, 0, "message: expected results.safeSinkCalls.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeSinkCalls.length, 1, "message: expected results.unsafeSinkCalls.length == 1 " + "test source:[" + script + "]");                                     
+        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeAssignments.length, 0, "message: expected results.unsafeAssignments.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.safeAssignments.length, 0, "message: expected results.safeAssignments.length == 0 " + "test source:[" + script + "]");    
         test.done();
     },
 
@@ -106,11 +121,15 @@ exports['ScenarioTest'] = {
                      "    }); " +                                                                                                                    
                      "  } else { callBack(company.itemProviders); } " +                                                                              
                      "}; ";                                                                                                                          
-        var results = doAnalyze(script);                                                                                                       
-        //TODO: check that the results do contain                                                                                                    
-        test.expect(1);                                                                                                                              
-        test.ok(TOBE_VERIFIED_TRUE, "message: 'the results TOBE validated'\t " +                                                                     
-                                    "test source:[" + script + "]");                                                                                 
+        var results = analyze.analyze(script);                                                                                                       
+        
+        test.expect(6);
+        test.equal(results.safeSinkCalls.length, 1, "message: expected results.safeSinkCalls.length == 1' " + "test source:[" + script + "]");
+        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeSinkCalls.length, 0, "message: expected results.unsafeSinkCalls.length == 0 " + "test source:[" + script + "]");                                     
+        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.unsafeAssignments.length, 0, "message: expected results.unsafeAssignments.length == 0 " + "test source:[" + script + "]");
+        test.equal(results.safeAssignments.length, 0, "message: expected results.safeAssignments.length == 0 " + "test source:[" + script + "]");          
         test.done();                                                                                                                                 
     },
 
@@ -136,13 +155,13 @@ exports['ScenarioTest'] = {
                      '  var fresh_max = getInitParam("fresh_article_max_age") * 60 * 60; ' +
                      '  var d = new Date(); ' +
                      '  if (d.getTime() / 1000 - article.updated < fresh_max) li_class = "fresh"; ' + 
-                     '  var checkbox_part = "<input type=\"checkbox\" class=\"cb\" onclick=\"toggle_select_article(this)\"/>"; ' +
+                     '  var checkbox_part = "<input type=\\"checkbox\\" class=\\"cb\\" onclick=\\"toggle_select_article(this)\\"/>"; ' +
                      '  var date = new Date(article.updated * 1000); ' +
                      '  var date_part = date.toString().substring(0,21); ' +
-                     '  var tmp_html = "<li id=\"A-"+article.id+"\" "+style+" class=\""+li_class+"\">" + ' +
-                     '                 checkbox_part + icon_part + "<a target=\"_blank\" href=\""+ article.link+"\""+ ' +
-                     '                 "onclick=\"return view("+article.id+")\" class=\'title\'>" + article.title + "</a>" + ' +
-                     '                 "<div class=\'body\'>" + "<div onclick=\"view("+article.id+")\" class=\'excerpt\'>" + ' +
+                     '  var tmp_html = "<li id=\\"A-"+article.id+"\\" "+style+" class=\\""+li_class+"\\">" + ' +
+                     '                 checkbox_part + icon_part + "<a target=\\"_blank\\" href=\\""+ article.link+"\\""+ ' +
+                     '                 "onclick=\\"return view("+article.id+")\\" class=\'title\'>" + article.title + "</a>" + ' +
+                     '                 "<div class=\'body\'>" + "<div onclick=\\"view("+article.id+")\\" class=\'excerpt\'>" + ' +
                      '                 article.excerpt + "</div>" + "<div class=\'info\'>"; ' +
                      '  tmp_html += date_part + "</div>" + "</div></li>"; ' +
                      '  $("headlines-content").innerHTML += tmp_html; ' +
@@ -156,12 +175,16 @@ exports['ScenarioTest'] = {
                      '  if (feed.id < -10) return \'images/label.png\'; ' +
                      '  return \'images/blank_icon.gif\'; ' +
                      '}';
-        var results = doAnalyze(script);
-        //TODO: check that the results do contain                                                                                                    
-        test.expect(1);
-        test.ok(TOBE_VERIFIED_TRUE, "message: 'the results TOBE validated'\t " +
-                                    "test source:[" + script + "]");
+
+        var results = analyze.analyze(script);
+        
+        test.expect(6);
+        test.ok(results.safeSinkCalls.length > 0, "message: expected results.safeSinkCalls.length > 0 " + "test source:[" + script + "]");
+        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 " + "test source:[" + script + "]"); // should be >0?
+        test.ok(results.unsafeSinkCalls.length > 0, "message: expected results.unsafeSinkCalls.length > 0 " + "test source:[" + script + "]");                                     
+        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 " + "test source:[" + script + "]");
+        test.ok(results.unsafeAssignments.length > 0, "message: expected results.unsafeAssignments.length > 0 " + "test source:[" + script + "]");
+        test.ok(results.safeAssignments.length > 0, "message: expected results.safeAssignments.length > 0 " + "test source:[" + script + "]");   
         test.done();
     }
-
 }
