@@ -7,28 +7,32 @@ var blackList = [""];
 var functionSinks = ["eval", "Function", "setTimeout", "setInterval", "execScript"];
 
 var memberAssignmentSinks = {
-        "innerHTML" : null,
-        "src" :	null,
-        "text" : null,
-        "textContent" : null,
-        "innerText" : null,
-        "value"	: null,
+    "innerHTML" : null,
+    "src" :	null,
+    "text" : null,
+    "textContent" : null,
+    "innerText" : null,
+    "value"	: null,
 
-        "hostname" : ["location"],
-        "protocol" : ["location"],
-        "pathname" : ["location"],
-        "href" : ["location"],
-        "location" : ["window",	"document"]  
+    "hostname" : ["location"],
+    "protocol" : ["location"],
+    "pathname" : ["location"],
+    "href" : ["location"],
+    "location" : ["window",	"document"]  
 };
 
 var memberFunctionSinks	= {
-        "generateCRMFRequest" : ["crypto"],
-        "write" : ["document"],
-        "writeln" : ["document"],
-        "createContextualFragment" : ["Range"],
-        "search" : ["location"],
-        "assign" : ["location"],
-        "replace" : ["location"]
+    "generateCRMFRequest" : ["crypto"],
+    "write"   : ["document"],
+    "writeln" : ["document"],
+    "createContextualFragment" : ["Range"],
+    "search"  : ["location"],
+    "assign"  : ["location"],
+    "replace" : ["location"],
+    "html"       : [null], // jQuery MemberExpression 
+    "append"     : [null], // jQuery MemberExpression  
+    "parseHTML"  : [null], // jQuery MemberExpression
+    "globalEval" : [null], // jQuery MemberExpression
 };
 
 var varSources = ["location"];
