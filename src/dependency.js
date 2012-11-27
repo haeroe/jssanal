@@ -33,6 +33,9 @@ function readLine(loc, linenumber) {
 	if (loc.file === undefined ) {
 	   return 'test';
 	}
+    if (loc.file.substr(0,4) === 'url#') {
+       return loc.file; 
+    }
 	file = fs.readFileSync(loc.file, 'utf8');
     var lines = file.split("\n");
 	if(linenumber-1 > lines.length){

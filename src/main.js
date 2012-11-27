@@ -94,7 +94,6 @@ function parseFilename(file_name) {
 
 // callback
 function parseUrlData(content) {
-
 	var ast = esprima.parse( content, {loc: true, range: true, raw: true, token: true} );
 
 	function rec( astBlock ) {
@@ -102,7 +101,7 @@ function parseUrlData(content) {
 			return;
 		}
 		if (astBlock.loc !== undefined ) {
-			astBlock.loc.file = currUrl;
+			astBlock.loc.file = "url#" + currUrl;
 		}
 		var blockType = Object.prototype.toString.call(astBlock).slice(8, -1);
 		if(blockType === "Object" || blockType === "Array") {
