@@ -89,7 +89,7 @@ UrlFile.prototype.wget = function(callback) {
 	});
 };
 
-var uf = new UrlFile(jsurl);
+/*var uf = new UrlFile(jsurl);
 console.log('Url: ' + uf.uri + ' DoFindAll: ' + uf.doFindAll); 
 console.log('Options: ' + util.inspect(uf.options));
 
@@ -97,6 +97,6 @@ console.log('Options: ' + util.inspect(uf.options));
 uf.wget(function(callback) {
 	console.log('\n' + callback);
 });
-
+*/
 
 module.exports = UrlFile;

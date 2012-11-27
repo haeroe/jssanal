@@ -1,8 +1,11 @@
 var esprima     = require('esprima');
-var fs      = require('fs');
-var util    = require('util');
-var analyzer  = new (require('./analyzer'))();
-var jsfinder = require('./jsfinder');
+var fs      	= require('fs');
+var util    	= require('util');
+var analyzer  	= new (require('./analyzer'))();
+var jsfinder	= require('./jsfinder');
+var urlfinder 	= require('./urlFinder');
+
+var currUrl;
 
 if (process.argv[2] !== undefined) {
 
@@ -19,7 +22,10 @@ if (process.argv[2] !== undefined) {
 			i++;
 		} else if(process.argv[i] === '-u')
 		{
-			/* moi oon urlfinder */
+			currUrl = process.argv[i+1];
+			var urlFile = new urlfinder(process.argv[i+1]);
+			urlFile.wget(parseUrlData);
+			
 			i++;		
 		} else
 		{
@@ -82,4 +88,25 @@ function parseFilename(file_name) {
     }	
 	rec( ast );
 	return ast;
+}
+
+function parseUrlData(content) {
+	var ast = esprima.parse( content, {loc: true, range: true, raw: true, token: true} );
+	
+	function rec( astBlock ) {
+		if (astBlock === null || astBlock === undefined || astBlock.returnDependencies) {
+			return;
+		}
+		if (astBlock.loc !== undefined ) {
+			astBlock.loc.file = currUrl;
+		}
+		var blockType = Object.prototype.toString.call(astBlock).slice(8, -1);
+		if(blockType === "Object" || blockType === "Array") {
+			for(var child in astBlock) {
+				rec( astBlock[ child ] );
+			}
+		}
+    }	
+	rec( ast );
+	analyzer.add( ast );
 }
