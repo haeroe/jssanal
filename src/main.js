@@ -6,7 +6,7 @@ var jsfinder  = require('./jsfinder');
 var urlfinder = require('./urlFinder');
 
 var currUrl;
-
+var remaining = 0;
 
 var options = {
 
@@ -33,6 +33,11 @@ if (process.argv[2] !== undefined) {
 			i++;
 		} else if(process.argv[i] === '-u')
 		{
+			if(remaining < 0) {
+				remaining = 0;
+			}
+			
+			remaining++;
 			currUrl     = process.argv[i+1];
 			var urlFile = new urlfinder(process.argv[i+1]);
 			urlFile.wget(parseUrlData);
@@ -47,45 +52,31 @@ if (process.argv[2] !== undefined) {
 	}
 }
 
-/*
-
-if (process.argv[2] !== undefined && process.argv[2] === '-f') {
-  var path = process.argv[3];
-	var files = jsfinder.find(path);
-	for (var i = 0; i < files.length; i++) {
-		var ast = parseFilename(files[i]);
-		analyzer.add( ast );
-	}
+if(remaining === 0) {
+	analyzer.process();
+	analyzer.report( log_f );
 }
-else { // if the file wasn't a relative path
-	for (var i = 2; i < process.argv.length; i++) {
-		var file_name   = process.argv[ i ];
-		var ast     = parseFilename(file_name);
-		analyzer.add( ast );
-	} 
-
-
-*/
-
-analyzer.process();
-analyzer.report( log_f );
 
 function parseFilename(file_name) {
 	var file = fs.readFileSync( file_name, 'ascii' );
-	var ast  = astRecurse(file);
+	var ast  = astRecurse(file, file_name);
 	return ast;
 }
 
 // callback
-function parseUrlData(content) {
-	var ast = astRecurse(content);
-
-	analyzer.add( ast );
-    analyzer.process();
-    analyzer.report( log_f );
+function parseUrlData(result) {
+	var ast = astRecurse(result, "url#" + currUrl);
+	analyzer.add(ast);
+	
+	if(remaining === 1) {
+		analyzer.process();
+		analyzer.report( log_f );
+	} else {
+		remaining--;
+	}
 }
 
-function astRecurse(rawdata) {
+function astRecurse(rawdata, filename) {
 	var ast = esprima.parse( rawdata, {loc: true, range: true, raw: true, token: true} );
 
 	function rec( astBlock ) {
@@ -93,7 +84,7 @@ function astRecurse(rawdata) {
 			return;
 		}
 		if (astBlock.loc !== undefined ) {
-			astBlock.loc.file = "url#" + currUrl;
+			astBlock.loc.file = filename;
 		}
 		var blockType = Object.prototype.toString.call(astBlock).slice(8, -1);
 		if(blockType === "Object" || blockType === "Array") {

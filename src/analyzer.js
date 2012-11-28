@@ -106,7 +106,7 @@ Analyzer.prototype.process = function(){
  */
 Analyzer.prototype.report = function( log_f ){
 	if (this.results.unsafeSinkCalls.length !== 0) {
-		console.log("");
+//		console.log("");
 		console.log('==============================\nUnsafe calls to sink functions:\n==============================');
 		for (var i = 0; i < this.results.unsafeSinkCalls.length ; i++) {
 			var curr = this.results.unsafeSinkCalls[i];
