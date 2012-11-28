@@ -5,7 +5,8 @@ var fs = require('fs');
 
 var testFolder= path.normalize(__dirname + '/../src') + '/';
 var testArray = [testFolder + 'configuration.js', testFolder + 'main.js', testFolder + 'jsfinder.js'];
-exports['jsfinder'] = {
+
+exports['jsfinderTest'] = {
   setUp: function(done) {
 	done();
   },

@@ -1,1 +1,1 @@
-grunt test | grep -v "\>\>[[:space:]]*at "
+grunt test | grep -v "\>\>[[:space:]]*at " | grep -v "AssertionMessage"

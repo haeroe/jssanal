@@ -1,6 +1,6 @@
 var Dependency = require('../src/dependency.js');
 
-exports['dependency'] = {
+exports['dependencyTest'] = {
   setUp: function(done) {
 	done();
   },

@@ -1,6 +1,6 @@
 var analyze = require('./testUtils');
 
-exports['ParseTest'] = {
+exports['pocTest'] = {
   setUp: function(done) {
     done();
   },
