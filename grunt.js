@@ -10,7 +10,7 @@ grunt.initConfig({
 	},
 	test: {
 		files: ['tests/*Test.js']
-	}
+	},
     watch: {
         files: '<config:lint.all>',
         tasks: 'default'
