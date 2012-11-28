@@ -33,7 +33,7 @@ function readLine(loc, linenumber) {
 	if (loc.file === undefined ) {
 	   return 'test';
 	}
-    if (loc.file.substr(0,4) === 'url#') {
+    if (loc.file.substr(0,4) === 'url#') { // TODO: read remote file vi wget
        return loc.file; 
     }
 	file = fs.readFileSync(loc.file, 'utf8');
