@@ -1,6 +1,6 @@
 var testUtils = require('./testUtils');
 
-exports['simpleSinks'] = {
+exports['simpleSinksTest'] = {
   setUp: function(done) {
     done();
   },
