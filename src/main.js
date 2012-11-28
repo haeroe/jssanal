@@ -72,29 +72,21 @@ analyzer.report( log_f );
 
 function parseFilename(file_name) {
 	var file = fs.readFileSync( file_name, 'ascii' );
-	var ast  = esprima.parse( file, {loc: true, range: true, raw: true, token: true} );
-	
-	function rec( astBlock ) {
-		if (astBlock === null || astBlock === undefined || astBlock.returnDependencies) {
-			return;
-		}
-		if (astBlock.loc !== undefined ) {
-			astBlock.loc.file = file_name;
-		}
-		var blockType = Object.prototype.toString.call(astBlock).slice(8, -1);
-		if(blockType === "Object" || blockType === "Array") {
-			for(var child in astBlock) {
-				rec( astBlock[ child ] );
-			}
-		}
-    }	
-	rec( ast );
+	var ast  = astRecurse(file);
 	return ast;
 }
 
 // callback
 function parseUrlData(content) {
-	var ast = esprima.parse( content, {loc: true, range: true, raw: true, token: true} );
+	var ast = astRecurse(content);
+
+	analyzer.add( ast );
+    analyzer.process();
+    analyzer.report( log_f );
+}
+
+function astRecurse(rawdata) {
+	var ast = esprima.parse( rawdata, {loc: true, range: true, raw: true, token: true} );
 
 	function rec( astBlock ) {
 		if (astBlock === null || astBlock === undefined || astBlock.returnDependencies) {
@@ -110,9 +102,7 @@ function parseUrlData(content) {
 			}
 		}
     }	
+    
 	rec( ast );
-
-	analyzer.add( ast );
-    analyzer.process();
-    analyzer.report( log_f );
+	return ast;
 }
