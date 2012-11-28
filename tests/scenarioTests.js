@@ -91,12 +91,12 @@ exports['ScenarioTest'] = {
         var results = analyze.analyze(script);
 
         test.expect(6);
-        test.equal(results.safeSinkCalls.length, 0, "message: expected results.safeSinkCalls.length == 0 " + "test source:[" + script + "]");
-        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 " + "test source:[" + script + "]");
-        test.equal(results.unsafeSinkCalls.length, 1, "message: expected results.unsafeSinkCalls.length == 1 " + "test source:[" + script + "]");                                     
-        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 " + "test source:[" + script + "]");
-        test.equal(results.unsafeAssignments.length, 0, "message: expected results.unsafeAssignments.length == 0 " + "test source:[" + script + "]");
-        test.equal(results.safeAssignments.length, 0, "message: expected results.safeAssignments.length == 0 " + "test source:[" + script + "]");    
+        test.equal(results.safeSinkCalls.length, 0, "message: expected results.safeSinkCalls.length == 0 "); // + "test source:[" + script + "]");
+        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 "); // + "test source:[" + script + "]");
+        test.equal(results.unsafeSinkCalls.length, 1, "message: expected results.unsafeSinkCalls.length == 1 "); // + "test source:[" + script + "]");                                     
+        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 "); // + "test source:[" + script + "]");
+        test.equal(results.unsafeAssignments.length, 0, "message: expected results.unsafeAssignments.length == 0 "); // + "test source:[" + script + "]");
+        test.equal(results.safeAssignments.length, 0, "message: expected results.safeAssignments.length == 0 "); // + "test source:[" + script + "]");    
         test.done();
     },
 
@@ -124,12 +124,12 @@ exports['ScenarioTest'] = {
         var results = analyze.analyze(script);                                                                                                       
         
         test.expect(6);
-        test.equal(results.safeSinkCalls.length, 1, "message: expected results.safeSinkCalls.length == 1' " + "test source:[" + script + "]");
-        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 " + "test source:[" + script + "]");
-        test.equal(results.unsafeSinkCalls.length, 0, "message: expected results.unsafeSinkCalls.length == 0 " + "test source:[" + script + "]");                                     
-        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 " + "test source:[" + script + "]");
-        test.equal(results.unsafeAssignments.length, 0, "message: expected results.unsafeAssignments.length == 0 " + "test source:[" + script + "]");
-        test.equal(results.safeAssignments.length, 0, "message: expected results.safeAssignments.length == 0 " + "test source:[" + script + "]");          
+        test.equal(results.safeSinkCalls.length, 1, "message: expected results.safeSinkCalls.length == 1' "); // + "test source:[" + script + "]");
+        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 "); // + "test source:[" + script + "]");
+        test.equal(results.unsafeSinkCalls.length, 0, "message: expected results.unsafeSinkCalls.length == 0 "); // + "test source:[" + script + "]");                                     
+        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 "); // + "test source:[" + script + "]");
+        test.equal(results.unsafeAssignments.length, 0, "message: expected results.unsafeAssignments.length == 0 "); // + "test source:[" + script + "]");
+        test.equal(results.safeAssignments.length, 0, "message: expected results.safeAssignments.length == 0 "); // + "test source:[" + script + "]");          
         test.done();                                                                                                                                 
     },
 
@@ -179,12 +179,12 @@ exports['ScenarioTest'] = {
         var results = analyze.analyze(script);
         
         test.expect(6);
-        test.ok(results.safeSinkCalls.length > 0, "message: expected results.safeSinkCalls.length > 0 " + "test source:[" + script + "]");
-        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 " + "test source:[" + script + "]"); // should be >0?
-        test.ok(results.unsafeSinkCalls.length > 0, "message: expected results.unsafeSinkCalls.length > 0 " + "test source:[" + script + "]");                                     
-        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 " + "test source:[" + script + "]");
-        test.ok(results.unsafeAssignments.length > 0, "message: expected results.unsafeAssignments.length > 0 " + "test source:[" + script + "]");
-        test.ok(results.safeAssignments.length > 0, "message: expected results.safeAssignments.length > 0 " + "test source:[" + script + "]");   
+        test.ok(results.safeSinkCalls.length > 0, "message: expected results.safeSinkCalls.length > 0 "); // + "test source:[" + script + "]");
+        test.equal(results.unresolvedCalls.length, 0, "message: expected results.unresolvedCalls.length == 0 "); // + "test source:[" + script + "]"); // should be >0?
+        test.ok(results.unsafeSinkCalls.length > 0, "message: expected results.unsafeSinkCalls.length > 0 "); // + "test source:[" + script + "]");                                     
+        test.equal(results.recursiveExpressions.length, 0, "message: expected results.recursiveExpressions.length == 0 "); // + "test source:[" + script + "]");
+        test.ok(results.unsafeAssignments.length > 0, "message: expected results.unsafeAssignments.length > 0 "); // + "test source:[" + script + "]");
+        test.ok(results.safeAssignments.length > 0, "message: expected results.safeAssignments.length > 0 "); // + "test source:[" + script + "]");   
         test.done();
     }
 }

@@ -5,7 +5,7 @@ function analyze(str) {
     var ast      = esprima.parse(str, {loc: true, range: true, raw: true, token: true} ); 
     analyzer.add(ast);
     analyzer.process();
-    analyzer.report();
+    //analyzer.report();
     return analyzer.results;
 }
 
