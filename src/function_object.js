@@ -1,5 +1,7 @@
-var Identifier = require('./identifier');
-var Dependency = require('./dependency');
+var Identifier 	= require('./identifier');
+var Dependency 	= require('./dependency');
+var Config		= require('./configuration.js');
+var _ 			= require('underscore');
 
 /** @enum { integer } */
 RESOLVED_NOT_VISITED = 0;
@@ -27,7 +29,6 @@ function FunctionObject( block, parent, analyzer ){
 
 	this.resolved = RESOLVED_NOT_VISITED;
 	this.resolveResult = {};
-
 	for ( var i = 0; i < block.params.length; i++ ) {
 		var id = Identifier.parse(block.params[i]);
 		this.variables[id] = [];
@@ -86,6 +87,7 @@ FunctionObject.prototype.getDependencies = function( block ){
 	if (block === null || block === undefined || block.returnDependencies){
 		return;
 	}
+	
 	if(block !== this.block){
 		if(block.type === "VariableDeclaration"){
 			for( var i = 0, len = block.declarations.length; i < len; ++i){
@@ -104,6 +106,11 @@ FunctionObject.prototype.getDependencies = function( block ){
 		if(block.type === "ReturnStatement"){
 			Dependency.fromBlock( block.argument, this, this.returnDependencies );
 			return;
+		}
+		if(block.type === "AssignmentExpression"){
+			if(checkAsgSink(block.left)) {
+				console.log('Sink');
+			}
 		}
 	}
 	for(var index in block){
@@ -200,6 +207,24 @@ FunctionObject.prototype.resolveDependencies = function() {
 	}
 	return this.resolveResult;
 };
+
+function checkAsgSink(block) {
+	if(block.type === "MemberExpression") {
+		var match = Config.memberAssignmentSinks[block.property.name];
+		
+		if(match == null) {
+			return true;
+		} else {
+			if(block.object.type === "MemberExpression") {
+				return (_(match).contains(block.object.property.name));
+			} else {
+				return (_(match).contains(block.object.name));
+			}
+		}
+	}
+	
+	return false;
+}
 
 module.exports = FunctionObject;
 

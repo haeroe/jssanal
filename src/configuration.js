@@ -29,10 +29,11 @@ var memberFunctionSinks	= {
     "search"       : ["location"],
     "assign"       : ["location"],
     "replace"      : ["location"],
-    "html"         : [null], // jQuery MemberExpression 
-    "append"       : [null], // jQuery MemberExpression  
-    "parseHTML"    : [null], // jQuery MemberExpression
-    "globalEval"   : [null], // jQuery MemberExpression
+    
+    "html"         : null, // jQuery MemberExpression 
+    "append"       : null, // jQuery MemberExpression  
+    "parseHTML"    : null, // jQuery MemberExpression
+    "globalEval"   : null  // jQuery MemberExpression
 };
 
 var varSources = ["location"];
