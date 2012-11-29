@@ -1,5 +1,6 @@
+'use strict';
+
 function analyze(str) {
-    'use strict';
     var esprima  = require('esprima');
     var analyzer = new (require('../src/analyzer'))();
     var ast      = esprima.parse(str, {loc: true, range: true, raw: true, token: true} ); 
@@ -7,9 +8,24 @@ function analyze(str) {
     analyzer.process();
     //analyzer.report();
     return analyzer.results;
-}
-
-module.exports = { 
-    analyze: analyze 
 };
 
+// TODO: common test ok output
+function printTestOK() {
+    //console.log('This is OK!');
+};
+
+function getUrlContents(urlstr, cb) {
+    var urlReader = new (require('../src/urlFinder.js'))(urlstr); 
+    urlReader.wget(cb);
+};
+
+/*function parseUrlDataCb(result) {
+    return result;
+}*/
+
+module.exports = { 
+    analyze: analyze,
+    printTestOK: printTestOK,
+    getUrlContents: getUrlContents
+};

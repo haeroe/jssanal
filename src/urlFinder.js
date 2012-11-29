@@ -8,11 +8,12 @@ var util  = require('util');
 var jsurl     = '';
 var isFindAll = false;
 
-// parse comman line arguments
-// used:
+// parse command line arguments
+// usage:
 // node urlFinder.js url http://www.cs.helsinki.fi/u/kkaaria/oma.js
 // node urlFinder url http://www.cs.helsinki.fi/u/kkaaria/*.js
 process.argv.forEach(function(val, index) {
+    'use strict';
 
 	if (val === 'url') {
 		jsurl = process.argv[index + 1];
@@ -38,7 +39,8 @@ function UrlFile(jsurl) {
 }
 
 UrlFile.prototype.wget = function(callback) {
-   
+    'use strict';
+
     var doFindAll = this.doFindAll,
         options = this.options;
 
@@ -52,13 +54,12 @@ UrlFile.prototype.wget = function(callback) {
 
     request.end();
     request.on('response', function(response) {
-    response.on('data', function(chunk) {
+        response.on('data', function(chunk) {
 		
 			if (doFindAll === true) {
 			
-				var hrefRE = /\ *href=.([\/a-zA-Z_]*.js)/;
-				var chunks = chunk.toString().split("<a ");
-
+				var hrefRE    = /\ *href=.([\/a-zA-Z_]*.js)/;
+				var chunks    = chunk.toString().split("<a ");
 				response_body = []; 
 				
 				chunks.forEach(function(chunky) {
