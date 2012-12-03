@@ -36,8 +36,10 @@ function FunctionObject( block, parent, analyzer ){
 	}
 		
 	this.getVariables( block );
-    this.getDependencies( block );
+  this.getDependencies( block );
 	this.getCalls( block );
+	
+	this.analyzer.addFun( this );
 }
 
 /*

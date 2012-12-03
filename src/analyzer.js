@@ -10,6 +10,7 @@ var _ = require('underscore');
  */
 function Analyzer(){
 	this.jobList = []; // A queue for all the different ast trees to be analyzed.
+	this.functionList = []; // A list of all functions for determining if everything has been analyzed.
 	this.wrapperFunction = undefined;
 	this.results = { 
 		safeSinkCalls: [], 
@@ -21,6 +22,14 @@ function Analyzer(){
 		safe: true 
 	};
 }
+
+/*
+ * For adding the function objects to the functionList
+ * @param { Object.FunctionObject } functionObject
+ */
+Analyzer.prototype.addFun = function( functionObject ) {
+		this.functionList.push( functionObject );
+};
 
 /*
  * Adds an esprima ast tree to the analyzers queue waiting for analysis.
@@ -125,6 +134,20 @@ Analyzer.prototype.report = function( log_f ){
 		for (var i = 0; i < this.results.recursiveExpressions.length ; i++) {
 			var curr = this.results.recursiveExpressions[i];
 			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink );
+		}
+	}
+	if (this.functionList.length !== Config.functionSinks.length + 1) {
+		console.log (this.functionList.length + ' ' + Config.functionSinks.length)
+		console.log('==============================\nUntested functions:\n==============================');
+		var untested;
+		for (var i = 0; i < this.functionList.length; i++) {
+			if ( this.functionList[i].resolved === 0 && Config.functionSinks.indexOf(this.functionList[i].name) === -1) {
+				console.log( this.functionList[i].name + '()');
+				untested = true;
+			}
+		}
+    if (!untested) {
+			console.log( 'All function declarations were analyzed.'	);
 		}
 	}
 };
