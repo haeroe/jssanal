@@ -110,6 +110,10 @@ FunctionObject.prototype.getDependencies = function( block ){
 			return;
 		}
 		if(block.type === "AssignmentExpression"){
+			var left = Identifier.parse(block.id);
+			Dependency.fromBlock(block.right, this, this.variables[left]);
+		
+		
 			var result_object = {
 						sourceFile: block.loc.file,
 						lineNumber: block.loc.start.line,
