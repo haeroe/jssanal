@@ -82,24 +82,6 @@ Analyzer.prototype.process = function(){
 		});
 	});
 	
-	/*	
-	_(Config.memberFunctionSinks).each(function(id){
-		combined_ast.body.body.push({
-			type: "FunctionDeclaration",
-			sink:true,
-			id: {
-				type: "Identifier",
-				name: id
-			},
-			body: {
-				type: "BlockStatement",
-				body: []
-			},
-			params: []
-		}
-		)
-	});
-	*/
 	for(var jobNumber = 0, len = this.jobList.length; jobNumber < len; ++jobNumber){
 		combined_ast.body.body.push( this.jobList[ jobNumber ].body );
 	}
