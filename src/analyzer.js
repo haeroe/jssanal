@@ -150,18 +150,17 @@ Analyzer.prototype.report = function( log_f ){
 			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink );
 		}
 	}
-	if (this.functionList.length !== Config.functionSinks.length + 1) {
-		console.log (this.functionList.length + ' ' + Config.functionSinks.length)
+	if (this.functionList.length !== 0) {
 		console.log('==============================\nUntested functions:\n==============================');
 		var untested;
 		for (var i = 0; i < this.functionList.length; i++) {
 			if ( this.functionList[i].resolved === 0 && Config.functionSinks.indexOf(this.functionList[i].name) === -1) {
-				console.log( this.functionList[i].name + '()');
+				console.log( '  ' + this.functionList[i].name + '()');
 				untested = true;
 			}
 		}
     if (!untested) {
-			console.log( 'All function declarations were analyzed.'	);
+			console.log( '  All function declarations were analyzed.'	);
 		}
 	}
 };
