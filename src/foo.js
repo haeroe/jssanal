@@ -1,2 +1,0 @@
-var lol;
-lol = "eisss";
