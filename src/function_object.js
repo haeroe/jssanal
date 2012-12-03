@@ -95,8 +95,18 @@ FunctionObject.prototype.getDependencies = function( block ){
 			for( var i = 0, len = block.declarations.length; i < len; ++i){
 				var declarator = block.declarations[ i ];
 				var left = Identifier.parse( declarator.id );
-				Dependency.fromBlock( declarator.init, this, this.variables[left] );
+				
+				if(declarator.init.type === "BinaryExpression") {
+					var members = getBinaryMembers(declarator.init);
+					
+					for(var member in members) {
+						Dependency.fromBlock( member, this, this.variables[left] );
+					}			
+				} else {
+					Dependency.fromBlock( declarator.init, this, this.variables[left] );
+				}
 			}
+			
 			return;
 		}
 		if(block.type === "FunctionDeclaration") {
@@ -111,8 +121,16 @@ FunctionObject.prototype.getDependencies = function( block ){
 		}
 		if(block.type === "AssignmentExpression"){
 			var left = Identifier.parse(block.id);
-			Dependency.fromBlock(block.right, this, this.variables[left]);
-		
+			
+			if(block.right.type === "BinaryExpression") {
+				var members = getBinaryMembers(block.right);
+				
+				for(var member in members) {
+					Dependency.fromBlock(member, this, this.variables[left]);
+				}			
+			} else {
+				Dependency.fromBlock(block.right, this, this.variables[left]);
+			}
 		
 			var result_object = {
 						sourceFile: block.loc.file,
@@ -268,6 +286,40 @@ function checkAsgSink(block) {
 	}
 	
 	return false;*/
+}
+
+function getBinaryMembers(block) {
+	members = [];
+
+	if(block.type !== "BinaryExpression") {
+		return members;
+	}
+	
+	while(block.left.type === "BinaryExpression") {
+		var member = { "type" : "Identifier" };
+	
+		if(block.right.type === "Identifier") {
+			member.name = block.right.name;
+			members.push(member);
+		}
+		
+		block = block.left;
+	}
+	
+	var left = { "type" : "Identifier" };
+	var right = { "type" : "Identifier"} ;
+	
+	if(block.left.type === "Identifier") {
+		left.name = block.left.name;
+		members.push(left);
+	}
+		
+	if(block.right.type === "Identifier") {
+		right.name = block.right.name;
+		members.push(right);
+	}
+	
+	return members;
 }
 
 module.exports = FunctionObject;

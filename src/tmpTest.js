@@ -18,3 +18,5 @@ eval(document); //unknown varible
 eval(a()); //recursive definition
 eval(c());
 eval('literal');
+
+var lol = a + b + "3";
