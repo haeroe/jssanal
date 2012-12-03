@@ -108,8 +108,21 @@ FunctionObject.prototype.getDependencies = function( block ){
 			return;
 		}
 		if(block.type === "AssignmentExpression"){
-			if(checkAsgSink(block.left)) {
-				console.log('Sink');
+			var result_object = {
+						sourceFile: block.loc.file,
+						lineNumber: block.loc.start.line,
+						trace: this
+						//vulnerableLine: line,
+						//sink: rloc.identifier,
+						//trace: context
+			};
+			
+			var sinkResult = checkAsgSink(block.left);
+			
+			if(sinkResult.sink) {
+				result_object.vulnerableLine = Dependency.readLine(block.loc, block.loc.start.line);
+				result_object.sink = sinkResult.sink_name;
+				this.analyzer.results.unsafeAssignments.push(result_object);
 			}
 		}
 	}
@@ -209,21 +222,46 @@ FunctionObject.prototype.resolveDependencies = function() {
 };
 
 function checkAsgSink(block) {
-	if(block.type === "MemberExpression") {
+
+	var result = {
+		sink: false,
+		sink_name: undefined	
+	};
+
+	if (block.type === "MemberExpression" ) {
+		result.sink = (Config.memberAssignmentSinks[block.property.name] !== undefined);
+				
+		if(block.object.type === "MemberExpression") {
+			result.sink_name = block.object.property.name + '.' + block.property.name;
+		} else {
+			result.sink_name = block.object.name + '.' + block.property.name;
+		}
+	} else {
+		result.sink = _(Config.assignmentSinks).contains(block.name);
+		
+		result.sink_name = block.name;
+	}
+	
+	return result;
+
+	/*if(block.type === "MemberExpression") {
 		var match = Config.memberAssignmentSinks[block.property.name];
 		
 		if(match == null) {
 			return true;
 		} else {
-			if(block.object.type === "MemberExpression") {
-				return (_(match).contains(block.object.property.name));
-			} else {
-				return (_(match).contains(block.object.name));
+			if(block.object.type === "MemberExpression"
+				&& _(match).contains(block.object.property.name)) {
+				
+			} else if (_(match).contains(block.object.name)) {
+				
 			}
 		}
+	} else {
+		return (_(Config.assignmentSinks).contains(block.name));
 	}
 	
-	return false;
+	return false;*/
 }
 
 module.exports = FunctionObject;

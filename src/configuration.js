@@ -21,6 +21,8 @@ var memberFunctionSinks	= {
     "globalEval"   : null  // jQuery MemberExpression
 };
 
+var assignmentSinks = [];
+
 var memberAssignmentSinks = {
     "innerHTML"    : null,
     "src"          : null,
@@ -70,6 +72,7 @@ var memberFunctionSources = {
 
 module.exports = {
 	functionSinks: functionSinks,
+	assignmentSinks: assignmentSinks,
 	memberFunctionSinks: memberFunctionSinks,
 	memberAssignmentSinks: memberAssignmentSinks,
     memberEventSinks: memberEventSinks,

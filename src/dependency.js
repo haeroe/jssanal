@@ -268,6 +268,7 @@ function isFunctionSink(block) {
 */
 
 module.exports = {
+  readLine: readLine,
   fromParameter: fromParameter,
   fromBlock: fromBlock
 };
