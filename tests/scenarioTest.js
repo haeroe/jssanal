@@ -1,4 +1,4 @@
-var analyze   = require('./testUtils');
+var analyze = require('./testUtils');
 
 exports['ScenarioTest'] = {
 

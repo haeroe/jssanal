@@ -1,6 +1,6 @@
 var Parser = require('./parser');
 var Config = require('./configuration');
-var _ = require('underscore');
+var _ = require('./npm/underscore/1.4.2/package/underscore.js');
 
 /*
  * Analyzers main function is to receive the astBlocks to be analyzed and
@@ -114,6 +114,20 @@ Analyzer.prototype.process = function(){
  *  Generates a simple summary of the analysis results and prints that to the standard output.
  */
 Analyzer.prototype.report = function( log_f ){
+	if (this.results.unsafeAssignments.length !== 0) {
+		console.log('==============================\nUnsafe assignments to sinks:\n==============================');
+		for (var i = 0; i < this.results.unsafeAssignments.length ; i++) {
+			var curr = this.results.unsafeAssignments[i];
+			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink  + ' line: "' + curr.vulnerableLine + '"' );
+		}
+	}
+	if (this.results.safeAssignments.length !== 0) {
+		console.log('==============================\nSafe assignments to sinks:\n==============================');
+		for (var i = 0; i < this.results.safeAssignments.length ; i++) {
+			var curr = this.results.safeAssignments[i];
+			console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink  + ' line: "' + curr.vulnerableLine + '"' );
+		}
+	}
 	if (this.results.unsafeSinkCalls.length !== 0) {
 //		console.log("");
 		console.log('==============================\nUnsafe calls to sink functions:\n==============================');

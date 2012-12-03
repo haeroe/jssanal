@@ -1,6 +1,6 @@
-var esprima   = require('esprima');
+var esprima   = require('./npm/esprima/1.0.2/package/esprima');
 var fs        = require('fs');
-var util      = require('util');
+var util      = require('./npm/formidable/1.0.11/package/lib/util');
 var analyzer  = new (require('./analyzer'))();
 var jsfinder  = require('./jsfinder');
 var urlfinder = require('./urlFinder');

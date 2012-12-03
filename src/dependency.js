@@ -1,6 +1,6 @@
 var Identifier = require('./identifier');
 var Config     = require('./configuration');
-var _          = require('underscore');
+var _          = require('./npm/underscore/1.4.2/package/underscore.js');
 var fs         = require('fs');
 
 /*
@@ -268,6 +268,7 @@ function isFunctionSink(block) {
 */
 
 module.exports = {
+  readLine: readLine,
   fromParameter: fromParameter,
   fromBlock: fromBlock
 };
