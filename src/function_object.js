@@ -1,7 +1,7 @@
 var Identifier 	= require('./identifier');
 var Dependency 	= require('./dependency');
 var Config		= require('./configuration.js');
-var _ 			= require('underscore');
+var _ 			= require('./npm/underscore/1.4.2/package/underscore.js');
 
 /** @enum { integer } */
 RESOLVED_NOT_VISITED = 0;

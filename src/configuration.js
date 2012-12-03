@@ -21,7 +21,7 @@ var memberFunctionSinks	= {
     "globalEval"   : null  // jQuery MemberExpression
 };
 
-var assignmentSinks = [];
+var assignmentSinks = [	];
 
 var memberAssignmentSinks = {
     "innerHTML"    : null,

@@ -3,7 +3,7 @@
 var url   = require('url');
 var http  = require('http');
 var https = require('https');
-var util  = require('util');
+var util  = require('./npm/formidable/1.0.11/package/lib/util.js');
 
 var jsurl     = '';
 var isFindAll = false;
