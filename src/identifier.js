@@ -1,6 +1,6 @@
 // hakee blokista stringimuotoisen identifierin.
 function parse( block ){
-	if (block === undefined && block === null){
+	if (block === undefined || block === null){
 		return;
 	}
 	if (block.name !== undefined) {
