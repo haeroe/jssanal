@@ -14,10 +14,10 @@ function analyze(str) {
 function printTestOK(title, message, source, doVersatile) {
     console.log('\n---------- ---------- ' + title + ': Passed ---------- ----------');
     if (doVersatile && message != undefined && message.length > 0)
-        console.log('Message: ' + message);
+        console.log('Message: [ ' + message + ' ]');
     if (doVersatile && source != undefined && source.length > 0)
-        console.log('Source: ' + source);
-    console.log('---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------\n');
+        console.log('Source: [ ' + source + ' ]');
+    //console.log('---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------\n');
 };
 
 function getUrlContents(urlstr, cb) {
