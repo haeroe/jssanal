@@ -66,8 +66,9 @@ var memberVarSources = {
 };
 
 var memberFunctionSources = {
-	"pushState"    : ["history"],
-	"replaceState" : ["history"]
+	"pushState"     : ["history"],
+	"replaceState"  : ["history"],
+	"rpc"			: ["serverDelegate"]
 };
 
 module.exports = {
