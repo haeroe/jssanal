@@ -11,8 +11,13 @@ function analyze(str) {
 };
 
 // TODO: common test ok output
-function printTestOK() {
-    //console.log('This is OK!');
+function printTestOK(title, message, source, doVersatile) {
+    console.log('\n---------- ---------- ' + title + ': Passed ---------- ----------');
+    if (doVersatile && message != undefined && message.length > 0)
+        console.log('Message: ' + message);
+    if (doVersatile && source != undefined && source.length > 0)
+        console.log('Source: ' + source);
+    console.log('---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------\n');
 };
 
 function getUrlContents(urlstr, cb) {

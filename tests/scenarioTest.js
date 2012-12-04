@@ -1,4 +1,6 @@
-var analyze = require('./testUtils');
+var tUtil = require('./testUtils');
+
+var doVersatile = true;
 
 exports['ScenarioTest'] = {
 
@@ -12,7 +14,7 @@ exports['ScenarioTest'] = {
     },
     'simpleFunctionDefinitionScenarioTest': function(test) {
         var script  = 'function getTitleText(){return "Hello!";}';
-        var results = analyze.analyze(script);
+        var results = tUtil.analyze(script);
 
         var testOk = (results.safeSinkCalls.length === 0) &&
                      (results.unresolvedCalls.length === 0) &&
@@ -21,7 +23,7 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            console.log("\nsimpleFunctionDefinitionScenarioTest OK! \ntest source: " + script);
+            tUtil.printTestOK('simpleFunctionDefinitionScenarioTest','',script, doVersatile);
         }
 
         test.expect(6);
@@ -36,7 +38,7 @@ exports['ScenarioTest'] = {
     'simpleSafeCallScenarioTest': function(test) {
         var script  = "function getTitleText() { return \"Hello!\"; } " +  
                       "$(\"div.header\").append(\"<h1>\" + getTitleText() + \"</h1>\");";
-        var results = analyze.analyze(script);
+        var results = tUtil.analyze(script);
        
         var testOk = (results.safeSinkCalls.length === 1) &&
                      (results.unresolvedCalls.length === 0) &&
@@ -45,7 +47,7 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            console.log("\nsimpleSafeCallScenarioTest OK! \ntest source: " + script);
+            tUtil.printTestOK('simpleSafeCallScenarioTest','',script, doVersatile);
         }
 
         test.expect(6);
@@ -60,7 +62,7 @@ exports['ScenarioTest'] = {
     'simpleUnSafeCallScenarioTest': function(test) {
         var script = "function getTitleText() { return \"Hello\" + user.name + \"!\"; }" + 
                      "$(\"div.header\").append(\"<h1>\" + getTitleText() + \"</h1>\");";
-        var results = analyze.analyze(script);
+        var results = tUtil.analyze(script);
        
         var testOk = (results.safeSinkCalls.length === 0) &&
                      (results.unresolvedCalls.length === 0) &&
@@ -69,7 +71,7 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            console.log("\nsimpleUnSafeCallScenarioTest OK! \ntest source: " + script);
+            tUtil.printTestOK('simpleUnSafeCallScenarioTest','',script, doVersatile);
         }
  
         test.expect(6);
@@ -84,7 +86,7 @@ exports['ScenarioTest'] = {
     'simpleEscapedScenarioTest': function(test) {
         var script = "function getTitleText(){return \"Hello\" + user.name + \"!\";} " + 
                      "$(\"div.header\").append(\"<h1>\" + htmlEscape(getTitleText()) + \"</h1>\");";
-        var results = analyze.analyze(script);
+        var results = tUtil.analyze(script);
   
         var testOk = (results.safeSinkCalls.length === 1) &&
                      (results.unresolvedCalls.length === 0) &&
@@ -93,7 +95,7 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            console.log("\nsimpleEscapedScenarioTest OK! \ntest source: " + script);
+            tUtil.printTestOK('simpleEscapedScenarioTest','',script, doVersatile);
         }
       
         test.expect(6);
@@ -128,7 +130,7 @@ exports['ScenarioTest'] = {
                      "    }); " +
                      "  } else { callBack(company.itemProviders); } " +
                      "}; ";
-        var results = analyze.analyze(script);
+        var results = tUtil.analyze(script);
 
         var testOk = (results.safeSinkCalls.length === 0) &&
                      (results.unresolvedCalls.length === 0) &&
@@ -137,7 +139,7 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            console.log("\ncompleteVulnerableTest OK! \ntest source: " + script);
+            tUtil.printTestOK('completeVulnerableTest','',script, doVersatile);
         }
 
         test.expect(6);
@@ -171,7 +173,7 @@ exports['ScenarioTest'] = {
                      "    }); " +                                                                                                                    
                      "  } else { callBack(company.itemProviders); } " +                                                                              
                      "}; ";                                                                                                                          
-        var results = analyze.analyze(script);                                                                                                       
+        var results = tUtil.analyze(script);                                                                                                       
         
         var testOk = (results.safeSinkCalls.length === 1) &&
                      (results.unresolvedCalls.length === 0) &&
@@ -180,7 +182,7 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            console.log("\ncompleteUnVulnerableTest OK! \ntest source: " + script);
+            tUtil.printTestOK('completeUnVulnerableTest','',script, doVersatile);
         }
 
         test.expect(6);
@@ -236,7 +238,7 @@ exports['ScenarioTest'] = {
                      '  return \'images/blank_icon.gif\'; ' +
                      '}';
 
-        var results = analyze.analyze(script);
+        var results = tUtil.analyze(script);
         
         var testOk = (results.safeSinkCalls.length > 0) &&
                      (results.unresolvedCalls.length === 0) &&
@@ -245,7 +247,7 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length > 0) &&
                      (results.safeAssignments.length > 0);
         if(testOk) {
-            console.log("\ncomplexVulnerableTest OK! \ntest source: " + script);
+            tUtil.printTestOK('complexVulnerableTest','',script, doVersatile);
         }
 
         test.expect(6);
