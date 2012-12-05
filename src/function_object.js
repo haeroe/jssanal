@@ -17,29 +17,29 @@ RESOLVED_RECURSION = 3;
  * @constructor
  */
 function FunctionObject( block, parent, analyzer ){
-	this.name = Identifier.parse( block.id );
-	this.parent = parent; 
-	this.block = block;
-	block.functionObject = this;
-	this.variables = {};
-	this.returnDependencies = [];
-	this.sourceDependencies = [];
-	this.functionCalls = [];
-	this.analyzer = analyzer;
+    this.name = Identifier.parse( block.id );
+    this.parent = parent; 
+    this.block = block;
+    block.functionObject = this;
+    this.variables = {};
+    this.returnDependencies = [];
+    this.sourceDependencies = [];
+    this.functionCalls = [];
+    this.analyzer = analyzer;
 
-	this.resolved = RESOLVED_NOT_VISITED;
+    this.resolved = RESOLVED_NOT_VISITED;
 	this.resolveResult = {};
 	for ( var i = 0; i < block.params.length; i++ ) {
 		var id = Identifier.parse(block.params[i]);
 		this.variables[id] = [];
 		Dependency.fromParameter( i, this, this.variables[id] ); 
 	}
-		
-	this.getVariables( block );
-  this.getDependencies( block );
-	this.getCalls( block );
-	
-	this.analyzer.addFun( this );
+    
+    this.getVariables( block );
+    this.getDependencies( block );
+    this.getCalls( block );
+    
+    this.analyzer.addFun( this );
 }
 
 /*
@@ -96,7 +96,7 @@ FunctionObject.prototype.getDependencies = function( block ){
 				var declarator = block.declarations[ i ];
 				var left = Identifier.parse( declarator.id );
 				
-				if(declarator.init.type === "BinaryExpression") {
+				if(declarator.init != null && declarator.init.type === "BinaryExpression") {
 					var members = getBinaryMembers(declarator.init);
 					
 					for(var member in members) {
@@ -323,4 +323,3 @@ function getBinaryMembers(block) {
 }
 
 module.exports = FunctionObject;
-
