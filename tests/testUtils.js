@@ -11,13 +11,15 @@ function analyze(str) {
 };
 
 // TODO: common test ok output
-function printTestOK(title, message, source, doVersatile) {
-    console.log('\n---------- ---------- ' + title + ': Passed ---------- ----------');
+function printTestOK(groupTitle, testTitle, message, source, doVersatile) {
+    console.log('\n---------- ' + 
+                ((groupTitle !== undefined && groupTitle.length > 0) ? ('' + groupTitle.toUpperCase() + ' - ') : '') + 
+                ((testTitle !== undefined && testTitle.length > 0) ? testTitle : '') + 
+                ': PASSED ----------');
     if (doVersatile && message != undefined && message.length > 0)
         console.log('Message: [ ' + message + ' ]');
     if (doVersatile && source != undefined && source.length > 0)
-        console.log('Source: [ ' + source + ' ]');
-    //console.log('---------- ---------- ---------- ---------- ---------- ---------- ---------- ----------\n');
+        console.log('Source: [ \n' + source + '\n ]');
 };
 
 function getUrlContents(urlstr, cb) {

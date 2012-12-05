@@ -1,7 +1,10 @@
 var tUtil = require('./testUtils');
-var doVersatile = true;
 
-exports['pocTest'] = {
+var doVersatile    = true;
+var testGroupTitle = 'POC_TEST';
+
+
+exports['POC_TEST'] = {
   setUp: function(done) {
     done();
   },
@@ -11,7 +14,8 @@ exports['pocTest'] = {
     var condition = (results.unsafeSinkCalls.length === 0);
  
     if (condition) { 
-        tUtil.printTestOK('testLiteralCall ', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testLiteralCall ', 
+                          undefined, script, doVersatile);
     }
 	test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -23,7 +27,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true); // TODO: safe deprecated
 
     if (condition) { 
-        tUtil.printTestOK('testGlobalAssignment', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testGlobalAssignment', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -35,7 +40,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true); // TODO
 
     if (condition) { 
-        tUtil.printTestOK('testLocalAssignment', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testLocalAssignment', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -47,7 +53,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true); // TODO
 
     if (condition) { 
-        tUtil.printTestOK('testCircularAssignment', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testCircularAssignment', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -59,7 +66,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true); // TODO
 
     if (condition) { 
-        tUtil.printTestOK('testAssignmentFromFunctionReturn', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testAssignmentFromFunctionReturn', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -71,7 +79,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true); // TODO    
 
     if (condition) { 
-        tUtil.printTestOK('testFunctionFromAStructure', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testFunctionFromAStructure', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -83,7 +92,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true);    
 
     if (condition) { 
-        tUtil.printTestOK('testNestedFunctionCalls', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testNestedFunctionCalls', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -95,7 +105,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true && results.recursiveExpressions.size !== 0); 
 
     if (condition) { 
-        tUtil.printTestOK('testRecursiveFunctionCalls', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testRecursiveFunctionCalls', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -107,7 +118,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true); // TODO   
 
     if (condition) { 
-        tUtil.printTestOK('testIndirectlyRecursiveFunctionCalls', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testIndirectlyRecursiveFunctionCalls', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -119,7 +131,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true);
     
     if (condition) { 
-        tUtil.printTestOK('testArgumentValueFromFunctionParameter', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testArgumentValueFromFunctionParameter', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -131,7 +144,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true);    
 
     if (condition) { 
-        tUtil.printTestOK('testArgumentPassingFromEnclosingFunction', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testArgumentPassingFromEnclosingFunction', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -143,7 +157,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true);    
 
     if (condition) { 
-        tUtil.printTestOK('testMultipleSafePossibleValues', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testMultipleSafePossibleValues', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -155,7 +170,8 @@ exports['pocTest'] = {
     var condition = (results.unresolvedCalls.length !== 0);    
 
     if (condition) { 
-        tUtil.printTestOK('testMultipleDifferentPossibleValuesForUnresolvedFunction', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testMultipleDifferentPossibleValuesForUnresolvedFunction', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
 	test.ok(condition, ("test source: " + script));
@@ -168,7 +184,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true); // TODO   
 
     if (condition) { 
-        tUtil.printTestOK('testMultipleArguments', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testMultipleArguments', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -180,7 +197,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true); // TODO    
 
     if (condition) { 
-        tUtil.printTestOK('testFunctionVariable', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testFunctionVariable', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
@@ -192,7 +210,8 @@ exports['pocTest'] = {
     var condition = (results.safeSinkCalls.length !== 0); 
     
     if (condition) { 
-        tUtil.printTestOK('testCallback', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testCallback', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
 	test.ok(condition, ("test source: " + script));
@@ -206,7 +225,8 @@ exports['pocTest'] = {
     var condition = (results.unresolvedCalls.length !== 0);    
 
     if (condition) { 
-        tUtil.printTestOK('testChainedCalls', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testChainedCalls', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
 	test.ok(condition, ("test source: " + script));
@@ -222,7 +242,8 @@ exports['pocTest'] = {
     var condition = (results.safe === true); // TODO 
     
     if (condition) { 
-        tUtil.printTestOK('testFunctionReturn', undefined, script, doVersatile);
+        tUtil.printTestOK(testGroupTitle, 'testFunctionReturn', 
+                          undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );

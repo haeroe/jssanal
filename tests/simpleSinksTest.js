@@ -1,7 +1,9 @@
 var testUtils = require('./testUtils');
-var doVersatile = true;
 
-exports['simpleSinksTest'] = {
+var doVersatile    = true;
+var groupTestTitle = 'SIMPLE_SINK_TEST';
+
+exports['SIMPLE_SINKS_TEST'] = {
   setUp: function(done) {
     done();
   },
@@ -11,8 +13,8 @@ exports['simpleSinksTest'] = {
     var condition = results.safeSinkCalls.length !== 0;
     
     if (condition) { 
-        //console.log('\n testSinkCallLiteralParam'); 
-        testUtils.printTestOK('testSinkCallLiteralParam', undefined, script, doVersatile);
+        testUtils.printTestOK(groupTestTitle, 'testSinkCallLiteralParam', 
+                              undefined, script, doVersatile);
     }
     test.expect(1);
 	test.ok(condition, "test source:[ " + script + "]" );
@@ -24,8 +26,8 @@ exports['simpleSinksTest'] = {
     var condition = results.safeSinkCalls.length !== 0;
     
     if (condition) { 
-        //console.log('\n testSinkCallSafeConstant'); 
-        testUtils.printTestOK('testSinkCallSafeConstant', undefined, script, doVersatile);
+        testUtils.printTestOK(groupTestTitle, 'testSinkCallSafeConstant', 
+                              undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, "test source:[ " + script + "]" );
@@ -37,7 +39,8 @@ exports['simpleSinksTest'] = {
     var condition = results.unsafeSinkCalls.length !== 0;
     
     if (condition) { 
-        testUtils.printTestOK('testSinkCallUnsafeDynamicParameter', script, doVersatile);
+        testUtils.printTestOK(groupTestTitle, 'testSinkCallUnsafeDynamicParameter', 
+                              undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, "test source:[ " + script + "]" );
@@ -49,7 +52,8 @@ exports['simpleSinksTest'] = {
     var condition = results.safeSinkCalls.length !== 0;
     
     if (condition) { 
-        testUtils.printTestOK('testSinkCallSafeFunctionReturnValue', undefined, script, doVersatile);
+        testUtils.printTestOK(groupTestTitle, 'testSinkCallSafeFunctionReturnValue', 
+                              undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, "test source:[ " + script + "]" );
@@ -61,7 +65,8 @@ exports['simpleSinksTest'] = {
     var condition = results.safeAssignments.length !== 0;
     
     if (condition) { 
-        testUtils.printTestOK('testAssignmentSinkSafeValue', undefined, script, doVersatile);
+        testUtils.printTestOK(groupTestTitle, 'testAssignmentSinkSafeValue', 
+                              undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, "test source:[ " + script + "]" );
@@ -73,7 +78,8 @@ exports['simpleSinksTest'] = {
     var condition = results.safeAssignments.length !== 0;
     
     if (condition) {
-        testUtils.printTestOK('testAssignmentSinkVariableOutOfScope', undefined, script, doVersatile);
+        testUtils.printTestOK(groupTestTitle, 'testAssignmentSinkVariableOutOfScope', 
+                              undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, "test source:[ " + script + "]" );
@@ -82,11 +88,12 @@ exports['simpleSinksTest'] = {
   'testAssignmentSinkSafeValueFromFunctionReturn': function(test) {
     var script    = "function f() { return 'safe'; } document.write = f();";
     var results   = testUtils.analyze(script);
-    //var condition = results.safeSinkCalls.length !== 0;
+    //var condition = results.safeSinkCalls.length !== 0; //TODO: fix
     var condition = results.safeAssignments.length !== 0;    
 
     if (condition) {
-        testUtils.printTestOK('testAssignmentSinkSafeValueFromFunctionReturn', undefined, script, doVersatile);
+        testUtils.printTestOK(groupTestTitle, 'testAssignmentSinkSafeValueFromFunctionReturn', 
+                              undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, "test source:[ " + script + "]" );
@@ -96,10 +103,11 @@ exports['simpleSinksTest'] = {
     var script  = "function f() { return a(); } function a() { return f(); } eval( f() );";
     var results = testUtils.analyze(script);
     //var condition = results.safeSinkCalls.length !== 0;
-    var condition = results.unsafeAssignments.length !== 0;
+    var condition = results.unsafeAssignments.length !== 0; //TODO: fix 
 
     if (condition) {
-        testUtils.printTestOK('testSinkGiveRecursiveDefinition', undefined, script, doVersatile);
+        testUtils.printTestOK(groupTestTitle, 'testSinkGiveRecursiveDefinition', 
+                              undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, "test source:[ " + script + "]" );

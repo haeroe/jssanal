@@ -1,8 +1,9 @@
 var tUtil = require('./testUtils');
 
-var doVersatile = true;
+var doVersatile    = true;
+var groupTestTitle = 'SCENARIO_TEST';
 
-exports['ScenarioTest'] = {
+exports['SCENARIO_TEST'] = {
 
     setUp: function(callback) {
         //console.log("\nScenarioTest setUp!" + callback);
@@ -23,7 +24,8 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            tUtil.printTestOK('simpleFunctionDefinitionScenarioTest','',script, doVersatile);
+            tUtil.printTestOK(groupTestTitle, 'simpleFunctionDefinitionScenarioTest', 
+                              undefined, script, doVersatile);
         }
 
         test.expect(6);
@@ -47,7 +49,8 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            tUtil.printTestOK('simpleSafeCallScenarioTest','',script, doVersatile);
+            tUtil.printTestOK(groupTestTitle, 'simpleSafeCallScenarioTest', 
+                              undefined, script, doVersatile);
         }
 
         test.expect(6);
@@ -71,7 +74,8 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            tUtil.printTestOK('simpleUnSafeCallScenarioTest','',script, doVersatile);
+            tUtil.printTestOK(groupTestTitle, 'simpleUnSafeCallScenarioTest', 
+                              undefined, script, doVersatile);
         }
  
         test.expect(6);
@@ -95,7 +99,8 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            tUtil.printTestOK('simpleEscapedScenarioTest','',script, doVersatile);
+            tUtil.printTestOK(groupTestTitle, 'simpleEscapedScenarioTest', 
+                              undefined, script, doVersatile);
         }
       
         test.expect(6);
@@ -139,7 +144,8 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            tUtil.printTestOK('completeVulnerableTest','',script, doVersatile);
+            tUtil.printTestOK(groupTestTitle, 'completeVulnerableTest', 
+                              undefined, script, doVersatile);
         }
 
         test.expect(6);
@@ -182,7 +188,8 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            tUtil.printTestOK('completeUnVulnerableTest','',script, doVersatile);
+            tUtil.printTestOK(groupTestTitle, 'completeUnVulnerableTest', 
+                              undefined, script, doVersatile);
         }
 
         test.expect(6);
@@ -247,7 +254,8 @@ exports['ScenarioTest'] = {
                      (results.unsafeAssignments.length > 0) &&
                      (results.safeAssignments.length > 0);
         if(testOk) {
-            tUtil.printTestOK('complexVulnerableTest','',script, doVersatile);
+            tUtil.printTestOK(groupTestTitle, 'complexVulnerableTest', 
+                              undefined, script, doVersatile);
         }
 
         test.expect(6);

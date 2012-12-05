@@ -1,13 +1,18 @@
+var tUtil      = require('./testUtils');
 var Dependency = require('../src/dependency.js');
 
-exports['dependencyTest'] = {
+var doVersatile = true;
+var groupTitle  = 'DEPENDENCY_TEST';
+
+exports['DEPENDENCY_TEST'] = {
   setUp: function(done) {
 	done();
   },
+
   'creating a dependency from a function declaration': function(test) {
     test.expect(1);
     var paramBlock = {
-            "type": "FunctionDeclaration",
+        "type": "FunctionDeclaration",
             "id": {
                 "type": "Identifier",
                 "name": "erkki",
@@ -38,14 +43,19 @@ exports['dependencyTest'] = {
                     }
                 }
             }
-        }; 
-	var list = [];
+    }; 
+	var list      = [];
 	Dependency.fromBlock(paramBlock, undefined, list);
-	list = list[0];
-	var result = (list.type === 'function' && list.identifier === 'erkki'); 
-	test.ok(result);
+	list          = list[0];
+	var condition = (list.type === 'function' && list.identifier === 'erkki'); 
+	
+    if (condition) { 
+        tUtil.printTestOK(groupTitle, 'creating a dependency from a function declaration', undefined, undefined, doVersatile);
+    }    
+    test.ok(condition);
     test.done();
   },
+
   'creating a dependency from a binary expression': function(test) {
     test.expect(1);
     var paramBlock = {
@@ -62,11 +72,15 @@ exports['dependencyTest'] = {
                             "raw": "7"
                         }
                      };
-	var lista = [];
+	var lista     = [];
 	Dependency.fromBlock(paramBlock, undefined, lista);
-	lista = lista[0];
-	var result = (lista.type === 'binary' && lista.identifier === '*'); 
-	test.ok(result);
+	lista         = lista[0];
+	var condition = (lista.type === 'binary' && lista.identifier === '*');
+
+    if (condition) { 
+        tUtil.printTestOK(groupTitle, 'creating a dependency from a binary expression', undefined, undefined, doVersatile);
+    }
+    test.ok(condition);
     test.done();
   }
 } 
