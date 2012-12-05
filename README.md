@@ -5,7 +5,7 @@ The project was done as course work on a University of Helsinki software enginee
 
 ### For a brief getting started guide see:
 
-[Usage instructions](https://github.com/haeroe/jssanal/wiki/Usage-instructions)
+[User instructions](https://github.com/haeroe/jssanal/wiki/User instructions)
 
 ### For a more in depth view into the project please start at the wiki:
 
