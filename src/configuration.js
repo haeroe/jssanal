@@ -76,7 +76,7 @@ module.exports = {
 	assignmentSinks: assignmentSinks,
 	memberFunctionSinks: memberFunctionSinks,
 	memberAssignmentSinks: memberAssignmentSinks,
-  memberEventSinks: memberEventSinks,
+    memberEventSinks: memberEventSinks,
 	varSources: varSources,
 	memberVarSources: memberVarSources,
 	memberFunctionSources: memberFunctionSources

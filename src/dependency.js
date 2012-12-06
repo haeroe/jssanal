@@ -3,6 +3,7 @@ var Config     = require('./configuration');
 var _          = require('./npm/underscore/1.4.2/package/underscore.js');
 var fs         = require('fs');
 
+
 /*
  * Initializes a new Dependency object.
  * @param { string } id textual representation parsed for the depedency. eg. 'variableB'.
@@ -13,6 +14,7 @@ var fs         = require('fs');
 function Dependency(id, type, args){
 	this.identifier = id;
 	this.type = type;
+    
     if (args === undefined)
 	  args = {};
 	this.block = args.block;
@@ -168,33 +170,30 @@ function findVariable( id, context ){
 function fromBlock( block, context, list ){
 	var args, d, id, type;
 
-	if (block === null){
+	if (block === null || list == null){
 		return;
 	}
-	if (block.type === "Literal"){
+    else if (block.type === "Literal"){
 		return;
 	}
-	if (block.type === "Identifier"){
+    else if (block.type === "Identifier"){
 		id = Identifier.parse(block);
 		type = "variable";
 		
 		args = {};
-
 		args.realLocation = findVariable( id, context );
 
 		d = new Dependency( id, type, args );
 		list.push( d );
-
 	}
-	if (block.type === "ExpressionStatement") {
+    else if (block.type === "ExpressionStatement") {
 		fromBlock( block.expression, context, list );
 	}
-	if (block.type === "FunctionDeclaration") {
+    else if (block.type === "FunctionDeclaration") {
 		id = Identifier.parse( block.id );
 		type = "function";
 
 		args = { block: block };
-
 		if ( block.sink !== undefined ) {
 			args.sink = true;
 		} else {
@@ -204,7 +203,7 @@ function fromBlock( block, context, list ){
 		d = new Dependency( id, type, args );
 		list.push( d );
 	}
-	if (block.type === "BinaryExpression"){
+    //else if (block.type === "BinaryExpression"){
 		/*// TODO (properly)
 		type = 'binary';
 		var binList = {};
@@ -216,25 +215,27 @@ function fromBlock( block, context, list ){
 		d = new Dependency( id, type, binList );
 		console.log(binList);
 		list.push( d );*/
-	}
-	if (block.type === "CallExpression"){
-		id = Identifier.parse(block.callee);
-
+	//}
+    else if (block.type === "CallExpression"){
+		id   = Identifier.parse(block.callee);
 		type = "call";
-
 		args = { argumentList: [], block: block };
-		//block.arguments comes from parserAPI
+		
+        //block.arguments comes from parserAPI
 		for(var i = 0; i < block.arguments.length; i++) {
 			var argument = [];
 			fromBlock( block.arguments[ i ], context, argument );
 			args.argumentList.push( argument );
 		}
 	
-		args.realLocation = findVariable(id, context);
+        args.realLocation = findVariable(id, context);
 
 		d = new Dependency( id, type, args );
-		list.push( d );
+        list.push( d );
 	}
+    else {
+        // console.log('**Dependency.fromBlock not found for type:' + block.type);
+    }       
 }
 
 /*

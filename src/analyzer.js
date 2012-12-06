@@ -28,7 +28,7 @@ function Analyzer(){
  * @param { Object.FunctionObject } functionObject
  */
 Analyzer.prototype.addFun = function( functionObject ) {
-		this.functionList.push( functionObject );
+    this.functionList.push( functionObject );
 };
 
 /*
