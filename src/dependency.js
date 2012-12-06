@@ -234,7 +234,7 @@ function fromBlock( block, context, list ){
         list.push( d );
 	}
     else {
-        // console.log('**Dependency.fromBlock not found for type:' + block.type);
+       // console.log('**Dependency.fromBlock not found for type:' + block.type);
     }       
 }
 

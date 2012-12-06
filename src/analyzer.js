@@ -65,7 +65,7 @@ Analyzer.prototype.process = function(){
 		params: []
 	};
 
-
+    // function sinks
 	_(Config.functionSinks).each(function(id){
 		combined_ast.body.body.push({
 			type: "FunctionDeclaration",
@@ -81,6 +81,25 @@ Analyzer.prototype.process = function(){
 			params: []
 		});
 	});
+    // member function sinks
+    _(Config.memberFunctionSinks).map(function(val, key){
+
+        var id = (val + '.' + key); 
+
+        combined_ast.body.body.push({                                                                                                                                                
+            type: "FunctionDeclaration",                                                                                                                                             
+            sink: true,                                                                                                                                                              
+            id: {                                                                                                                                                                    
+                type: "Identifier",                                                                                                                                                  
+                name: id                                                                                                                                                             
+            },                                                                                                                                                                       
+            body: {                                                                                                                                                                  
+                type: "BlockStatement",                                                                                                                                              
+                body: []                                                                                                                                                             
+            },                                                                                                                                                                       
+            params: []                                                                                                                                                               
+        });                                                                                                                                                                          
+    });          
 	
 	for(var jobNumber = 0, len = this.jobList.length; jobNumber < len; ++jobNumber){
 		combined_ast.body.body.push( this.jobList[ jobNumber ].body );
