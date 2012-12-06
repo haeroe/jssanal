@@ -285,7 +285,8 @@ function checkAsgSink(block) {
 	};
 
 	if (block.type === "MemberExpression" ) {
-		result.sink = (Config.memberAssignmentSinks[block.property.name] !== undefined);
+		result.sink = (Config.memberAssignmentSinks[block.property.name] !== undefined) || 
+                      (Config.memberEventSinks[block.property.name] !== undefined);
 				
 		if(block.object.type === "MemberExpression") {
 			result.sink_name = block.object.property.name + '.' + block.property.name;
