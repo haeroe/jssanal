@@ -17,10 +17,11 @@ function log_f( arg ){
     console.log(arg);
 }
 
-
+// parse command line arguments
 if (process.argv[2] !== undefined) {
 
 	for (var i = 2; i < process.argv.length; i++) {
+        // files path
 		if(process.argv[ i ] === '-f')
 		{
 			var path  = process.argv[ i+1 ];
@@ -31,7 +32,8 @@ if (process.argv[2] !== undefined) {
 			}
 			
 			i++;
-		} else if(process.argv[i] === '-u')
+		} // urls
+        else if(process.argv[i] === '-u')
 		{
 			if(remaining < 0) {
 				remaining = 0;
@@ -78,7 +80,7 @@ function parseUrlData(result) {
 
 function astRecurse(rawdata, filename) {
 	var ast = esprima.parse( rawdata, {loc: true, range: true, raw: true, token: true} );
-
+    
 	function rec( astBlock ) {
 		if (astBlock === null || astBlock === undefined || astBlock.returnDependencies) {
 			return;

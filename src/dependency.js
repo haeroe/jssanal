@@ -12,17 +12,17 @@ var fs         = require('fs');
  * @constructor
  */
 function Dependency(id, type, args){
-	this.identifier = id;
-	this.type = type;
+    this.identifier = id;
+    this.type = type;
     
     if (args === undefined)
-	  args = {};
-	this.block = args.block;
-	this.argumentList = args.argumentList;
-	this.sink = args.sink;
-	this.realLocation = args.realLocation;
+        args = {};
+    this.block = args.block;
+    this.argumentList = args.argumentList;
+    this.sink = args.sink;
+    this.realLocation = args.realLocation;
 
-	this.resolved = false;
+    this.resolved = false;
 }
 
 /* 
@@ -35,7 +35,7 @@ function readLine(loc, linenumber) {
 	if (loc.file === undefined ) {
 	   return 'test';
 	}
-    if (loc.file.substr(0,4) === 'url#') { // TODO: read remote file vi wget
+    if (loc.file.substr(0,4) === 'url#') { // TODO: read remote file via wget
        return loc.file; 
     }
 	file = fs.readFileSync(loc.file, 'utf8');
@@ -69,6 +69,7 @@ Dependency.prototype.resolve = function( context ) {
 	if( this.type !== 'call')
 		return true;
 
+    // get call depedencies
     if ( this.realLocation !== undefined ) {
 		for(var i = 0; i < this.realLocation.length; i++){
 	
@@ -125,8 +126,8 @@ Dependency.prototype.resolve = function( context ) {
 			}
 		}
 	}
+    
 	return safe;
-
 };
 
 /*
@@ -233,9 +234,6 @@ function fromBlock( block, context, list ){
 		d = new Dependency( id, type, args );
         list.push( d );
 	}
-    else {
-       // console.log('**Dependency.fromBlock not found for type:' + block.type);
-    }       
 }
 
 /*

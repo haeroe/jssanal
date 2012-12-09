@@ -3,11 +3,12 @@ var Dependency 	= require('./dependency');
 var Config		= require('./configuration.js');
 var _ 			= require('./npm/underscore/1.4.2/package/underscore.js');
 
+
 /** @enum { integer } */
 RESOLVED_NOT_VISITED = 0;
-RESOLVED_VISITED = 1;
-RESOLVED_DONE = 2;
-RESOLVED_RECURSION = 3;
+RESOLVED_VISITED     = 1;
+RESOLVED_DONE        = 2;
+RESOLVED_RECURSION   = 3;
 
 
 /*
@@ -32,21 +33,23 @@ function FunctionObject( block, parent, analyzer ){
 
     this.resolved = RESOLVED_NOT_VISITED;
 	this.resolveResult = {};
+    // Function declaration parameters
 	for ( var i = 0; i < block.params.length; i++ ) {
 		var id = Identifier.parse(block.params[i]);
 		this.variables[id] = [];
 		Dependency.fromParameter( i, this, this.variables[id] ); 
 	}
-   
+  
     this.getVariables( block );
     this.getDependencies( block );
     this.getCalls( block );
     
     this.analyzer.addFun( this );
-}
+};
 
 /*
- * Searches the block for Variable and Function declarations.
+ * Searches the block for Variable, Function declarations and 
+ * Left-hand side Object Property assignments.
  * When such block is found the function initializes an array for the id
  *		in the current function object.
  * @param { Object.AstBlock } block contains the esprima parsed representation of the function.
@@ -57,20 +60,20 @@ FunctionObject.prototype.getVariables = function( block ){
 	}
 
     if(block !== this.block){
-        // variables
+        // Variables
         if(block.type === "VariableDeclaration"){
-	        for( var i = 0, len = block.declarations.length; i < len; ++i){
+	        for(var i = 0, len = block.declarations.length; i < len; ++i){
 		        var declaration = block.declarations[ i ];
 			    var left        = Identifier.parse( declaration.id );
 			
                 if (this.variables[left] === undefined) {
 				    this.variables[left] = [];
-			    }
-		    }
+		        }
 	        return;
-	    }
-        // functions
-	    if(block.type === "FunctionDeclaration") { 
+	        }
+        }    
+        // Functions
+	    if(block.type === "FunctionDeclaration"){ 
 		    var identifier = Identifier.parse( block.id );
 		    
             if (this.variables[identifier] === undefined) {
@@ -78,8 +81,8 @@ FunctionObject.prototype.getVariables = function( block ){
 		    }
 		    return;
 	    }
-        // object properties
-        if(block.type === "AssignmentExpression" && block.left.type === "MemberExpression" ) {  
+        // Object properties
+        if(block.type === "AssignmentExpression" && block.left.type === "MemberExpression"){  
             var object_identifier   = Identifier.parse( block.left.object );                                                                                                   
             var property_identifier = Identifier.parse( block.left.property );                                                                                                   
             var identifier          = object_identifier + '.' + property_identifier;
@@ -89,18 +92,18 @@ FunctionObject.prototype.getVariables = function( block ){
             }                                                                                                                                                      
             return;                                                                                                                                                
         }        
-    }	
+    }  
 	for(var index in block){
-		var blockType = Object.prototype.toString.call(block).slice(8, -1);
-		if(blockType === "Object" || blockType === "Array") {
+	    var blockType = Object.prototype.toString.call(block).slice(8, -1);
+		if(blockType === "Object" || blockType === "Array"){
 			this.getVariables( block[ index ] );
 		}
 	}
-
 };
 
 /*
- * Searches the given block for dependencies in variables, function statements and function return values.
+ * Searches depedencies for left-hand side declarations: function and variable declarations,
+ * return statements and object properties.
  * When found their id's are added to the dependencies of the current function object.
  * @param { Object.AstBlock } block contains the esprima parsed representation of the function.
  */
@@ -134,43 +137,40 @@ FunctionObject.prototype.getDependencies = function( block ){
 		if(block.type === "FunctionDeclaration") {
 			var identifier = Identifier.parse( block.id );
 			Dependency.fromBlock( block, this, this.variables[ identifier ] );
-
 			return;
 		}
 		if(block.type === "ReturnStatement"){
 			Dependency.fromBlock( block.argument, this, this.returnDependencies );
 			return;
 		}
-        // depedencies for left-hand object properties
-		if(block.type === "AssignmentExpression" && block.left.type === "MemberExpression"){
-            var object_identifier   = Identifier.parse( block.left.object );                                                                                                   
-            var property_identifier = Identifier.parse( block.left.property );                                                                                                   
-            var identifier          = object_identifier + '.' + property_identifier;
-
-            Dependency.fromBlock( block.right, this, this.variables[identifier] );
-        }
 		if(block.type === "AssignmentExpression"){
 			var left = Identifier.parse(block.left);
 			
-			if(block.right.type === "BinaryExpression") {
+			if(block.right.type === "BinaryExpression"){
 				var members = getBinaryMembers(block.right);
 				
 				for(var member in members) {
-					Dependency.fromBlock(member, this, this.variables[left]);
-				}			
-			} else if (block.left.type !== "MemberExpression"){
-                //console.log('FunctionObject.getDependencies() left:' + left + ' leftA: '+ util.inspect(block.left,false,2) + ' rigthA:' + util.inspect(block.right,false,2));
-                Dependency.fromBlock(block.right, this, this.variables[left]);
+					Dependency.fromBlock( member, this, this.variables[left] );
+				}
+            // depedencies for left-hand object properties
+            } else if(block.left.type === "MemberExpression"){  
+                var object_identifier   = Identifier.parse( block.left.object );                                                                                                   
+                var property_identifier = Identifier.parse( block.left.property );                                                                                                   
+                var identifier          = object_identifier + '.' + property_identifier;
+                    
+                Dependency.fromBlock( block.right, this, this.variables[identifier] );
+			} else{
+                Dependency.fromBlock( block.right, this, this.variables[left] );
 			}
 		
             // find assignment sinks
 			var result_object = {
-						sourceFile: block.loc.file,
-						lineNumber: block.loc.start.line,
-						trace: this
-						//vulnerableLine: line,
-						//sink: rloc.identifier,
-						//trace: context
+                sourceFile: block.loc.file,
+                lineNumber: block.loc.start.line,
+                trace: this
+                //vulnerableLine: line,
+                //sink: rloc.identifier,
+	            //trace: context
 			};
 			
 			var sinkResult = checkAsgSink(block.left);
@@ -188,7 +188,6 @@ FunctionObject.prototype.getDependencies = function( block ){
 			this.getDependencies( block[ index ] );
 		}
 	}
-
 };
 
 /*
@@ -200,11 +199,10 @@ FunctionObject.prototype.getCalls = function( block ) {
 	if (block === null || block === undefined || block.returnDependencies)
 		return;
 	if(block !== this.block){
-//		console.log(block.type);
+        // console.log(block.type);
 		if( block.type === "FunctionDeclaration" ) {
 			return;
 		}
-
 		if( block.type === "CallExpression" ) {
 			Dependency.fromBlock( block, this, this.functionCalls );
 		}
@@ -223,10 +221,10 @@ FunctionObject.prototype.getCalls = function( block ) {
  */
 FunctionObject.prototype.resolveDependencies = function() {	
 	//console.log('start', this.name );
-	if(this.resolved === RESOLVED_DONE) {
+	
+    if(this.resolved === RESOLVED_DONE) {
 		return this.resolveResult;
 	}
-
 	if(this.resolved === RESOLVED_VISITED){
 		this.resolved = RESOLVED_RECURSION;
 		
@@ -236,32 +234,26 @@ FunctionObject.prototype.resolveDependencies = function() {
 			returnsSafe: false,
 			isSink: true
 		}
-
 		return this.resolveResult;
 	}
-
 	if(this.resolved === RESOLVED_RECURSION){
 		//console.log('rec', this.name );
 		return this.resolveResult;
 	}
-
 	this.resolved = RESOLVED_VISITED;
 		
 	//console.log('main block', this.name );
+	//console.log(this.functionCalls.length);	
 	
-//	console.log(this.functionCalls.length)	
-	for(var i = 0; i < this.functionCalls.length; i++){
+    for(var i = 0; i < this.functionCalls.length; i++){
 		var call = this.functionCalls[ i ];
 
 		call.resolve( this );
-
-		/*	
-		if( !call.resolve( this ).recursion ){
-			return ;
-		}
-		*/
+	
+		//if( !call.resolve( this ).recursion ){
+		//	return ;
+		//}
 	}
-
 	for(i = 0; i < this.returnDependencies.length; i++){
 		//this.sourceDependencies.push( source );
 	}
@@ -278,7 +270,6 @@ FunctionObject.prototype.resolveDependencies = function() {
 };
 
 function checkAsgSink(block) {
-
 	var result = {
 		sink: false,
 		sink_name: undefined	
@@ -294,31 +285,11 @@ function checkAsgSink(block) {
 			result.sink_name = block.object.name + '.' + block.property.name;
 		}
 	} else {
-		result.sink = _(Config.assignmentSinks).contains(block.name);
-		
+		result.sink      = _(Config.assignmentSinks).contains(block.name);
 		result.sink_name = block.name;
 	}
 	
 	return result;
-
-	/*if(block.type === "MemberExpression") {
-		var match = Config.memberAssignmentSinks[block.property.name];
-		
-		if(match == null) {
-			return true;
-		} else {
-			if(block.object.type === "MemberExpression"
-				&& _(match).contains(block.object.property.name)) {
-				
-			} else if (_(match).contains(block.object.name)) {
-				
-			}
-		}
-	} else {
-		return (_(Config.assignmentSinks).contains(block.name));
-	}
-	
-	return false;*/
 }
 
 function getBinaryMembers(block) {
@@ -327,7 +298,6 @@ function getBinaryMembers(block) {
 	if(block.type !== "BinaryExpression") {
 		return members;
 	}
-	
 	while(block.left.type === "BinaryExpression") {
 		var member = { "type" : "Identifier" };
 	
@@ -335,23 +305,20 @@ function getBinaryMembers(block) {
 			member.name = block.right.name;
 			members.push(member);
 		}
-		
 		block = block.left;
 	}
 	
 	var left  = { "type" : "Identifier" };
 	var right = { "type" : "Identifier"} ;
 	
-	if(block.left.type === "Identifier") {
+	if(block.left.type === "Identifier"){
 		left.name = block.left.name;
 		members.push(left);
 	}
-		
-	if(block.right.type === "Identifier") {
+	if(block.right.type === "Identifier"){
 		right.name = block.right.name;
 		members.push(right);
 	}
-	
 	return members;
 }
 
