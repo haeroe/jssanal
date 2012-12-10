@@ -5,7 +5,7 @@ function parse( block ){
 	}
 	if (block.name !== undefined) {
 		return block.name;
-	} else if (block.property !== undefined && block.property.name !== undefined) {
+	} else if (block.property !== undefined && block.property.name !== undefined) {
 		return block.property.name;
 	}
 	

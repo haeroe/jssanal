@@ -83,8 +83,8 @@ Analyzer.prototype.process = function(){
     });
     // member function sinks
     _(Config.memberFunctionSinks).map(function(val, key){
-        var id = (val + '.' + key); 
-        
+        var id = key; 
+        //console.log(id); 
         combined_ast.body.body.push({
             type: "FunctionDeclaration",
             sink: true,
@@ -107,6 +107,21 @@ Analyzer.prototype.process = function(){
     Parser.parseFunctions( combined_ast, this );
 
     combined_ast.functionObject.resolveDependencies();
+    
+		if (this.functionList.length != 0) { // todo: excluding the default sink calls
+        console.log('==============================\nUntested functions:\n==============================');
+        var untested;
+        for (var i = 0; i < this.functionList.length; i++) {
+            if ( this.functionList[i].resolved === 0 && this.functionList[i].block.sink !== true) {
+                console.log( '  ' + this.functionList[i].name + '()');
+                untested = true;
+								this.functionList[i].resolveDependencies();
+			}
+        }
+        if (!untested) {
+            console.log( '  All function declarations were analyzed.'	);
+        }
+    }
 };
 
 /*
@@ -146,19 +161,6 @@ Analyzer.prototype.report = function( log_f ){
         for (var i = 0; i < this.results.recursiveExpressions.length ; i++) {
             var curr = this.results.recursiveExpressions[i];
             console.log( '  ' + curr.sourceFile + ':' + curr.lineNumber + ' sink: ' + curr.sink );  
-        }
-    }
-    if (this.functionList.length != 0) { // todo: excluding the default sink calls
-        console.log('==============================\nUntested functions:\n==============================');
-        var untested;
-        for (var i = 0; i < this.functionList.length; i++) {
-            if ( this.functionList[i].resolved === 0 && Config.functionSinks.indexOf(this.functionList[i].name) === -1) {
-                console.log( '  ' + this.functionList[i].name + '()');
-                untested = true;
-			}
-        }
-        if (!untested) {
-            console.log( '  All function declarations were analyzed.'	);
         }
     }
 };

@@ -53,14 +53,12 @@ function readLine(loc, linenumber) {
  */
 Dependency.prototype.resolve = function( context ) {
 	var safe = true;
-
 	if( this.type === 'variable' ){
-
 		var rloc = this.realLocation;
-        if( rloc === undefined )
+		if( rloc === undefined || rloc.length === 0)
 			return false;
-		
-        for(var i = 0; i < rloc.length; i++){
+
+		for(var i = 0; i < rloc.length; i++){
 			safe = safe && rloc[ i ].resolve( context );
 		}
 		return safe;
@@ -68,16 +66,18 @@ Dependency.prototype.resolve = function( context ) {
 
 	if( this.type !== 'call')
 		return true;
-
-    // get call depedencies
-    if ( this.realLocation !== undefined ) {
+	// get call depedencies
+	if ( this.realLocation === undefined ) {
+		safe = false;	
+	}
+	if ( this.realLocation !== undefined ) {
 		for(var i = 0; i < this.realLocation.length; i++){
-	
-			var rloc = this.realLocation[ i ];
-            //console.log('resolve call', this.identifier);
 
-            if(rloc === undefined)
-                continue;
+			var rloc = this.realLocation[ i ];
+			//console.log('resolve call', this.identifier);
+
+			if(rloc === undefined)
+				continue;
 
 			if(rloc.type === "function") {
 
@@ -97,20 +97,18 @@ Dependency.prototype.resolve = function( context ) {
 
 					tmpAllSafe = tmpAllSafe && argumentSafety;
 				}
-			
 				//console.log('wut', functionObject.name);	
 				var paramObject = functionObject.resolveDependencies();
 				//console.log("returns safe ", this.identifier, paramObject.returnsSafe);
 				if(paramObject.returnsSafe === false){
 					safe = false;
 				}
-
 				if( rloc.sink === true ) {
 
 					var line = readLine(this.block.loc, this.block.callee.loc.start.line);
-					
-                    var result_object = {
-						sourceFile: this.block.loc.file,
+
+					var result_object = {
+sourceFile: this.block.loc.file,
 						lineNumber: this.block.callee.loc.start.line,
 						vulnerableLine: line,
 						sink: rloc.identifier,
@@ -126,7 +124,7 @@ Dependency.prototype.resolve = function( context ) {
 			}
 		}
 	}
-    
+
 	return safe;
 };
 

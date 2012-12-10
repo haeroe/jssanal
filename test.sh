@@ -1,1 +1,1 @@
-grunt test | grep -v "\>\>[[:space:]]*at " | grep -v "AssertionMessage"
+grunt test | grep "\(^---\|WARN\|>> [^A][^s][^s][^e][^r][^t][^i][^o][^n].* - \)"
