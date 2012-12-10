@@ -9,13 +9,13 @@ var fs = require('fs');
  * @return { Array.string } a list of .js files found with their paths.
  */
 function readFolder(userInput) {
-	var files = require('findit').sync(__dirname + '/');
+	var files = require('./npm/findit/0.1.2/package/index.js').sync(__dirname + '/');
 	if (userInput) { 
 		if(fs.exists(__dirname + '/' + userInput)) {
-			files = require('findit').sync(__dirname + '/' + userInput);
+			files = require('./npm/findit/0.1.2/package/index.js').sync(__dirname + '/' + userInput);
 		} 
 		else {
-			files = require('findit').sync(userInput);
+			files = require('./npm/findit/0.1.2/package/index.js').sync(userInput);
 		}
 	}
 
