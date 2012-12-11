@@ -52,32 +52,32 @@ var memberEventSinks = {
 var varSources = ["location"];
 
 var memberVarSources = {
-	"referrer"     : ["document"],
-	"URL"          : ["document"],
-	"documentURI"  : ["document"],
-	"URLUnencoded" : ["document"],
-	"baseURI"      : ["document"],
-	"cookie"       : ["document"],
-	"href"         : ["location"],
-	"search"       : ["location"],
-	"hash"         : ["location"],
-	"pathname"     : ["location"],
-	"name"         : ["window"]
+    "referrer"     : ["document"],
+    "URL"          : ["document"],
+    "documentURI"  : ["document"],
+    "URLUnencoded" : ["document"],
+    "baseURI"      : ["document"],
+    "cookie"       : ["document"],
+    "href"         : ["location"],
+    "search"       : ["location"],
+    "hash"         : ["location"],
+    "pathname"     : ["location"],
+    "name"         : ["window"]
 };
 
 var memberFunctionSources = {
-	"pushState"     : ["history"],
-	"replaceState"  : ["history"],
-	"rpc"			: ["serverDelegate"]
+    "pushState"     : ["history"],
+    "replaceState"  : ["history"],
+    "rpc"           : ["serverDelegate"]
 };
 
 module.exports = {
-	functionSinks: functionSinks,
-	assignmentSinks: assignmentSinks,
-	memberFunctionSinks: memberFunctionSinks,
-	memberAssignmentSinks: memberAssignmentSinks,
+    functionSinks: functionSinks,
+    assignmentSinks: assignmentSinks,
+    memberFunctionSinks: memberFunctionSinks,
+    memberAssignmentSinks: memberAssignmentSinks,
     memberEventSinks: memberEventSinks,
-	varSources: varSources,
-	memberVarSources: memberVarSources,
-	memberFunctionSources: memberFunctionSources
+    varSources: varSources,
+    memberVarSources: memberVarSources,
+    memberFunctionSources: memberFunctionSources
 };

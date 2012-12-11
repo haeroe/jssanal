@@ -108,7 +108,7 @@ Dependency.prototype.resolve = function( context ) {
 					var line = readLine(this.block.loc, this.block.callee.loc.start.line);
 
 					var result_object = {
-sourceFile: this.block.loc.file,
+                        sourceFile: this.block.loc.file,
 						lineNumber: this.block.callee.loc.start.line,
 						vulnerableLine: line,
 						sink: rloc.identifier,
