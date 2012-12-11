@@ -5,12 +5,12 @@ var doVersatile = true;
 var groupTitle  = 'DEPENDENCY_TEST';
 
 exports['DEPENDENCY_TEST'] = {
+  
   setUp: function(done) {
 	done();
   },
 
   'creating a dependency from a function declaration': function(test) {
-    test.expect(1);
     var paramBlock = {
         "type": "FunctionDeclaration",
             "id": {
@@ -50,37 +50,42 @@ exports['DEPENDENCY_TEST'] = {
 	var condition = (list.type === 'function' && list.identifier === 'erkki'); 
 	
     if (condition) { 
-        tUtil.printTestOK(groupTitle, 'creating a dependency from a function declaration', undefined, undefined, doVersatile);
-    }    
+        tUtil.printTestOK(groupTitle, 
+                          'creating a dependency from a function declaration', 
+                          undefined, undefined, doVersatile);
+    } 
+    test.expect(1);
     test.ok(condition);
     test.done();
   },
-
-  'creating a dependency from a binary expression': function(test) {
-    test.expect(1);
+  // test not valid anymore since the source has changed
+  /*'creating a dependency from a binary expression': function(test) {
     var paramBlock = {
-                        "type": "BinaryExpression",
-                        "operator": "*",
-                        "left": {
-                            "type": "Literal",
-                            "value": 6,
-                            "raw": "6"
-                        },
-                        "right": {
-                            "type": "Literal",
-                            "value": 7,
-                            "raw": "7"
-                        }
-                     };
+        "type": "BinaryExpression",
+        "operator": "*",
+        "left": {
+            "type": "Literal",
+            "value": 6,
+            "raw": "6"
+        },
+        "right": {
+            "type": "Literal",
+            "value": 7,
+            "raw": "7"
+        }
+    };
 	var lista     = [];
 	Dependency.fromBlock(paramBlock, undefined, lista);
 	lista         = lista[0];
 	var condition = (lista.type === 'binary' && lista.identifier === '*');
 
     if (condition) { 
-        tUtil.printTestOK(groupTitle, 'creating a dependency from a binary expression', undefined, undefined, doVersatile);
+        tUtil.printTestOK(groupTitle, 
+                          'creating a dependency from a binary expression', 
+                          undefined, undefined, doVersatile);
     }
+    test.expect(1);
     test.ok(condition);
     test.done();
-  }
-} 
+  }*/
+}; 

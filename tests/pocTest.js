@@ -5,16 +5,20 @@ var testGroupTitle = 'POC_TEST';
 
 
 exports['POC_TEST'] = {
+  
   setUp: function(done) {
     done();
   },
+
   'testLiteralCall': function(test) {
     var script    = "alert(1)";
 	var results   = tUtil.analyze(script);
-    var condition = (results.unsafeSinkCalls.length === 0);
- 
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testLiteralCall ', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testLiteralCall ', 
                           undefined, script, doVersatile);
     }
 	test.expect(1);
@@ -24,10 +28,12 @@ exports['POC_TEST'] = {
   'testGlobalAssignment': function(test) {
 	var script    = "var x=\"zap\"; alert(x);";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true); // TODO: safe deprecated
-
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testGlobalAssignment', 
+        tUtil.printTestOK(testGroupTitle, 
+                         'testGlobalAssignment', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -37,10 +43,13 @@ exports['POC_TEST'] = {
   'testLocalAssignment': function(test) {
 	var script    = "function f() { var x=\"zap\"; alert(x); }";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true); // TODO
-
+    //var condition = (results.safe === true); 
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testLocalAssignment', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testLocalAssignment', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -50,10 +59,13 @@ exports['POC_TEST'] = {
   'testCircularAssignment': function(test) {
 	var script    = "var x=\"zap\"; var y=x; x=y; alert(x);";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true); // TODO
-
+    //var condition = (results.safe === true); 
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testCircularAssignment', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testCircularAssignment', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -61,12 +73,16 @@ exports['POC_TEST'] = {
     test.done();
   }, 
   'testAssignmentFromFunctionReturn': function(test) {
-	var script    = "var x=g(1); alert(x);\n" + "function g(y) { return y }";
+	var script    = "var x=g(1); alert(x);\n" + 
+                    "function g(y) { return y }";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true); // TODO
-
+    //var condition = (results.safe === true); 
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testAssignmentFromFunctionReturn', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testAssignmentFromFunctionReturn', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -74,12 +90,18 @@ exports['POC_TEST'] = {
     test.done();
   }, 
   'testFunctionFromAStructure': function(test) {
-	var script    = "var functionContainer = {\n" + "  f : function() { return 100; }\n" + "}\n" +	"alert(functionContainer.f());";
+	var script    = "var functionContainer = {\n" + 
+                    "  f : function() { return 100; }\n" + 
+                    "}\n" +	
+                    "alert(functionContainer.f());";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true); // TODO    
-
+    //var condition = (results.safe === true);    
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testFunctionFromAStructure', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testFunctionFromAStructure', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -87,12 +109,16 @@ exports['POC_TEST'] = {
     test.done();
   },
   'testNestedFunctionCalls': function(test) {
-	var script    = "alert(g(1));\n" + "function g(y) { return y }";
+	var script    = "alert(g(1));\n" + 
+                    "function g(y) { return y }";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true);    
-
+    //var condition = (results.safe === true);    
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testNestedFunctionCalls', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testNestedFunctionCalls', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -100,12 +126,15 @@ exports['POC_TEST'] = {
     test.done();
   },
    'testRecursiveFunctionCalls': function(test) {
-	var script    = "function f(x) { alert(x); f(x); }\n" + "f(1);";
+	var script    = "function f(x) { alert(x); f(x); }\n" + 
+                    "f(1);";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true && results.recursiveExpressions.size !== 0); 
-
+    var condition = (results.recursiveExpressions.length !== 0 && 
+                     results.unsafeSinkCalls.length !== 0); 
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testRecursiveFunctionCalls', 
+        tUtil.printTestOK(testGroupTitle, 
+                         'testRecursiveFunctionCalls', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -113,12 +142,16 @@ exports['POC_TEST'] = {
     test.done();
   },
   'testIndirectlyRecursiveFunctionCalls': function(test) {
-	var script    = "function f(x) { alert(x); g(x); }\n" + "function g(y) { f(y); }\n" + "f(1);";
+	var script    = "function f(x) { alert(x); g(x); }\n" + 
+                    "function g(y) { f(y); }\n" + 
+                    "f(1);";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true); // TODO   
-
+    var condition = (results.recursiveExpressions.length !== 0 && 
+                     results.unsafeSinkCalls.length !== 0); 
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testIndirectlyRecursiveFunctionCalls', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testIndirectlyRecursiveFunctionCalls', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -126,12 +159,16 @@ exports['POC_TEST'] = {
     test.done();
   },
   'testArgumentValueFromFunctionParameter': function(test) {
-	var script    = "g(1);\n" + "function g(y) { alert(y); }";
+	var script    = "g(1);\n" + 
+                    "function g(y) { alert(y); }";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true);
+    //var condition = (results.safe === true); // todo
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
     
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testArgumentValueFromFunctionParameter', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testArgumentValueFromFunctionParameter', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -139,12 +176,16 @@ exports['POC_TEST'] = {
     test.done();
   },
   'testArgumentPassingFromEnclosingFunction': function(test) {
-	var script    = "function enclosing(x) { unknown(function() { alert(x); }); }\n" + "enclosing(123);";
+	var script    = "function enclosing(x) { unknown(function() { alert(x); }); }\n" + 
+                    "enclosing(123);";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true);    
-
+    //var condition = (results.safe === true);    
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testArgumentPassingFromEnclosingFunction', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testArgumentPassingFromEnclosingFunction', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -154,10 +195,13 @@ exports['POC_TEST'] = {
   'testMultipleSafePossibleValues': function(test) {
 	var script    = "function f() { var x=\"zap\"; x=\"foo\"; alert(x); }";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true);    
-
+    //var condition = (results.safe === true);    
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testMultipleSafePossibleValues', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testMultipleSafePossibleValues', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -167,10 +211,12 @@ exports['POC_TEST'] = {
   'testMultipleDifferentPossibleValuesForUnresolvedFunction': function(test) {
     var script    = "var x=123; x=unknown1(); alert(unknown2(x))";
     var results   = tUtil.analyze(script);
-    var condition = (results.unresolvedCalls.length !== 0);    
+    var condition = (results.unresolvedCalls.length !== 0 &&    
+                     results.unsafeSinkCalls.length === 0); //?
 
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testMultipleDifferentPossibleValuesForUnresolvedFunction', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testMultipleDifferentPossibleValuesForUnresolvedFunction', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -181,10 +227,13 @@ exports['POC_TEST'] = {
   'testMultipleArguments': function(test) {
 	var script    = "alert(123, 456);";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true); // TODO   
-
+    //var condition = (results.safe === true);   
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testMultipleArguments', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testMultipleArguments', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -194,10 +243,13 @@ exports['POC_TEST'] = {
   'testFunctionVariable': function(test) {
 	var script    = "var f = alert; f(123);";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true); // TODO    
-
+    //var condition = (results.safe === true);    
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testFunctionVariable', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testFunctionVariable', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -207,10 +259,13 @@ exports['POC_TEST'] = {
   'testCallback': function(test) {
     var script    = "function f(callback) { callback(123); } f(eval);";
     var results   = tUtil.analyze(script);
-    var condition = (results.safeSinkCalls.length !== 0); 
+    //var condition = (results.safeSinkCalls.length !== 0); 
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length !== 0);
     
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testCallback', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testCallback', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -222,10 +277,14 @@ exports['POC_TEST'] = {
   'testChainedCalls': function(test) {
     var script    = "function f() { return obj; } f().method(123);";
     var results   = tUtil.analyze(script);
-    var condition = (results.unresolvedCalls.length !== 0);    
-
+    //var condition = (results.unresolvedCalls.length !== 0);    
+    var condition = (results.unresolvedCalls.length !== 0 && 
+                     results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
+    
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testChainedCalls', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testChainedCalls', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
@@ -237,17 +296,21 @@ exports['POC_TEST'] = {
     test.done();
   },
   'testFunctionReturn': function(test) {
-	var script    = "function f() { return alert; }\n" + "var g = f(); g(123);";
+	var script    = "function f() { return alert; }\n" + 
+                    "var g = f(); g(123);";
 	var results   = tUtil.analyze(script);
-    var condition = (results.safe === true); // TODO 
+    //var condition = (results.safe === true); 
+    var condition = (results.unsafeSinkCalls.length === 0 && 
+                     results.safeSinkCalls.length === 0);
     
     if (condition) { 
-        tUtil.printTestOK(testGroupTitle, 'testFunctionReturn', 
+        tUtil.printTestOK(testGroupTitle, 
+                          'testFunctionReturn', 
                           undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, ("test source: " + script) );
     test.done();
   }
-}
+};
 

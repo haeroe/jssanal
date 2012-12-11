@@ -13,11 +13,12 @@ exports['SIMPLE_SINKS_TEST'] = {
     var condition = results.safeSinkCalls.length !== 0;
     
     if (condition) { 
-        testUtils.printTestOK(groupTestTitle, 'testSinkCallLiteralParam', 
+        testUtils.printTestOK(groupTestTitle, 
+                              'testSinkCallLiteralParam', 
                               undefined, script, doVersatile);
     }
     test.expect(1);
-	test.ok(condition, "test source:[ " + script + "]" );
+    test.ok(condition, "test source:[ " + script + "]" );
     test.done();
   },
   'testSinkCallSafeConstant': function(test) {
@@ -26,7 +27,8 @@ exports['SIMPLE_SINKS_TEST'] = {
     var condition = results.safeSinkCalls.length !== 0;
     
     if (condition) { 
-        testUtils.printTestOK(groupTestTitle, 'testSinkCallSafeConstant', 
+        testUtils.printTestOK(groupTestTitle, 
+                              'testSinkCallSafeConstant', 
                               undefined, script, doVersatile);
     }
     test.expect(1);
@@ -39,7 +41,8 @@ exports['SIMPLE_SINKS_TEST'] = {
     var condition = results.unsafeSinkCalls.length !== 0;
     
     if (condition) { 
-        testUtils.printTestOK(groupTestTitle, 'testSinkCallUnsafeDynamicParameter', 
+        testUtils.printTestOK(groupTestTitle, 
+                              'testSinkCallUnsafeDynamicParameter', 
                               undefined, script, doVersatile);
     }
     test.expect(1);
@@ -52,7 +55,8 @@ exports['SIMPLE_SINKS_TEST'] = {
     var condition = results.safeSinkCalls.length !== 0;
     
     if (condition) { 
-        testUtils.printTestOK(groupTestTitle, 'testSinkCallSafeFunctionReturnValue', 
+        testUtils.printTestOK(groupTestTitle, 
+                              'testSinkCallSafeFunctionReturnValue', 
                               undefined, script, doVersatile);
     }
     test.expect(1);
@@ -65,20 +69,23 @@ exports['SIMPLE_SINKS_TEST'] = {
     var condition = results.safeAssignments.length !== 0;
     
     if (condition) { 
-        testUtils.printTestOK(groupTestTitle, 'testAssignmentSinkSafeValue', 
+        testUtils.printTestOK(groupTestTitle, 
+                              'testAssignmentSinkSafeValue', 
                               undefined, script, doVersatile);
     }
     test.expect(1);
     test.ok(condition, "test source:[ " + script + "]" );
     test.done();
   },
-  'testAssignmentSinkVariableOutOfScope': function(test) {
-    var script    = "document.URL = outofscope;";
+  'testAssignmentSourceVariableOutOfScope': function(test) {
+    var script    = "document.URL = outofscope;"; // member variable source assignment 
     var results   = testUtils.analyze(script);
-    var condition = results.safeAssignments.length !== 0;
-    
+    //var condition = results.safeAssignments.length !== 0;
+    var condition = results.unsafeAssignments.length !== 0;
+
     if (condition) {
-        testUtils.printTestOK(groupTestTitle, 'testAssignmentSinkVariableOutOfScope', 
+        testUtils.printTestOK(groupTestTitle, 
+                              'testAssignmentSinkVariableOutOfScope', 
                               undefined, script, doVersatile);
     }
     test.expect(1);
@@ -88,11 +95,13 @@ exports['SIMPLE_SINKS_TEST'] = {
   'testAssignmentSinkSafeValueFromFunctionReturn': function(test) {
     var script    = "function f() { return 'safe'; } document.write = f();";
     var results   = testUtils.analyze(script);
-    //var condition = results.safeSinkCalls.length !== 0; //TODO: fix
-    var condition = results.safeAssignments.length !== 0;    
+    //var condition = results.safeSinkCalls.length !== 0; 
+    var condition = results.safeAssignments.length !== 0 &&
+                    results.safeSinkCalls.length !== 0; 
 
     if (condition) {
-        testUtils.printTestOK(groupTestTitle, 'testAssignmentSinkSafeValueFromFunctionReturn', 
+        testUtils.printTestOK(groupTestTitle, 
+                              'testAssignmentSinkSafeValueFromFunctionReturn', 
                               undefined, script, doVersatile);
     }
     test.expect(1);
@@ -103,10 +112,12 @@ exports['SIMPLE_SINKS_TEST'] = {
     var script  = "function f() { return a(); } function a() { return f(); } eval( f() );";
     var results = testUtils.analyze(script);
     //var condition = results.safeSinkCalls.length !== 0;
-    var condition = results.unsafeAssignments.length !== 0; //TODO: fix 
+    var condition = results.unsafeAssignments.length !== 0 && 
+                    results.recursiveExpressions.length !== 0;
 
     if (condition) {
-        testUtils.printTestOK(groupTestTitle, 'testSinkGiveRecursiveDefinition', 
+        testUtils.printTestOK(groupTestTitle, 
+                              'testSinkGiveRecursiveDefinition', 
                               undefined, script, doVersatile);
     }
     test.expect(1);
