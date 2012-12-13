@@ -3,13 +3,11 @@ var Dependency 	= require('./dependency');
 var Config		= require('./configuration.js');
 var _ 			= require('./npm/underscore/1.4.2/package/underscore.js');
 
-
 /** @enum { integer } */
 RESOLVED_NOT_VISITED = 0;
 RESOLVED_VISITED     = 1;
 RESOLVED_DONE        = 2;
 RESOLVED_RECURSION   = 3;
-
 
 /*
  * Generates a function object for representing a single function found in the parsing process.
@@ -30,16 +28,17 @@ function FunctionObject( block, parent, analyzer ){
     this.functionCalls = [];
     
     this.analyzer = analyzer;
-
+    
     this.resolved = RESOLVED_NOT_VISITED;
-	this.resolveResult = {};
+    this.resolveResult = {};
+    
     // Function declaration parameters
-	for ( var i = 0; i < block.params.length; i++ ) {
-		var id = Identifier.parse(block.params[i]);
-		this.variables[id] = [];
-		Dependency.fromParameter( i, this, this.variables[id] ); 
-	}
-  
+    for ( var i = 0; i < block.params.length; i++ ) {
+        var id = Identifier.parse(block.params[i]);
+        this.variables[id] = [];
+        Dependency.fromParameter( i, this, this.variables[id] ); 
+    }
+    
     this.getVariables( block );
     this.getDependencies( block );
     this.getCalls( block );
@@ -55,50 +54,57 @@ function FunctionObject( block, parent, analyzer ){
  * @param { Object.AstBlock } block contains the esprima parsed representation of the function.
  */
 FunctionObject.prototype.getVariables = function( block ){
-	if (block === null || block === undefined || block.returnDependencies){
-		return;
-	}
-
+    if (block === null || block === undefined || block.returnDependencies){
+        return;
+    }
+    
     if(block !== this.block){
         // Variables
         if(block.type === "VariableDeclaration"){
-	        for(var i = 0, len = block.declarations.length; i < len; ++i){
-		        var declaration = block.declarations[ i ];
-			    var left        = Identifier.parse( declaration.id );
-			
-                if (this.variables[left] === undefined) {
-				    this.variables[left] = [];
-		        }
-	        return;
-	        }
-        }    
+            for(var i = 0, len = block.declarations.length; i < len; ++i){
+                var declaration = block.declarations[ i ];
+                var left        = Identifier.parse( declaration.id );
+                
+                if (this.variables[left] === undefined){
+                    this.variables[left] = [];
+                }
+                return;
+            }
+        } 
         // Functions
-	    if(block.type === "FunctionDeclaration"){ 
-		    var identifier = Identifier.parse( block.id );
-		    
-            if (this.variables[identifier] === undefined) {
-			    this.variables[identifier] = [];
-		    }
-		    return;
-	    }
+        if(block.type === "FunctionDeclaration"){ 
+            var identifier = Identifier.parse( block.id );
+            
+            if (this.variables[identifier] === undefined){
+                this.variables[identifier] = [];
+            }
+            return;
+        }
         // Object properties
         if(block.type === "AssignmentExpression" && block.left.type === "MemberExpression"){  
-            var object_identifier   = Identifier.parse( block.left.object );                                                                                                   
-            var property_identifier = Identifier.parse( block.left.property );                                                                                                   
-            var identifier          = object_identifier + '.' + property_identifier;
-                                                
-            if (this.variables[identifier] === undefined) {                                                                                                        
-                this.variables[identifier] = [];                                                                                                                   
-            }                                                                                                                                                      
-            return;                                                                                                                                                
-        }        
+            var identifier = Identifier.parse( block.left );
+            
+            if (this.variables[identifier] === undefined){
+                this.variables[identifier] = [];
+            }
+            return;
+        }
+        // if variable was not declared ?
+        if(block.type === "AssignmentExpression" && block.left.type === "Identifier"){
+            var identifier = Identifier.parse( block.left );
+
+            if (this.variables[identifier] === undefined){
+                this.variables[identifier] = [];
+            }
+            return;
+        }  
     }  
-	for(var index in block){
-	    var blockType = Object.prototype.toString.call(block).slice(8, -1);
-		if(blockType === "Object" || blockType === "Array"){
-			this.getVariables( block[ index ] );
-		}
-	}
+    for(var index in block){
+        var blockType = Object.prototype.toString.call(block).slice(8, -1);
+        if(blockType === "Object" || blockType === "Array"){
+            this.getVariables( block[ index ] );
+        }
+    }
 };
 
 /*
@@ -108,32 +114,30 @@ FunctionObject.prototype.getVariables = function( block ){
  * @param { Object.AstBlock } block contains the esprima parsed representation of the function.
  */
 FunctionObject.prototype.getDependencies = function( block ){
-	if (block === null || block === undefined || block.returnDependencies){
-		return;
-	}
-	
-	if(block !== this.block){
-		if(block.type === "VariableDeclaration"){
-			for( var i = 0, len = block.declarations.length; i < len; ++i){
-				var declarator = block.declarations[ i ];
-				var left = Identifier.parse( declarator.id );
-				
+    if (block === null || block === undefined || block.returnDependencies){
+        return;
+    }
+    if(block !== this.block){
+        if(block.type === "VariableDeclaration"){
+            for(var i = 0, len = block.declarations.length; i < len; ++i){
+                var declarator = block.declarations[ i ];
+                var left = Identifier.parse( declarator.id );
+                
                 // right-hand binary expressions
-				if(declarator.init !== null && 
+                if(declarator.init !== null &&
                    declarator.init.type !== null && 
-                   declarator.init.type === "BinaryExpression") {
-					var members = getBinaryMembers(declarator.init);
-					
-					for(var member in members) {
-						Dependency.fromBlock( member, this, this.variables[left] );
-					}			
-				} else {
-					Dependency.fromBlock( declarator.init, this, this.variables[left] );
-				}
-			}
-			
+                   declarator.init.type === "BinaryExpression"){
+                    var members = getBinaryMembers(declarator.init);
+                    
+                    for(var member in members) {
+                        Dependency.fromBlock( member, this, this.variables[left] );
+                    }
+                }else{
+                    Dependency.fromBlock( declarator.init, this, this.variables[left] );
+                }
+            }
 			return;
-		}
+        }
 		if(block.type === "FunctionDeclaration") {
 			var identifier = Identifier.parse( block.id );
 			Dependency.fromBlock( block, this, this.variables[ identifier ] );
@@ -152,12 +156,10 @@ FunctionObject.prototype.getDependencies = function( block ){
 				for(var member in members) {
 					Dependency.fromBlock( member, this, this.variables[left] );
 				}
-            // depedencies for left-hand object properties
+            // dependencies for left-hand side object properties
             } else if(block.left.type === "MemberExpression"){  
-                var object_identifier   = Identifier.parse( block.left.object );                                                                                                   
-                var property_identifier = Identifier.parse( block.left.property );                                                                                                   
-                var identifier          = object_identifier + '.' + property_identifier;
-                    
+                var identifier = Identifier.parseObjectId( block.left );
+                
                 Dependency.fromBlock( block.right, this, this.variables[identifier] );
 			} else{
                 Dependency.fromBlock( block.right, this, this.variables[left] );
@@ -198,6 +200,7 @@ FunctionObject.prototype.getDependencies = function( block ){
 FunctionObject.prototype.getCalls = function( block ) {
 	if (block === null || block === undefined || block.returnDependencies)
 		return;
+
 	if(block !== this.block){
         // console.log(block.type);
 		if( block.type === "FunctionDeclaration" ) {
@@ -220,53 +223,56 @@ FunctionObject.prototype.getCalls = function( block ) {
  *		and function call ids and finds the sources for each of those.
  */
 FunctionObject.prototype.resolveDependencies = function() {	
-	//console.log('start', this.name );
-	
+    //console.log('start', this.name );
+    
     if(this.resolved === RESOLVED_DONE) {
-		return this.resolveResult;
-	}
-	if(this.resolved === RESOLVED_VISITED){
-		this.resolved = RESOLVED_RECURSION;
+        return this.resolveResult;
+    }
+    if(this.resolved === RESOLVED_VISITED){
+        this.resolved = RESOLVED_RECURSION;
+        
+        //console.log('visited', this.name );
+        
+        this.resolveResult = {
+		    returnsSafe: false,
+		    isSink: true
+        }
+        return this.resolveResult;
+    }
+    if(this.resolved === RESOLVED_RECURSION){
+	    //console.log('rec', this.name );
+        return this.resolveResult;
+    }
+    this.resolved = RESOLVED_VISITED;
 		
-		//console.log('visited', this.name );
-
-		this.resolveResult = {
-			returnsSafe: false,
-			isSink: true
-		}
-		return this.resolveResult;
-	}
-	if(this.resolved === RESOLVED_RECURSION){
-		//console.log('rec', this.name );
-		return this.resolveResult;
-	}
-	this.resolved = RESOLVED_VISITED;
-		
-	//console.log('main block', this.name );
-	//console.log(this.functionCalls.length);	
+    //console.log('main block', this.name );
+    //console.log(this.functionCalls.length);	
 	
     for(var i = 0; i < this.functionCalls.length; i++){
-		var call = this.functionCalls[ i ];
+	    var call = this.functionCalls[ i ];
 
-		call.resolve( this );
+	    call.resolve( this );
 	
-		//if( !call.resolve( this ).recursion ){
-		//	return ;
-		//}
-	}
-	for(i = 0; i < this.returnDependencies.length; i++){
-		//this.sourceDependencies.push( source );
-	}
-
-	if(this.resolved === RESOLVED_VISITED){
-		this.resolved = RESOLVED_DONE;
-
-		this.resolveResult = {
-			returnsSafe: true,
-			isSink: false
-		}
-	}
-	return this.resolveResult;
+        //if( !call.resolve( this ).recursion ){
+        //	return ;
+        //}
+    }
+    var retSafe = true;
+    for(i = 0; i < this.returnDependencies.length; i++){
+        var ret = this.returnDependencies[i];
+        retSafe = retSafe && ret.resolve( this );
+        //this.sourceDependencies.push( source );
+    }
+    
+    if(this.resolved === RESOLVED_VISITED){
+        this.resolved = RESOLVED_DONE;
+        
+        this.resolveResult = {
+            returnsSafe: retSafe,
+            isSink: false
+        }
+    }
+    return this.resolveResult;
 };
 
 function checkAsgSink(block) {
@@ -292,6 +298,9 @@ function checkAsgSink(block) {
 	return result;
 }
 
+/* Get binary expression identifiers 
+ * @param { Object.AstBlock } block contains the esprima parsed representation of binary expression.
+ */
 function getBinaryMembers(block) {
 	members = [];
 

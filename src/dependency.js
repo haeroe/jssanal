@@ -1,5 +1,5 @@
 var Identifier = require('./identifier');
-var Config     = require('./configuration');
+//var Config     = require('./configuration');
 var _          = require('./npm/underscore/1.4.2/package/underscore.js');
 var fs         = require('fs');
 
@@ -58,20 +58,27 @@ function readLine(loc, linenumber) {
  */
 Dependency.prototype.resolve = function( context ) {
 	var safe = true;
-	if( this.type === 'variable' ){
+
+    if( this.type === 'param' ){ // located as a function parameter??
+        return false;
+    }
+    if( this.type === 'variable' || this.type === 'property' ){
+
 		var rloc = this.realLocation;
 		if( rloc === undefined || rloc.length === 0)
 			return false;
-
+        
 		for(var i = 0; i < rloc.length; i++){
 			safe = safe && rloc[ i ].resolve( context );
 		}
 		return safe;
 	}
 
-	if( this.type !== 'call')
+	if( this.type !== 'call'){
 		return true;
-	// get call depedencies
+    }
+	
+    // get call dependencies
 	if ( this.realLocation === undefined ) {
 		safe = false;	
 	}
@@ -79,7 +86,7 @@ Dependency.prototype.resolve = function( context ) {
 		for(var i = 0; i < this.realLocation.length; i++){
 
 			var rloc = this.realLocation[ i ];
-			//console.log('resolve call', this.identifier);
+			//console.log('resolve call: ' + this.identifier + ' rloc.id: ' + rloc.identifier);
 
 			if(rloc === undefined)
 				continue;
@@ -94,6 +101,7 @@ Dependency.prototype.resolve = function( context ) {
 				for(var p = 0; p < this.argumentList.length; p++){
 					var argumentSafety = true;
 					var argument = this.argumentList[ p ];
+
 					for (var j = 0; j < argument.length; j++){
 						argumentSafety = argumentSafety && argument[ j ].resolve( context );
 					}
@@ -102,14 +110,15 @@ Dependency.prototype.resolve = function( context ) {
 
 					tmpAllSafe = tmpAllSafe && argumentSafety;
 				}
-				//console.log('wut', functionObject.name);	
+				
+                //console.log('wut', functionObject.name);
 				var paramObject = functionObject.resolveDependencies();
 				//console.log("returns safe ", this.identifier, paramObject.returnsSafe);
-				if(paramObject.returnsSafe === false){
+                if(paramObject.returnsSafe === false){
 					safe = false;
 				}
-				if( rloc.sink === true ) {
 
+				if( rloc.sink === true ){
 					var line = readLine(this.block.loc, this.block.callee.loc.start.line);
 
 					var result_object = {
@@ -136,9 +145,9 @@ Dependency.prototype.resolve = function( context ) {
 /*
  * Generates a new dependency object from a parameter 
  *		and pushes it to the list of dependencies.
- * param { string } index is the variable name.
- * param { Object.Block } context contains the 'parent' context.
- * param { Array.Dependency } list of dependencies for appending the results.
+ * @param { string } index is the variable name.
+ * @param { Object.Block } context contains the 'parent' context.
+ * @param { Array.Dependency } list of dependencies for appending the results.
  */
 function fromParameter( index, context, list ){
 	var id = index;
@@ -152,7 +161,9 @@ function fromParameter( index, context, list ){
  * Recursive search for finding a variable from the parent context.
  * @param { string } id which the variable had when it was first met.
  * @param { Object.AstBlock } context esprima block where the variable search begins.
- * @return { string } The actual id of the found variable, undefined if not found.
+ * @return { FunctionObject.variables[Depedency1,..,DependencyN] } 
+ *         list of the depedencies for the variable given in parent context.
+ *         Undefined if the variable id was not found. 
  */
 function findVariable( id, context ){
 	if( context.variables[ id ] !== undefined ){
@@ -174,7 +185,7 @@ function findVariable( id, context ){
 function fromBlock( block, context, list ){
 	var args, d, id, type;
 
-	if (block === null || list == null){
+	if (block === null || list === null || list === undefined || (list instanceof Array) === false){
 		return;
 	}
     else if (block.type === "Literal"){
@@ -207,6 +218,20 @@ function fromBlock( block, context, list ){
 		d = new Dependency( id, type, args );
 		list.push( d );
 	}
+    else if(block.type === "BinaryExpression"){
+        fromBlock(block.left, context, list);
+        fromBlock(block.right, context, list);
+    }
+    else if(block.type === "MemberExpression"){
+        id = Identifier.parseObjectId( block );
+        type = 'property'
+
+        args = {};
+		args.realLocation = findVariable( id, context );
+		
+        d = new Dependency( id, type, args );
+		list.push( d );
+    }    
     //else if (block.type === "BinaryExpression"){
 		/*// TODO (properly)
 		type = 'binary';
