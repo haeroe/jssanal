@@ -108,18 +108,18 @@ Analyzer.prototype.process = function(){
 
     combined_ast.functionObject.resolveDependencies();
     
-		if (this.functionList.length != 0) { // todo: excluding the default sink calls
+    if (this.functionList.length != 0) {
         console.log('==============================\nUntested functions:\n==============================');
         var untested;
         for (var i = 0; i < this.functionList.length; i++) {
             if ( this.functionList[i].resolved === 0 && this.functionList[i].block.sink !== true) {
                 console.log( '  ' + this.functionList[i].name + '()');
                 untested = true;
-								this.functionList[i].resolveDependencies();
-			}
+                this.functionList[i].resolveDependencies();
+            }
         }
         if (!untested) {
-            console.log( '  All function declarations were analyzed.'	);
+            console.log('  All function declarations were analyzed.  ');
         }
     }
 };

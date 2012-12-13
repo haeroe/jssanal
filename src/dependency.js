@@ -32,18 +32,23 @@ function Dependency(id, type, args){
  * @return { string } The actual line read from the input.
  */
 function readLine(loc, linenumber) {
-	if (loc.file === undefined ) {
-	   return 'test';
-	}
-    if (loc.file.substr(0,4) === 'url#') { // TODO: read remote file via wget
-       return loc.file; 
+    if (loc.file === undefined ) { 
+        return 'test';
     }
-	file = fs.readFileSync(loc.file, 'utf8');
+    var filename = loc.file;
+    if (loc.file.substr(0,4) === 'url#') {
+        var DOWNLOAD_DIR = './url_downloads/';
+        if ( fs.existsSync(DOWNLOAD_DIR) === false ) {
+            return loc.file; 
+        }    
+        filename = DOWNLOAD_DIR + loc.file.substr(4); 
+    }
+    file = fs.readFileSync(filename, 'utf8');
     var lines = file.split("\n");
-	if(linenumber-1 > lines.length){
-		return;
-	}		
-	return lines[linenumber-1];
+    if(linenumber-1 > lines.length){
+        return;
+    }		
+    return lines[linenumber-1];
 }
 
 /*

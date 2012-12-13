@@ -10,8 +10,8 @@ var isFindAll = false;
 
 // parse command line arguments
 // usage:
-// node urlFinder.js url http://www.cs.helsinki.fi/u/kkaaria/oma.js
-// node urlFinder url http://www.cs.helsinki.fi/u/kkaaria/*.js
+//  node urlFinder.js url http://www.cs.helsinki.fi/u/kkaaria/oma.js
+//  node urlFinder url http://www.cs.helsinki.fi/u/kkaaria/*.js
 process.argv.forEach(function(val, index) {
     'use strict';
 
