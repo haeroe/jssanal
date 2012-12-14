@@ -42,7 +42,7 @@ function FunctionObject( block, parent, analyzer ){
     this.getVariables( block );
     this.getDependencies( block );
     this.getCalls( block );
-    
+
     this.analyzer.addFun( this );
 };
 
@@ -89,7 +89,7 @@ FunctionObject.prototype.getVariables = function( block ){
             }
             return;
         }
-        // if variable was not declared ?
+        // if variable was not declared only assigned -> globals
         if(block.type === "AssignmentExpression" && block.left.type === "Identifier"){
             var identifier = Identifier.parse( block.left );
 
@@ -122,19 +122,18 @@ FunctionObject.prototype.getDependencies = function( block ){
             for(var i = 0, len = block.declarations.length; i < len; ++i){
                 var declarator = block.declarations[ i ];
                 var left = Identifier.parse( declarator.id );
-                
+            
+                Dependency.fromBlock( declarator.init, this, this.variables[left] );
                 // right-hand binary expressions
-                if(declarator.init !== null &&
-                   declarator.init.type !== null && 
-                   declarator.init.type === "BinaryExpression"){
+                /*if(declarator.init.type === "BinaryExpression"){
                     var members = getBinaryMembers(declarator.init);
                     
-                    for(var member in members) {
-                        Dependency.fromBlock( member, this, this.variables[left] );
-                    }
+                    members.forEach(function(obj){
+                        Dependency.fromBlock( obj, this, this.variables[left] );
+                    });
                 }else{
                     Dependency.fromBlock( declarator.init, this, this.variables[left] );
-                }
+                }*/
             }
 			return;
         }
@@ -149,21 +148,16 @@ FunctionObject.prototype.getDependencies = function( block ){
 		}
 		if(block.type === "AssignmentExpression"){
 			var left = Identifier.parse(block.left);
-			
-			if(block.right.type === "BinaryExpression"){
+
+            Dependency.fromBlock( block.right, this, this.variables[left] );
+			/*if(block.right.type === "BinaryExpression"){
 				var members = getBinaryMembers(block.right);
-				
-				for(var member in members) {
-					Dependency.fromBlock( member, this, this.variables[left] );
-				}
-            // dependencies for left-hand side object properties
-            } else if(block.left.type === "MemberExpression"){  
-                var identifier = Identifier.parseObjectId( block.left );
-                
-                Dependency.fromBlock( block.right, this, this.variables[identifier] );
-			} else{
+                members.forEach(function(obj){
+					Dependency.fromBlock( obj, this, this.variables[left] );
+                });
+            }else{
                 Dependency.fromBlock( block.right, this, this.variables[left] );
-			}
+			}*/
 		
             // find assignment sinks
 			var result_object = {
@@ -202,7 +196,6 @@ FunctionObject.prototype.getCalls = function( block ) {
 		return;
 
 	if(block !== this.block){
-        // console.log(block.type);
 		if( block.type === "FunctionDeclaration" ) {
 			return;
 		}
@@ -298,9 +291,7 @@ function checkAsgSink(block) {
 	return result;
 }
 
-/* Get binary expression identifiers 
- * @param { Object.AstBlock } block contains the esprima parsed representation of binary expression.
- */
+/*
 function getBinaryMembers(block) {
 	members = [];
 
@@ -330,5 +321,6 @@ function getBinaryMembers(block) {
 	}
 	return members;
 }
+*/
 
 module.exports = FunctionObject;

@@ -190,7 +190,7 @@ function fromBlock( block, context, list ){
     else if (block.type === "Identifier"){
 		id = Identifier.parse(block);
 		type = "variable";
-		
+
 		args = {};
 		args.realLocation = findVariable( id, context );
 
@@ -219,7 +219,7 @@ function fromBlock( block, context, list ){
         fromBlock(block.right, context, list);
     }
     else if(block.type === "MemberExpression"){
-        id = Identifier.parseObjectId( block );
+        id = Identifier.parse( block );
         type = 'property'
 
         args = {};
@@ -242,12 +242,12 @@ function fromBlock( block, context, list ){
 		list.push( d );*/
 	//}
     else if (block.type === "CallExpression"){
-		id   = Identifier.parse(block.callee);
-		type = "call";
+		id   = (Identifier.parse(block.callee)).split('.').pop(); // currently only sink property of member funcs saved on realLocation
+		type = "call"
 		args = { argumentList: [], block: block };
 		
         //block.arguments comes from parserAPI
-		for(var i = 0; i < block.arguments.length; i++) {
+		for(var i = 0; i < block.arguments.length; i++){
 			var argument = [];
 			fromBlock( block.arguments[ i ], context, argument );
 			args.argumentList.push( argument );
