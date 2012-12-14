@@ -1,9 +1,12 @@
 var tUtil = require('./testUtils');
 
-var doVersatile    = true;
-var groupTestTitle = 'SIDE_TEST';
+var doVersatile      = true;
+var GROUP_TEST_TITLE = 'SIDE_TEST';
 
-// Tests to be added 
+//
+// Unit tests considered and/or to be added 
+//
+
 exports['SIDE_TEST'] = {
 
     setUp: function(callback) {
@@ -19,13 +22,42 @@ exports['SIDE_TEST'] = {
 
         var testOk = (results.safeSinkCalls.length === 0) &&
                      (results.unresolvedCalls.length === 0) &&
-                     (results.unsafeSinkCalls.length === 0) &&
+                     (results.unsafeSinkCalls.length !== 0) &&
                      (results.recursiveExpressions.length === 0) &&
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            tUtil.printTestOK(groupTestTitle, 
+            tUtil.printTestOK(GROUP_TEST_TITLE, 
                               'MemberFunctionSinkAssignmentOfUnInitializedVariable', 
+                              undefined, script, doVersatile);
+        }
+
+        test.expect(1);
+        test.ok(testOk, "message: 'parse crash'    test source:[" + script + "]");
+        test.done();
+    },
+    'OneUnsafeAndTwoSafeEvalCallsinThreeFunctions': function(test) {
+        var script = 'function myfunction1(txt1){ eval(txt1); } \n' +
+                     'function myfunction2(txt2){ eval(txt2); } \n' +
+                     'function myfunction3(txt3){ eval(txt3); } \n' +
+                     'function test() { \n' +
+                     '   myfunction1("123"); \n' +
+                     '   var x = "456"; \n' +
+                     '   myfunction2(x); \n' + 
+                     '   var y = getUserInput(x); \n' +
+                     '   myfunction3(y); \n' +
+                     '}';
+        var results = tUtil.analyze(script);
+
+        var testOk = (results.safeSinkCalls.length !== 0) &&
+                     (results.unresolvedCalls.length === 0) &&
+                     (results.unsafeSinkCalls.length !== 0) &&
+                     (results.recursiveExpressions.length === 0) &&
+                     (results.unsafeAssignments.length === 0) &&
+                     (results.safeAssignments.length === 0);
+        if(testOk) {
+            tUtil.printTestOK(GROUP_TEST_TITLE,  
+                              'OneUnsafeAndTwoSafeEvalCallsinThreeFunctions',
                               undefined, script, doVersatile);
         }
 
@@ -34,7 +66,7 @@ exports['SIDE_TEST'] = {
         test.done();
     }/*,
     ' ': function(test) {
-        var script = ' ';
+        var script = '  ';
         var results = tUtil.analyze(script);
 
         var testOk = (results.safeSinkCalls.length === 0) &&
@@ -45,26 +77,7 @@ exports['SIDE_TEST'] = {
                      (results.safeAssignments.length === 0);
         if(testOk) {
             tUtil.printTestOK(groupTestTitle, 
-                              ' ', 
-                              undefined, script, doVersatile);
-        }
-
-        test.expect(1);
-        test.ok(testOk, "message: 'parse crash'    test source:[" + script + "]");
-        test.done();
-    },
-    'Array Initializer': function(test) {
-        var script = 'x = []; x = [ 42 ]; x = [ ,, 42 ]; x = [ 1, 2, 3, ];';
-        var results = tUtil.analyze(script);
-
-        var testOk = (results.safeSinkCalls.length === 0) &&
-                     (results.unresolvedCalls.length === 0) &&
-                     (results.unsafeSinkCalls.length === 0) &&
-                     (results.recursiveExpressions.length === 0) &&
-                     (results.unsafeAssignments.length === 0) &&
-                     (results.safeAssignments.length === 0);
-        if(testOk) {
-            tUtil.printTestOK(groupTestTitle, 'Array Initializer', 
+                              'Test to be added', 
                               undefined, script, doVersatile);
         }
 
