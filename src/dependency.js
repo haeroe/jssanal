@@ -37,11 +37,7 @@ function readLine(loc, linenumber) {
     }
     var filename = loc.file;
     if (loc.file.substr(0,4) === 'url#') {
-        var DOWNLOAD_DIR = './url_downloads/';
-        if ( fs.existsSync(DOWNLOAD_DIR) === false ) {
-            return loc.file; 
-        }    
-        filename = DOWNLOAD_DIR + loc.file.substr(4); 
+        filename = loc.file.substr(4); 
     }
     file = fs.readFileSync(filename, 'utf8');
     var lines = file.split("\n");

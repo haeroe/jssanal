@@ -6,6 +6,8 @@ var analyzer  = new (require('./analyzer'))();
 var jsfinder  = require('./jsfinder');
 var urlfinder = require('./urlFinder');
 
+
+var DOWNLOAD_DIR = './url_downloads/';
 var currUrl;
 var remaining = 0;
 
@@ -68,9 +70,9 @@ function parseFilename(file_name) {
 
 // callback
 function parseUrlDataCb(result) {
-    storeToFile(result); // store results to file
-    
-    var ast = astRecurse(result, "url#" + currUrl);
+    var filepath = storeToFile(result); // store results to file
+  
+    var ast = astRecurse(result, "url#" + filepath);
     analyzer.add(ast);
     
     if(remaining === 1) {
@@ -82,19 +84,20 @@ function parseUrlDataCb(result) {
 }
 
 function storeToFile(result) {
-    var ret = true;
+    var ret = 'all.js';
     try {
-        var DOWNLOAD_DIR = './url_downloads/';
         if ( fs.existsSync(DOWNLOAD_DIR) === false ) {
             fs.mkdirSync(DOWNLOAD_DIR, 0750);
-        } 
+        }
         var filename = url.parse(currUrl).pathname.split('/').pop();
-        fs.writeFileSync(filename, result);
-        return ret;
+        filename = ((filename === '*.js') ? 'all.js' : filename);
+        var filepath = DOWNLOAD_DIR + filename;
+        fs.writeFileSync(filepath, result);
+        return filepath;
     } catch(e) {
         console.log('Failed to create directory ' + DOWNLOAD_DIR + ': ' + e);    
     }    
-    return false;
+    return ret;
 }    
 
 function astRecurse(rawdata, filename) {
