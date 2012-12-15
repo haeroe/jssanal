@@ -3,7 +3,6 @@ var Identifier = require('./identifier');
 var _          = require('./npm/underscore/1.4.2/package/underscore.js');
 var fs         = require('fs');
 
-
 /*
  * Initializes a new Dependency object.
  * @param { string } id textual representation parsed for the depedency. eg. 'variableB'.
@@ -21,6 +20,8 @@ function Dependency(id, type, args){
     this.argumentList = args.argumentList;
     this.sink = args.sink;
     this.realLocation = args.realLocation;
+
+    this.callerName = args.contextName;
 
     this.resolved = false;
 }
@@ -56,14 +57,19 @@ Dependency.prototype.resolve = function( context ) {
 	var safe = true;
 
     if( this.type === 'param' ){ // located as a function parameter??
-        return false;
+        return true;
     }
     if( this.type === 'variable' || this.type === 'property' ){
-
-		var rloc = this.realLocation;
-		if( rloc === undefined || rloc.length === 0)
-			return false;
         
+		var rloc = this.realLocation;
+		//if( rloc === undefined || rloc.length === 0)
+		//	return false;
+       
+		if( rloc === undefined )
+	        return false;
+		if( rloc.length === 0 )
+	        return true;
+            
 		for(var i = 0; i < rloc.length; i++){
 			safe = safe && rloc[ i ].resolve( context );
 		}
@@ -82,7 +88,6 @@ Dependency.prototype.resolve = function( context ) {
 		for(var i = 0; i < this.realLocation.length; i++){
 
 			var rloc = this.realLocation[ i ];
-			//console.log('resolve call: ' + this.identifier + ' rloc.id: ' + rloc.identifier);
 
 			if(rloc === undefined)
 				continue;
@@ -90,7 +95,7 @@ Dependency.prototype.resolve = function( context ) {
 			if(rloc.type === "function") {
 
 				var functionObject = rloc.block.functionObject;
-
+                
 				var tmpAllSafe = true;
 
 				var argumentSafetyList = [];
@@ -100,16 +105,50 @@ Dependency.prototype.resolve = function( context ) {
 
 					for (var j = 0; j < argument.length; j++){
 						argumentSafety = argumentSafety && argument[ j ].resolve( context );
-					}
-					//console.log(argumentSafety);
+				
+                        // find sink call argument origin         
+                        if(rloc.sink === true){
+
+                            var rootFo = functionObject;
+                            while(rootFo.parent !== undefined){
+                                rootFo = rootFo.parent;    
+                            }
+                            // find func arguments sinked into sink func            
+                            function findCallerIdArgs(id, rootCalls){
+                                var rList = [[]];
+                                // it's recursion
+                                if (id === '0wrapper'){
+                                    return rList;
+                                }
+                                for (var m in rootCalls){
+                                    if(rootCalls[m].identifier !== id){
+                                       for (var n in rootCalls[m].realLocation){
+                                            if (rootCalls[m].realLocation[n].block.type === 'FunctionDeclaration'){
+                                                var nextCalls = rootCalls[m].realLocation[n].block.functionObject.functionCalls;
+                                                rList = findCallerIdArgs(id, nextCalls);
+                                            }
+                                        }        
+                                    }else{
+                                        return rootCalls[m].argumentList;                
+                                    }
+                                }
+                                return rList;
+                            }
+
+                            var sinkCallArgList = findCallerIdArgs( this.callerName, rootFo.block.functionObject.functionCalls );
+                            if (sinkCallArgList.length > 0 && sinkCallArgList[0].length > 0)
+                                tmpAllSafe = tmpAllSafe && sinkCallArgList[p][j].resolve( context );
+                        }
+                    }
+
 					argumentSafetyList.push( argumentSafety );
 
 					tmpAllSafe = tmpAllSafe && argumentSafety;
 				}
 				
-                //console.log('wut', functionObject.name);
+                //console.log('resolve wut', functionObject.name);
 				var paramObject = functionObject.resolveDependencies();
-				//console.log("returns safe ", this.identifier, paramObject.returnsSafe);
+				//console.log("resolve returns safe ", this.identifier, paramObject.returnsSafe);
                 if(paramObject.returnsSafe === false){
 					safe = false;
 				}
@@ -242,10 +281,13 @@ function fromBlock( block, context, list ){
 		list.push( d );*/
 	//}
     else if (block.type === "CallExpression"){
-		id   = (Identifier.parse(block.callee)).split('.').pop(); // currently only sink property of member funcs saved on realLocation
-		type = "call"
-		args = { argumentList: [], block: block };
-		
+        id   = (Identifier.parse(block.callee))
+        if (id !== undefined) { 
+            id = id.split('.').pop(); // currently only sink property of member funcs saved in realLocation
+		}
+        type = "call"
+		args = { argumentList: [], block: block, contextName: context.name };
+	    
         //block.arguments comes from parserAPI
 		for(var i = 0; i < block.arguments.length; i++){
 			var argument = [];
@@ -254,7 +296,7 @@ function fromBlock( block, context, list ){
 		}
 	
         args.realLocation = findVariable(id, context);
-
+        
 		d = new Dependency( id, type, args );
         list.push( d );
 	}

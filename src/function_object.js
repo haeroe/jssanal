@@ -9,6 +9,7 @@ RESOLVED_VISITED     = 1;
 RESOLVED_DONE        = 2;
 RESOLVED_RECURSION   = 3;
 
+
 /*
  * Generates a function object for representing a single function found in the parsing process.
  * @param { Object.AstBlock } block contains the esprima parsed representation of the function.
@@ -216,7 +217,7 @@ FunctionObject.prototype.getCalls = function( block ) {
  *		and function call ids and finds the sources for each of those.
  */
 FunctionObject.prototype.resolveDependencies = function() {	
-    //console.log('start', this.name );
+    //console.log('\nstart', this.name );
     
     if(this.resolved === RESOLVED_DONE) {
         return this.resolveResult;
@@ -240,22 +241,26 @@ FunctionObject.prototype.resolveDependencies = function() {
 		
     //console.log('main block', this.name );
     //console.log(this.functionCalls.length);	
-	
+
+    var callSafe = true;    
     for(var i = 0; i < this.functionCalls.length; i++){
 	    var call = this.functionCalls[ i ];
-
+        
 	    call.resolve( this );
-	
+
         //if( !call.resolve( this ).recursion ){
         //	return ;
         //}
     }
+
+    // function return depedencies
     var retSafe = true;
     for(i = 0; i < this.returnDependencies.length; i++){
         var ret = this.returnDependencies[i];
         retSafe = retSafe && ret.resolve( this );
         //this.sourceDependencies.push( source );
     }
+    //console.log('retSafe ' + retSafe + ' of ' + this.name);
     
     if(this.resolved === RESOLVED_VISITED){
         this.resolved = RESOLVED_DONE;
