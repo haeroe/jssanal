@@ -40,12 +40,15 @@ exports['SIDE_TEST'] = {
         var script = 'function myfunction1(txt1){ eval(txt1); } \n' +
                      'function myfunction2(txt2){ eval(txt2); } \n' +
                      'function myfunction3(txt3){ eval(txt3); } \n' +
+                     'function myfunction4(txt4){ eval(txt4); } \n' +
                      'function test() { \n' +
                      '   myfunction1("123"); \n' +
                      '   var x = "456"; \n' +
                      '   myfunction2(x); \n' + 
                      '   var y = getUserInput(x); \n' +
                      '   myfunction3(y); \n' +
+                     '   var z = document.url; \n' +
+                     '   myfunction4(z); \n' +
                      '}';
         var results = tUtil.analyze(script);
 
@@ -57,7 +60,7 @@ exports['SIDE_TEST'] = {
                      (results.safeAssignments.length === 0);
         if(testOk) {
             tUtil.printTestOK(GROUP_TEST_TITLE,  
-                              'OneUnsafeAndTwoSafeEvalCallsinThreeFunctions',
+                              'TwoUnsafeAndTwoSafeEvalCallsinThreeFunctions',
                               undefined, script, doVersatile);
         }
 
