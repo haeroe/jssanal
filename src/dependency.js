@@ -3,6 +3,7 @@ var Identifier = require('./identifier');
 var _          = require('./npm/underscore/1.4.2/package/underscore.js');
 var fs         = require('fs');
 
+
 /*
  * Initializes a new Dependency object.
  * @param { string } id textual representation parsed for the depedency. eg. 'variableB'.
@@ -95,16 +96,16 @@ Dependency.prototype.resolve = function( context ) {
 			if(rloc.type === "function") {
 
 				var functionObject = rloc.block.functionObject;
-                
+
 				var tmpAllSafe = true;
 
 				var argumentSafetyList = [];
 				for(var p = 0; p < this.argumentList.length; p++){
-					var argumentSafety = true;
+					//var argumentSafety = true;
 					var argument = this.argumentList[ p ];
 
 					for (var j = 0; j < argument.length; j++){
-						argumentSafety = argumentSafety && argument[ j ].resolve( context );
+						//argumentSafety = argumentSafety && argument[ j ].resolve( context );
 				
                         // find sink call argument origin         
                         if(rloc.sink === true){
@@ -113,6 +114,7 @@ Dependency.prototype.resolve = function( context ) {
                             while(rootFo.parent !== undefined){
                                 rootFo = rootFo.parent;    
                             }
+
                             // find func arguments sinked into sink func            
                             function findCallerIdArgs(id, rootCalls){
                                 var rList = [[]];
@@ -123,10 +125,15 @@ Dependency.prototype.resolve = function( context ) {
                                 for (var m in rootCalls){
                                     if(rootCalls[m].identifier !== id){
                                        for (var n in rootCalls[m].realLocation){
-                                            if (rootCalls[m].realLocation[n].block.type === 'FunctionDeclaration'){
-                                                var nextCalls = rootCalls[m].realLocation[n].block.functionObject.functionCalls;
-                                                rList = findCallerIdArgs(id, nextCalls);
-                                            }
+
+                                           if(rootCalls[m].realLocation[n].type !== 'function'){
+                                                return rList;
+                                           }     
+                                           if (rootCalls[m].realLocation[n].block.type === 'FunctionDeclaration'){
+                                                var nCalls = rootCalls[m].realLocation[n].block.functionObject.functionCalls;
+                                                rList = findCallerIdArgs(id, nCalls);
+                                           }
+
                                         }        
                                     }else{
                                         return rootCalls[m].argumentList;                
@@ -141,9 +148,9 @@ Dependency.prototype.resolve = function( context ) {
                         }
                     }
 
-					argumentSafetyList.push( argumentSafety );
+					//argumentSafetyList.push( argumentSafety );
 
-					tmpAllSafe = tmpAllSafe && argumentSafety;
+					//tmpAllSafe = tmpAllSafe && argumentSafety;
 				}
 				
                 //console.log('resolve wut', functionObject.name);
