@@ -96,7 +96,6 @@ Dependency.prototype.resolve = function( context ) {
 			var functionObject = rloc.block.functionObject;
 
 			var resolvedFunction = functionObject.resolveDependencies();
-
 			if(resolvedFunction.isAlwaysUnsafeSink){
 				var line = readLine(this.block.loc, this.block.callee.loc.start.line);
 
@@ -108,9 +107,7 @@ Dependency.prototype.resolve = function( context ) {
 					trace: context
 				};
 
-				if(allSafe){
-					context.analyzer.results.unsafeSinkCalls.push( result_object );
-				}
+				context.analyzer.results.unsafeSinkCalls.push( result_object );
 			}
 			if(!resolvedFunction.canReturnSafe && !resolvedFunction.argumentSink){
 				return false;
@@ -173,7 +170,7 @@ Dependency.prototype.resolve = function( context ) {
 
 			//console.log('resolve wut', functionObject.name);
 			//console.log("resolve returns safe ", this.identifier, paramObject.returnsSafe);
-			if(paramObject.argumentReturn === true && !allSafe){
+			if(resolvedFunction.argumentReturn === true && !allSafe){
 				safe = false;
 			}
 
