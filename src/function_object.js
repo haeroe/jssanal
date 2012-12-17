@@ -222,17 +222,27 @@ FunctionObject.prototype.resolveDependencies = function() {
     if(this.resolved === RESOLVED_DONE) {
         return this.resolveResult;
     }
-    if(this.resolved === RESOLVED_VISITED){
-        this.resolved = RESOLVED_RECURSION;
-        
-        //console.log('visited', this.name );
-        
-        this.resolveResult = {
-		    returnsSafe: false,
-		    isSink: true
-        }
-        return this.resolveResult;
-    }
+	if(this.resolved === RESOLVED_VISITED){
+		var result_object = {
+			sourceFile: this.block.id.loc.file,
+			lineNumber: this.block.id.loc.start.line,
+			vulnerableLine: "",
+			sink: this.name,
+			trace: undefined
+		};
+		this.analyzer.results.recursiveExpressions.push(result_object);
+			this.resolved = RESOLVED_RECURSION;
+
+		//console.log('visited', this.name );
+
+		this.resolveResult = {
+			canReturnSafe: false,
+			isAlwaysUnsafeSink: true,
+			argumentReturn: false,
+			argumentSink: false
+		}
+		return this.resolveResult;
+	}
     if(this.resolved === RESOLVED_RECURSION){
 	    //console.log('rec', this.name );
         return this.resolveResult;
@@ -266,8 +276,10 @@ FunctionObject.prototype.resolveDependencies = function() {
         this.resolved = RESOLVED_DONE;
         
         this.resolveResult = {
-            returnsSafe: retSafe,
-            isSink: false
+			canReturnSafe: true,
+			isAlwaysUnsafeSink: false,
+			argumentReturn: retSafe,
+			argumentSink: false
         }
     }
     return this.resolveResult;
