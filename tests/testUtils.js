@@ -1,7 +1,7 @@
 'use strict';
 
 function analyze(str) {
-    var esprima  = require('esprima');
+    var esprima  = require('../src/npm/esprima/1.0.2/package/esprima');
     var analyzer = new (require('../src/analyzer'))();
     var ast      = esprima.parse(str, {loc: true, range: true, raw: true, token: true} ); 
     analyzer.add(ast);

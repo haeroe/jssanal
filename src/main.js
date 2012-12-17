@@ -1,4 +1,4 @@
-var esprima   = require('./npm/esprima/1.0.2/package/esprima');
+var esprima   = require('./npm/esprima/1.0.2/package/esprima.js');
 var fs        = require('fs');
 var util      = require('./npm/formidable/1.0.11/package/lib/util');
 var url       = require('url');
