@@ -27,8 +27,10 @@ function FunctionObject( block, parent, analyzer ){
     this.returnDependencies = [];
     this.sourceDependencies = [];
     this.functionCalls = [];
+
+   	this.currentArguments = {};
     
-    this.analyzer = analyzer;
+	this.analyzer = analyzer;
     
     this.resolved = RESOLVED_NOT_VISITED;
     this.resolveResult = {};
@@ -252,15 +254,11 @@ FunctionObject.prototype.resolveDependencies = function() {
     //console.log('main block', this.name );
     //console.log(this.functionCalls.length);	
 
-    var callSafe = true;    
     for(var i = 0; i < this.functionCalls.length; i++){
 	    var call = this.functionCalls[ i ];
         
 	    call.resolve( this );
 
-        //if( !call.resolve( this ).recursion ){
-        //	return ;
-        //}
     }
 
     // function return depedencies

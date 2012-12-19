@@ -19,8 +19,8 @@ function Dependency(id, type, args){
         args = {};
     this.block = args.block;
     this.argumentList = args.argumentList;
-    this.sink = args.sink;
     this.realLocation = args.realLocation;
+	this.sink = args.sink;
 
     this.callerName = args.contextName;
 
@@ -91,108 +91,122 @@ Dependency.prototype.resolve = function( context ) {
 		if(rloc === undefined)
 			continue;
 
+		var functionObject;
+
+		if(rloc.type === "param"){
+
+			rloc = context.currentArguments[rloc.identifier][0].realLocation[0];
+		}
 		if(rloc.type === "function") {
 
-			var functionObject = rloc.block.functionObject;
+			functionObject = rloc.block.functionObject;
+		} else {
+			continue;
+		}
+		functionObject.currentArguments = this.argumentList;
 
-			var resolvedFunction = functionObject.resolveDependencies();
-			if(resolvedFunction.isAlwaysUnsafeSink){
-				var line = readLine(this.block.loc, this.block.callee.loc.start.line);
+		var resolvedFunction = functionObject.resolveDependencies();
+		if(resolvedFunction.isAlwaysUnsafeSink){
+			var line = readLine(this.block.loc, this.block.callee.loc.start.line);
 
-				var result_object = {
-					sourceFile: this.block.loc.file,
-					lineNumber: this.block.callee.loc.start.line,
-					vulnerableLine: line,
-					sink: rloc.identifier,
-					trace: context
-				};
+			var result_object = {
+				sourceFile: this.block.loc.file,
+				lineNumber: this.block.callee.loc.start.line,
+				vulnerableLine: line,
+				sink: rloc.identifier,
+				trace: context
+			};
 
-				context.analyzer.results.unsafeSinkCalls.push( result_object );
-			}
-			if(!resolvedFunction.canReturnSafe && !resolvedFunction.argumentSink){
-				return false;
-			}
+			context.analyzer.results.unsafeSinkCalls.push( result_object );
+		}
+		if(!resolvedFunction.canReturnSafe && !resolvedFunction.argumentSink){
+			return false;
+		}
+	
 
-			var allSafe = true;
+		var allSafe = true;
 
-			var argumentSafetyList = [];
-			for(var p = 0; p < this.argumentList.length; p++){
-				//var argumentSafety = true;
-				var argument = this.argumentList[ p ];
+		var argumentSafetyList = [];
+		for(var p = 0; p < this.argumentList.length; p++){
+			//var argumentSafety = true;
+			var argument = this.argumentList[ p ];
 
-				for (var j = 0; j < argument.length; j++){
-					//argumentSafety = argumentSafety && argument[ j ].resolve( context );
+			for (var j = 0; j < argument.length; j++){
 
-					// find sink call argument origin         
-					if(rloc.sink === true){
-						var rootFo = functionObject;
-						while(rootFo.parent !== undefined){
-							rootFo = rootFo.parent;    
-						}
+				//argumentSafety = argumentSafety && argument[ j ].resolve( context );
 
-						// find func arguments sinked into sink func            
-						function findCallerIdArgs(id, rootCalls){
-							var rList = [[]];
-							// it's recursion
-							if (id === '0wrapper'){
-								return rList;
-							}
-							for (var m in rootCalls){
-								if(rootCalls[m].identifier !== id){
-									for (var n in rootCalls[m].realLocation){
+				// find sink call argument origin         
+				if(rloc.sink === true){
+					var rootFo = functionObject;
+					while(rootFo.parent !== undefined){
+						rootFo = rootFo.parent;    
+					}
 
-										if(rootCalls[m].realLocation[n].type !== 'function'){
-											return rList;
-										}     
-										if (rootCalls[m].realLocation[n].block.type === 'FunctionDeclaration'){
-											var nCalls = rootCalls[m].realLocation[n].block.functionObject.functionCalls;
-											rList = findCallerIdArgs(id, nCalls);
-										}
-
-									}        
-								}else{
-									return rootCalls[m].argumentList;                
-								}
-							}
+					// find func arguments sinked into sink func            
+					function findCallerIdArgs(id, rootCalls){
+						var rList = [[]];
+						// it's recursion
+						if (id === '0wrapper'){
 							return rList;
 						}
+						for (var m in rootCalls){
+							if(rootCalls[m].identifier !== id){
+								for (var n in rootCalls[m].realLocation){
 
-						var sinkCallArgList = findCallerIdArgs( this.callerName, rootFo.block.functionObject.functionCalls );
-						if (sinkCallArgList.length > 0 && sinkCallArgList[0].length > 0)
-							allSafe = allSafe && sinkCallArgList[p][j].resolve( context );
+									if(rootCalls[m].realLocation[n].type !== 'function'){
+										return rList;
+									}     
+									if (rootCalls[m].realLocation[n].block.type === 'FunctionDeclaration'){
+										var nCalls = rootCalls[m].realLocation[n].block.functionObject.functionCalls;
+										rList = findCallerIdArgs(id, nCalls);
+									}
+
+								}        
+							}else{
+								return rootCalls[m].argumentList; 
+							}
+						}
+						return rList;
 					}
+
+					var sinkCallArgList = findCallerIdArgs( this.callerName, rootFo.block.functionObject.functionCalls );
+					if (sinkCallArgList.length > 0 && sinkCallArgList[0].length > 0)
+						allSafe = allSafe && sinkCallArgList[p][j].resolve( context );
 				}
-
-				//argumentSafetyList.push( argumentSafety );
-
-				//tmpAllSafe = tmpAllSafe && argumentSafety;
 			}
 
-			//console.log('resolve wut', functionObject.name);
-			//console.log("resolve returns safe ", this.identifier, paramObject.returnsSafe);
-			if(resolvedFunction.argumentReturn === true && !allSafe){
-				safe = false;
-			}
+			//argumentSafetyList.push( argumentSafety );
 
-			if( rloc.sink === true ){
-				var line = readLine(this.block.loc, this.block.callee.loc.start.line);
+			//tmpAllSafe = tmpAllSafe && argumentSafety;
+		}
 
-				var result_object = {
-					sourceFile: this.block.loc.file,
-					lineNumber: this.block.callee.loc.start.line,
-					vulnerableLine: line,
-					sink: rloc.identifier,
-					trace: context
-				};
+		//console.log('resolve wut', functionObject.name);
+		//console.log("resolve returns safe ", this.identifier, paramObject.returnsSafe);
+		if(resolvedFunction.argumentReturn === true && !allSafe){
+			safe = false;
+		}
+		//console.log(rloc);
+		//console.log(rloc.identifier, rloc.sink);
 
-				if(allSafe){
-					context.analyzer.results.safeSinkCalls.push( result_object );
-				}else{
-					context.analyzer.results.unsafeSinkCalls.push( result_object );
-				}
+		if( rloc.sink === true ){
+			var line = readLine(this.block.loc, this.block.callee.loc.start.line);
+
+			var result_object = {
+				sourceFile: this.block.loc.file,
+				lineNumber: this.block.callee.loc.start.line,
+				vulnerableLine: line,
+				sink: rloc.identifier,
+				trace: context
+			};
+
+			if(allSafe){
+				context.analyzer.results.safeSinkCalls.push( result_object );
+			}else{
+				context.analyzer.results.unsafeSinkCalls.push( result_object );
 			}
 		}
 	}
+	
 
 	return safe;
 };
