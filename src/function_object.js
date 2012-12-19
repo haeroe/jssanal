@@ -127,16 +127,6 @@ FunctionObject.prototype.getDependencies = function( block ){
                 var left = Identifier.parse( declarator.id );
             
                 Dependency.fromBlock( declarator.init, this, this.variables[left] );
-                // right-hand binary expressions
-                /*if(declarator.init.type === "BinaryExpression"){
-                    var members = getBinaryMembers(declarator.init);
-                    
-                    members.forEach(function(obj){
-                        Dependency.fromBlock( obj, this, this.variables[left] );
-                    });
-                }else{
-                    Dependency.fromBlock( declarator.init, this, this.variables[left] );
-                }*/
             }
 			return;
         }
@@ -153,14 +143,6 @@ FunctionObject.prototype.getDependencies = function( block ){
 			var left = Identifier.parse(block.left);
 
             Dependency.fromBlock( block.right, this, this.variables[left] );
-			/*if(block.right.type === "BinaryExpression"){
-				var members = getBinaryMembers(block.right);
-                members.forEach(function(obj){
-					Dependency.fromBlock( obj, this, this.variables[left] );
-                });
-            }else{
-                Dependency.fromBlock( block.right, this, this.variables[left] );
-			}*/
 		
             // find assignment sinks
 			var result_object = {
@@ -259,7 +241,6 @@ FunctionObject.prototype.resolveDependencies = function() {
 	    var call = this.functionCalls[ i ];
         
 	    call.resolve( this );
-
     }
 
     // function return dependencies

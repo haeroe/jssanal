@@ -3,7 +3,6 @@ var Identifier = require('./identifier');
 var _          = require('./npm/underscore/1.4.2/package/underscore.js');
 var fs         = require('fs');
 
-
 /*
  * Initializes a new Dependency object.
  * @param { string } id textual representation parsed for the depedency. eg. 'variableB'.
@@ -93,11 +92,14 @@ Dependency.prototype.resolve = function( context ) {
 		var functionObject;
 
 		if(rloc.type === "param"){
+		
+            if (context.currentArguments[rloc.identifier] !== undefined &&
+                context.currentArguments[rloc.identifier].length !== 0){
 
-			rloc = context.currentArguments[rloc.identifier][0].realLocation[0];
+                rloc = context.currentArguments[rloc.identifier][0].realLocation[0];
+            }
 		}
 		if(rloc.type === "function") {
-
 			functionObject = rloc.block.functionObject;
 		} else {
 			continue;
@@ -136,8 +138,8 @@ Dependency.prototype.resolve = function( context ) {
 
 				// find sink call argument origin         
 				if(rloc.sink === true){
-					var rootFo = functionObject;
-					while(rootFo.parent !== undefined){
+
+					var rootFo = functionObject; while(rootFo.parent !== undefined){
 						rootFo = rootFo.parent;    
 					}
 
@@ -159,65 +161,19 @@ Dependency.prototype.resolve = function( context ) {
 										var nCalls = rootCalls[m].realLocation[n].block.functionObject.functionCalls;
 										rList = findCallerIdArgs(id, nCalls);
 									}
-
 								}        
 							}else{
 								return rootCalls[m].argumentList; 
 							}
 						}
 						return rList;
-
-						// find sink call argument origin         
-						if(rloc.sink === true){
-
-							var rootFo = functionObject;
-							while(rootFo.parent !== undefined){
-								rootFo = rootFo.parent;    
-							}
-
-							// find func arguments sinked into sink func            
-							function findCallerIdArgs(id, funcCalls){
-								var rList = [];
-
-								// it's recursion
-								if (id === '0wrapper'){
-									return rList;
-								}
-								for (var m in funcCalls){
-
-									if(funcCalls[m].identifier !== id){
-										for (var n in funcCalls[m].realLocation){
-
-											if(funcCalls[m].realLocation[n].type !== 'function'){i
-												continue;
-											}    
-											//if(funcCalls[m].realLocation[n].block.functionObject.resolved !== 2){ //unresolved func
-											//    continue;
-											//}
-											if(funcCalls[m].realLocation[n].block.type === 'FunctionDeclaration'){
-												var nCalls = funcCalls[m].realLocation[n].block.functionObject.functionCalls;
-												rList = findCallerIdArgs(id, nCalls);
-											}
-
-										}        
-									}else{
-										return funcCalls[m].argumentList; // found id                
-									}
-								}
-								return rList;
-							}
-
-							var callArgsList = findCallerIdArgs( this.callerId, rootFo.block.functionObject.functionCalls );
-
-							if (callArgsList.length > 0 && callArgsList[0].length > 0){
-								allSafe = allSafe && callArgsList[p][j].resolve( context );
-							}
-						}
-
-						var sinkCallArgList = findCallerIdArgs( this.callerName, rootFo.block.functionObject.functionCalls );
-						if (sinkCallArgList.length > 0 && sinkCallArgList[0].length > 0)
-							allSafe = allSafe && sinkCallArgList[p][j].resolve( context );
-					}
+                    }
+                    
+                    var callArgsList = findCallerIdArgs( this.callerId, rootFo.block.functionObject.functionCalls );
+                    
+                    if (callArgsList.length > 0 && callArgsList[0].length > 0){
+                        allSafe = allSafe && callArgsList[p][j].resolve( context );
+                    }
 				}
 
 				//argumentSafetyList.push( argumentSafety );
@@ -346,23 +302,10 @@ function fromBlock( block, context, list ){
         d = new Dependency( id, type, args );
 		list.push( d );
     }    
-    //else if (block.type === "BinaryExpression"){
-		/*// TODO (properly)
-		type = 'binary';
-		var binList = {};
-		
-		fromBlock( block.left, undefined, binList );
-		fromBlock( block.right, undefined, binList );
-
-		id = block.operator;
-		d = new Dependency( id, type, binList );
-		console.log(binList);
-		list.push( d );*/
-	//}
     else if (block.type === "CallExpression"){
         id   = (Identifier.parse(block.callee))
         if (id !== undefined) { 
-            id = id.split('.').pop(); // currently only sink property of member funcs saved in realLocation
+            id = id.split('.').pop(); // currently only property of object member funcs saved in realLocation
 		}
         type = "call"
 		args = { argumentList: [], block: block, contextId: context.name };
