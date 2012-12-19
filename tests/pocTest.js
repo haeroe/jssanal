@@ -211,8 +211,8 @@ exports['POC_TEST'] = {
   'testMultipleDifferentPossibleValuesForUnresolvedFunction': function(test) {
     var script    = "var x=123; x=unknown1(); alert(unknown2(x))";
     var results   = tUtil.analyze(script);
-    var condition = (results.unresolvedCalls.length !== 0 &&    
-                     results.unsafeSinkCalls.length === 0); //?
+    var condition = (results.unresolvedCalls.length === 0 &&    
+                     results.unsafeSinkCalls.length !== 0); 
 
     if (condition) { 
         tUtil.printTestOK(testGroupTitle, 
@@ -278,8 +278,8 @@ exports['POC_TEST'] = {
     var script    = "function f() { return obj; } f().method(123);";
     var results   = tUtil.analyze(script);
     //var condition = (results.unresolvedCalls.length !== 0);    
-    var condition = (results.unresolvedCalls.length !== 0 && 
-                     results.unsafeSinkCalls.length === 0 && 
+    var condition = (results.unresolvedCalls.length === 0 && 
+                     results.unsafeSinkCalls.length !== 0 && 
                      results.safeSinkCalls.length === 0);
     
     if (condition) { 

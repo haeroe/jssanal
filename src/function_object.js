@@ -250,7 +250,6 @@ FunctionObject.prototype.resolveDependencies = function() {
         retSafe = retSafe && ret.resolve( this );
         //this.sourceDependencies.push( source );
     }
-    //console.log('retSafe ' + retSafe + ' of ' + this.name, this.returnDependencies.length);
     
     if(this.resolved === RESOLVED_VISITED){
         this.resolved = RESOLVED_DONE;

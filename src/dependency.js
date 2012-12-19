@@ -66,6 +66,7 @@ Dependency.prototype.resolve = function( context ) {
 	if( this.type === 'variable' || this.type === 'property' ){
 
 		var rloc = this.realLocation;
+
 		if( rloc === undefined )
 			return false;
 		if( rloc.length === 0 )
@@ -92,7 +93,7 @@ Dependency.prototype.resolve = function( context ) {
 		var functionObject;
 
 		if(rloc.type === "param"){
-		
+	
             if (context.currentArguments[rloc.identifier] !== undefined &&
                 context.currentArguments[rloc.identifier].length !== 0){
 
@@ -104,9 +105,12 @@ Dependency.prototype.resolve = function( context ) {
 		} else {
 			continue;
 		}
+        //console.log('wut ' + functionObject.name + ' args ' + this.argumentList.length);
 		functionObject.currentArguments = this.argumentList;
 
 		var resolvedFunction = functionObject.resolveDependencies();
+        //console.log('wut2 ' + functionObject.name + ' resolvedFunction ' + util.inspect(resolvedFunction,false,2));
+
 		if(resolvedFunction.isAlwaysUnsafeSink){
 			var line = readLine(this.block.loc, this.block.callee.loc.start.line);
 
@@ -120,21 +124,25 @@ Dependency.prototype.resolve = function( context ) {
 
 			context.analyzer.results.unsafeSinkCalls.push( result_object );
 		}
-		if(!resolvedFunction.canReturnSafe && !resolvedFunction.argumentSink){
+		if(resolvedFunction.canReturnSafe === false && resolvedFunction.argumentSink === false){
 			return false;
 		}
-
+        if(resolvedFunction.argumentReturn === false){
+            return false;
+        }
 
 		var allSafe = true;
 
-		var argumentSafetyList = [];
+        allSafe = allSafe && resolvedFunction.argumentReturn;
+
+        var argumentSafety = true;
+
 		for(var p = 0; p < this.argumentList.length; p++){
-			//var argumentSafety = true;
 			var argument = this.argumentList[ p ];
 
 			for (var j = 0; j < argument.length; j++){
 
-				//argumentSafety = argumentSafety && argument[ j ].resolve( context );
+				argumentSafety = argumentSafety && argument[ j ].resolve( context );
 
 				// find sink call argument origin         
 				if(rloc.sink === true){
@@ -146,10 +154,12 @@ Dependency.prototype.resolve = function( context ) {
 					// find func arguments sinked into sink func            
 					function findCallerIdArgs(id, rootCalls){
 						var rList = [[]];
+
 						// it's recursion
 						if (id === '0wrapper'){
 							return rList;
 						}
+
 						for (var m in rootCalls){
 							if(rootCalls[m].identifier !== id){
 								for (var n in rootCalls[m].realLocation){
@@ -166,23 +176,22 @@ Dependency.prototype.resolve = function( context ) {
 								return rootCalls[m].argumentList; 
 							}
 						}
+
 						return rList;
                     }
-                    
+
                     var callArgsList = findCallerIdArgs( this.callerId, rootFo.block.functionObject.functionCalls );
-                    
+
                     if (callArgsList.length > 0 && callArgsList[0].length > 0){
                         allSafe = allSafe && callArgsList[p][j].resolve( context );
                     }
+
 				}
 
-				//argumentSafetyList.push( argumentSafety );
-
-				//tmpAllSafe = tmpAllSafe && argumentSafety;
+				allSafe = allSafe && argumentSafety;
 			}
 
-			//console.log('resolve wut', functionObject.name);
-			//console.log("resolve returns safe ", this.identifier, paramObject.returnsSafe);
+			//console.log("resolve returns safe ", this.identifier, allSafe);
 			if(resolvedFunction.argumentReturn && !allSafe){
 				safe = false;
 			}
