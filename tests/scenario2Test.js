@@ -91,7 +91,7 @@ exports['SCENARIO2_TEST'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            tUtil.printTestOK(groupTestTitle, 
+            tUtil.printTestOK(GROUP_TEST_TITLE, 
                               'TwoUnsafeAndTwoSafeEvalCallsCalledInTestFunctionWithTestCall',
                               undefined, script, doVersatile);
         }
@@ -118,7 +118,7 @@ exports['SCENARIO2_TEST'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            tUtil.printTestOK(groupTestTitle,
+            tUtil.printTestOK(GROUP_TEST_TITLE,
                               'ThreeSafeAndOneRecursiveAndOneUnSafeEvalCalls',
                               undefined, script, doVersatile);
         }
@@ -153,7 +153,7 @@ exports['SCENARIO2_TEST'] = {
                      (results.unsafeAssignments.length !== 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            tUtil.printTestOK(groupTestTitle, 
+            tUtil.printTestOK(GROUP_TEST_TITLE, 
                               'BasicUAT',
                               undefined, script, doVersatile);
         }
@@ -196,7 +196,7 @@ exports['SCENARIO2_TEST'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0)*/;
         if(testOk) {
-            tUtil.printTestOK(groupTestTitle,
+            tUtil.printTestOK(GROUP_TEST_TITLE,
                               'MultiplyComplexFunctionCallsinMultiplyFunctions',
                               undefined, script, doVersatile);
         }
@@ -204,7 +204,42 @@ exports['SCENARIO2_TEST'] = {
         test.expect(1);
         test.ok(testOk, "message: 'parse crash'    test source:[" + script + "]");
         test.done();
-    }/*,
+    },
+    'OneComplexAndOneSimpleUnsafeFuncCalls': function(test) {
+        var script = 'var a; \n' +
+                     'function f( param ){ \n' +
+                     '  var c; c = param; \n' +
+                     '  return c; \n' + 
+                     '}\n' +
+                     'function g( param ){\n' +
+                     '   document.write( param );\n' +
+                     '}\n' +
+                     'function h( param ){\n' +
+                     '   document.write( a );\n' +
+                     '}\n' + 
+                     'a = document.location;\n' +
+                     'g(f(a));\n' +   
+                     'h();';
+ 
+        var results = tUtil.analyze(script);
+
+        var testOk = (results.safeSinkCalls.length === 0) && //
+                     (results.unresolvedCalls.length === 0) &&
+                     (results.unsafeSinkCalls.length !== 0) &&
+                     (results.recursiveExpressions.length === 0) &&
+                     (results.unsafeAssignments.length === 0) &&
+                     (results.safeAssignments.length === 0);
+        if(testOk) {
+            tUtil.printTestOK(GROUP_TEST_TITLE, 
+                              'OneComplexAndOneSimpleUnsafeFuncCalls',
+                              undefined, script, doVersatile);
+        }
+
+        test.expect(1);
+        test.ok(testOk, "message: 'parse crash'    test source:[" + script + "]");
+        test.done();
+    } 
+    /*,
     ' ': function(test) {
         var script = '  ';
         var results = tUtil.analyze(script);
@@ -216,7 +251,7 @@ exports['SCENARIO2_TEST'] = {
                      (results.unsafeAssignments.length === 0) &&
                      (results.safeAssignments.length === 0);
         if(testOk) {
-            tUtil.printTestOK(groupTestTitle, 
+            tUtil.printTestOK(GROUP_TEST_TITLE, 
                               'Test to be added', 
                               undefined, script, doVersatile);
         }
