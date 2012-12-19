@@ -225,6 +225,7 @@ FunctionObject.prototype.resolveDependencies = function() {
         return this.resolveResult;
     }
 	if(this.resolved === RESOLVED_VISITED){
+
 		var result_object = {
 			sourceFile: this.block.id.loc.file,
 			lineNumber: this.block.id.loc.start.line,
@@ -232,8 +233,9 @@ FunctionObject.prototype.resolveDependencies = function() {
 			sink: this.name,
 			trace: undefined
 		};
+
 		this.analyzer.results.recursiveExpressions.push(result_object);
-			this.resolved = RESOLVED_RECURSION;
+	    this.resolved = RESOLVED_RECURSION;
 
 		//console.log('visited', this.name );
 
@@ -251,8 +253,7 @@ FunctionObject.prototype.resolveDependencies = function() {
     }
     this.resolved = RESOLVED_VISITED;
 		
-    //console.log('main block', this.name );
-    //console.log(this.functionCalls.length);	
+    //console.log('main block', this.name, this.functionCalls.length);	
 
     for(var i = 0; i < this.functionCalls.length; i++){
 	    var call = this.functionCalls[ i ];
@@ -261,14 +262,14 @@ FunctionObject.prototype.resolveDependencies = function() {
 
     }
 
-    // function return depedencies
+    // function return dependencies
     var retSafe = true;
     for(i = 0; i < this.returnDependencies.length; i++){
         var ret = this.returnDependencies[i];
         retSafe = retSafe && ret.resolve( this );
         //this.sourceDependencies.push( source );
     }
-    //console.log('retSafe ' + retSafe + ' of ' + this.name);
+    //console.log('retSafe ' + retSafe + ' of ' + this.name, this.returnDependencies.length);
     
     if(this.resolved === RESOLVED_VISITED){
         this.resolved = RESOLVED_DONE;

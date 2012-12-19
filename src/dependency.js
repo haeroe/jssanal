@@ -19,10 +19,10 @@ function Dependency(id, type, args){
         args = {};
     this.block = args.block;
     this.argumentList = args.argumentList;
-    this.realLocation = args.realLocation;
 	this.sink = args.sink;
+    this.realLocation = args.realLocation;
 
-    this.callerName = args.contextName;
+    this.callerId = args.contextId;
 
     this.resolved = false;
 }
@@ -55,35 +55,34 @@ function readLine(loc, linenumber) {
  * @return { boolean } Whether expression return value is safe or not.
  */
 Dependency.prototype.resolve = function( context ) {
-    if( this.type !== 'variable' &&
-		   	this.type !== 'property' &&
-		   	this.type !== 'call' ){ 
-		return true;
-    }
+
+	if( this.type !== 'variable' &&
+		this.type !== 'property' &&
+		this.type !== 'call' ){ 
+			return true;
+	}
 
 	var safe = true;
 
-    if( this.type === 'variable' || this.type === 'property' ){
-        
+	if( this.type === 'variable' || this.type === 'property' ){
+
 		var rloc = this.realLocation;
-		//if( rloc === undefined || rloc.length === 0)
-		//	return false;
-       
 		if( rloc === undefined )
-	        return false;
+			return false;
 		if( rloc.length === 0 )
-	        return true;
-            
+			return true;
+
 		for(var i = 0; i < rloc.length; i++){
 			safe = safe && rloc[ i ].resolve( context );
 		}
 		return safe;
 	}
 
-    // get call dependencies
+	// get call dependencies
 	if ( this.realLocation === undefined ) {
 		return false;
 	}
+
 	for(var i = 0; i < this.realLocation.length; i++){
 
 		var rloc = this.realLocation[ i ];
@@ -122,7 +121,7 @@ Dependency.prototype.resolve = function( context ) {
 		if(!resolvedFunction.canReturnSafe && !resolvedFunction.argumentSink){
 			return false;
 		}
-	
+
 
 		var allSafe = true;
 
@@ -167,49 +166,95 @@ Dependency.prototype.resolve = function( context ) {
 							}
 						}
 						return rList;
-					}
 
-					var sinkCallArgList = findCallerIdArgs( this.callerName, rootFo.block.functionObject.functionCalls );
-					if (sinkCallArgList.length > 0 && sinkCallArgList[0].length > 0)
-						allSafe = allSafe && sinkCallArgList[p][j].resolve( context );
+						// find sink call argument origin         
+						if(rloc.sink === true){
+
+							var rootFo = functionObject;
+							while(rootFo.parent !== undefined){
+								rootFo = rootFo.parent;    
+							}
+
+							// find func arguments sinked into sink func            
+							function findCallerIdArgs(id, funcCalls){
+								var rList = [];
+
+								// it's recursion
+								if (id === '0wrapper'){
+									return rList;
+								}
+								for (var m in funcCalls){
+
+									if(funcCalls[m].identifier !== id){
+										for (var n in funcCalls[m].realLocation){
+
+											if(funcCalls[m].realLocation[n].type !== 'function'){i
+												continue;
+											}    
+											//if(funcCalls[m].realLocation[n].block.functionObject.resolved !== 2){ //unresolved func
+											//    continue;
+											//}
+											if(funcCalls[m].realLocation[n].block.type === 'FunctionDeclaration'){
+												var nCalls = funcCalls[m].realLocation[n].block.functionObject.functionCalls;
+												rList = findCallerIdArgs(id, nCalls);
+											}
+
+										}        
+									}else{
+										return funcCalls[m].argumentList; // found id                
+									}
+								}
+								return rList;
+							}
+
+							var callArgsList = findCallerIdArgs( this.callerId, rootFo.block.functionObject.functionCalls );
+
+							if (callArgsList.length > 0 && callArgsList[0].length > 0){
+								allSafe = allSafe && callArgsList[p][j].resolve( context );
+							}
+						}
+
+						var sinkCallArgList = findCallerIdArgs( this.callerName, rootFo.block.functionObject.functionCalls );
+						if (sinkCallArgList.length > 0 && sinkCallArgList[0].length > 0)
+							allSafe = allSafe && sinkCallArgList[p][j].resolve( context );
+					}
+				}
+
+				//argumentSafetyList.push( argumentSafety );
+
+				//tmpAllSafe = tmpAllSafe && argumentSafety;
+			}
+
+			//console.log('resolve wut', functionObject.name);
+			//console.log("resolve returns safe ", this.identifier, paramObject.returnsSafe);
+			if(resolvedFunction.argumentReturn && !allSafe){
+				safe = false;
+			}
+			//console.log(rloc);
+			//console.log(rloc.identifier, rloc.sink);
+
+			if( resolvedFunction.argumentSink || rloc.sink ){
+				var line = readLine(this.block.loc, this.block.callee.loc.start.line);
+
+				var result_object = {
+					sourceFile: this.block.loc.file,
+					lineNumber: this.block.callee.loc.start.line,
+					vulnerableLine: line,
+					sink: rloc.identifier,
+					trace: context
+				};
+
+				if(allSafe){
+					context.analyzer.results.safeSinkCalls.push( result_object );
+				}else{
+					context.analyzer.results.unsafeSinkCalls.push( result_object );
 				}
 			}
-
-			//argumentSafetyList.push( argumentSafety );
-
-			//tmpAllSafe = tmpAllSafe && argumentSafety;
 		}
-
-		//console.log('resolve wut', functionObject.name);
-		//console.log("resolve returns safe ", this.identifier, paramObject.returnsSafe);
-		if(resolvedFunction.argumentReturn === true && !allSafe){
-			safe = false;
-		}
-		//console.log(rloc);
-		//console.log(rloc.identifier, rloc.sink);
-
-		if( rloc.sink === true ){
-			var line = readLine(this.block.loc, this.block.callee.loc.start.line);
-
-			var result_object = {
-				sourceFile: this.block.loc.file,
-				lineNumber: this.block.callee.loc.start.line,
-				vulnerableLine: line,
-				sink: rloc.identifier,
-				trace: context
-			};
-
-			if(allSafe){
-				context.analyzer.results.safeSinkCalls.push( result_object );
-			}else{
-				context.analyzer.results.unsafeSinkCalls.push( result_object );
-			}
-		}
-	}
-	
+	}	
 
 	return safe;
-};
+}
 
 /*
  * Generates a new dependency object from a parameter 
@@ -231,7 +276,7 @@ function fromParameter( index, context, list ){
  * @param { string } id which the variable had when it was first met.
  * @param { Object.AstBlock } context esprima block where the variable search begins.
  * @return { FunctionObject.variables[Depedency1,..,DependencyN] } 
- *         list of the depedencies for the variable given in parent context.
+ *         list of the dependencies for the variable given in parent context.
  *         Undefined if the variable id was not found. 
  */
 function findVariable( id, context ){
@@ -320,7 +365,7 @@ function fromBlock( block, context, list ){
             id = id.split('.').pop(); // currently only sink property of member funcs saved in realLocation
 		}
         type = "call"
-		args = { argumentList: [], block: block, contextName: context.name };
+		args = { argumentList: [], block: block, contextId: context.name };
 	    
         //block.arguments comes from parserAPI
 		for(var i = 0; i < block.arguments.length; i++){
