@@ -123,6 +123,27 @@ exports['SIMPLE_SINKS_TEST'] = {
     test.expect(1);
     test.ok(condition, "test source:[ " + script + "]" );
     test.done();
+  },
+  'testSinkInCallbackWithUnknownFunctionParameter': function(test) {
+    var script = 'function cb(cbparam){ \n' +
+                 '  eval(cbparam); \n' +
+                 '}\n' +
+                 'function test(callback, param){\n' + 
+                 '   callback(param);\n' +
+                 '}\n' +
+                 'test(cb, notknown);\n';
+    var results = testUtils.analyze(script);
+    var condition = (results.unsafeSinkCalls.length !== 0 && 
+                    results.safeSinkCalls.length === 0);
+
+    if (condition) {
+        testUtils.printTestOK(groupTestTitle, 
+                              'testSinkInCallbackWithUnknownFunctionParameter',
+                              undefined, script, doVersatile);
+    }
+    test.expect(1);
+    test.ok(condition, "test source:[ " + script + "]" );
+    test.done();
   }
 }
 
